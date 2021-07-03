@@ -75,6 +75,10 @@ Command Reference
 ``zanshin``
 ===========
 
+Command-line utility to interact with the Zanshin SaaS service offered
+by Tenchi Security, go to https://github.com/tenchi-security/zanshin-cli
+for license, source code and documentation
+
 **Usage**:
 
 .. code:: console
@@ -83,6 +87,12 @@ Command Reference
 
 **Options**:
 
+-  ``--profile TEXT``: Configuration file section to read API key and
+   configutation from [default: default]
+-  ``--format [json|table|csv|html]``: Output format to use for list
+   operations [default: json]
+-  ``--verbose / --no-verbose``: Print timiing and other information to
+   stderr [default: True]
 -  ``--install-completion``: Install completion for the current shell.
 -  ``--show-completion``: Show completion for the current shell, to copy
    it or customize the installation.
@@ -90,10 +100,203 @@ Command Reference
 
 **Commands**:
 
+-  ``alert``: Returns details about a specified alert
+-  ``following``: Operations on organizations that are being...
 -  ``init``: Update settings on configuration file.
 -  ``me``: Show details about the owner of the API key...
 -  ``organization``: Operations on organizations the API key owner...
 -  ``version``: Display the program and Python versions in...
+
+``zanshin alert``
+-----------------
+
+Returns details about a specified alert
+
+**Usage**:
+
+.. code:: console
+
+   $ zanshin alert [OPTIONS] ALERT_ID
+
+**Arguments**:
+
+-  ``ALERT_ID``: UUID of the alert to look up [required]
+
+**Options**:
+
+-  ``--help``: Show this message and exit.
+
+``zanshin following``
+---------------------
+
+Operations on organizations that are being followed by one of the
+organizations the API key owner is a member of
+
+**Usage**:
+
+.. code:: console
+
+   $ zanshin following [OPTIONS] COMMAND [ARGS]...
+
+**Options**:
+
+-  ``--help``: Show this message and exit.
+
+**Commands**:
+
+-  ``alerts``: Lists alerts of organizations that the API...
+-  ``list``: Lists other organizations that a specified...
+-  ``requests``: Operations on requests submitted by third...
+-  ``stop``: Stops one organization from following another
+
+``zanshin following alerts``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Lists alerts of organizations that the API key owner is following
+
+**Usage**:
+
+.. code:: console
+
+   $ zanshin following alerts [OPTIONS]
+
+**Options**:
+
+-  ``--following-id UUID``: Only list alerts from the specified followed
+   organizations
+-  ``--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|RESOLVED|CLOSED]``:
+   Only list alerts in the specified states. [default: OPEN, ACTIVE,
+   IN_PROGRESS, RISK_ACCEPTED, RESOLVED]
+-  ``--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]``: Only list alerts with
+   the specified severities [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
+-  ``--help``: Show this message and exit.
+
+``zanshin following list``
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Lists other organizations that a specified organization is following
+
+**Usage**:
+
+.. code:: console
+
+   $ zanshin following list [OPTIONS] ORGANIZATION_ID
+
+**Arguments**:
+
+-  ``ORGANIZATION_ID``: UUID of the organization [required]
+
+**Options**:
+
+-  ``--help``: Show this message and exit.
+
+``zanshin following requests``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Operations on requests submitted by third parties to be followed by one
+of the organizations the API key owner is a member of
+
+**Usage**:
+
+.. code:: console
+
+   $ zanshin following requests [OPTIONS] COMMAND [ARGS]...
+
+**Options**:
+
+-  ``--help``: Show this message and exit.
+
+**Commands**:
+
+-  ``accept``: Accepts a request to follow another...
+-  ``decline``: Declines a request to follow another...
+-  ``list``: Lists all of the requests from organizations...
+
+``zanshin following requests accept``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Accepts a request to follow another organization
+
+**Usage**:
+
+.. code:: console
+
+   $ zanshin following requests accept [OPTIONS] ORGANIZATION_ID FOLLOWING_ID
+
+**Arguments**:
+
+-  ``ORGANIZATION_ID``: UUID of the organization that received the
+   request [required]
+-  ``FOLLOWING_ID``: UUID of the organization that requested to be
+   followed [required]
+
+**Options**:
+
+-  ``--help``: Show this message and exit.
+
+``zanshin following requests decline``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Declines a request to follow another organization
+
+**Usage**:
+
+.. code:: console
+
+   $ zanshin following requests decline [OPTIONS] ORGANIZATION_ID FOLLOWING_ID
+
+**Arguments**:
+
+-  ``ORGANIZATION_ID``: UUID of the organization that received the
+   request [required]
+-  ``FOLLOWING_ID``: UUID of the organization that requested to be
+   followed [required]
+
+**Options**:
+
+-  ``--help``: Show this message and exit.
+
+``zanshin following requests list``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Lists all of the requests from organizations that want to be followed by
+a specified organization that the API key owner is a member of
+
+**Usage**:
+
+.. code:: console
+
+   $ zanshin following requests list [OPTIONS] ORGANIZATION_ID
+
+**Arguments**:
+
+-  ``ORGANIZATION_ID``: UUID of the organization that received the
+   request [required]
+
+**Options**:
+
+-  ``--help``: Show this message and exit.
+
+``zanshin following stop``
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Stops one organization from following another
+
+**Usage**:
+
+.. code:: console
+
+   $ zanshin following stop [OPTIONS] ORGANIZATION_ID FOLLOWING_ID
+
+**Arguments**:
+
+-  ``ORGANIZATION_ID``: UUID of the follower organization (which the API
+   key owner must be a member of) [required]
+-  ``FOLLOWING_ID``: UUID of the followed organization [required]
+
+**Options**:
+
+-  ``--help``: Show this message and exit.
 
 ``zanshin init``
 ----------------
@@ -123,14 +326,12 @@ Show details about the owner of the API key being used.
 
 **Options**:
 
--  ``--profile TEXT``: Configuration file section to use for credentials
-   and other settings [default: default]
 -  ``--help``: Show this message and exit.
 
 ``zanshin organization``
 ------------------------
 
-Operations on organizations the API key owner has direct access to.
+Operations on organizations the API key owner has direct access to
 
 **Usage**:
 
@@ -162,8 +363,7 @@ target, state or severity.
 
 **Arguments**:
 
--  ``ORGANIZATION_ID``: UUID of the organization to list alerts from.
-   [required]
+-  ``ORGANIZATION_ID``: UUID of the organization [required]
 
 **Options**:
 
@@ -171,12 +371,7 @@ target, state or severity.
    Only list alerts in the specified states. [default: OPEN, ACTIVE,
    IN_PROGRESS, RISK_ACCEPTED, RESOLVED]
 -  ``--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]``: Only list alerts with
-   the specified severities. [default: CRITICAL, HIGH, MEDIUM, LOW,
-   INFO]
--  ``--profile TEXT``: Configuration file section to use for credentials
-   and other settings [default: default]
--  ``--format [json|table|csv|html]``: Format to use for the output.
-   [default: json]
+   the specified severities [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
 -  ``--help``: Show this message and exit.
 
 ``zanshin organization list``
@@ -192,17 +387,13 @@ Lists the organizations this user has direct access to as a member.
 
 **Options**:
 
--  ``--profile TEXT``: Configuration file section to use for credentials
-   and other settings [default: default]
--  ``--format [json|table|csv|html]``: Format to use for the output.
-   [default: json]
 -  ``--help``: Show this message and exit.
 
 ``zanshin organization scan_target``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Operations on scan targets from organizations the API key owner has
-direct access to.
+direct access to
 
 **Usage**:
 
@@ -216,14 +407,14 @@ direct access to.
 
 **Commands**:
 
--  ``check``: Check an scan_target status from an...
--  ``list``: Lists the scan targets from an organization...
--  ``scan``: Start an Scan in a specific scan_target from...
+-  ``check``: Checks if a scan target is correctly...
+-  ``list``: Lists the scan targets (i.e.
+-  ``scan``: Starts an ad-hoc scan of a specified scan...
 
 ``zanshin organization scan_target check``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Check an scan_target status from an organization.
+Checks if a scan target is correctly configured
 
 **Usage**:
 
@@ -233,21 +424,19 @@ Check an scan_target status from an organization.
 
 **Arguments**:
 
--  ``ORGANIZATION_ID``: UUID of the organization to list alerts from.
+-  ``ORGANIZATION_ID``: UUID of the organization to list alerts from
    [required]
--  ``SCAN_TARGET_ID``: UUID of the scan target to start scan. [required]
+-  ``SCAN_TARGET_ID``: UUID of the scan target to start scan [required]
 
 **Options**:
 
--  ``--profile TEXT``: Configuration file section to use for credentials
-   and other settings [default: default]
 -  ``--help``: Show this message and exit.
 
 ``zanshin organization scan_target list``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Lists the scan targets from an organization that user has access to as a
-member.
+Lists the scan targets (i.e. linked cloud accounts) from an organization
+that user has access to as a member.
 
 **Usage**:
 
@@ -258,20 +447,16 @@ member.
 **Arguments**:
 
 -  ``ORGANIZATION_ID``: UUID of the organizations whose scan targets
-   should be listed. [required]
+   should be listed [required]
 
 **Options**:
 
--  ``--profile TEXT``: Configuration file section to use for credentials
-   and other settings [default: default]
--  ``--format [json|table|csv|html]``: Format to use for the output.
-   [default: json]
 -  ``--help``: Show this message and exit.
 
 ``zanshin organization scan_target scan``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Start an Scan in a specific scan_target from an organization.
+Starts an ad-hoc scan of a specified scan target
 
 **Usage**:
 
@@ -281,14 +466,12 @@ Start an Scan in a specific scan_target from an organization.
 
 **Arguments**:
 
--  ``ORGANIZATION_ID``: UUID of the organization to list alerts from.
+-  ``ORGANIZATION_ID``: UUID of the organization to list alerts from
    [required]
--  ``SCAN_TARGET_ID``: UUID of the scan target to start scan. [required]
+-  ``SCAN_TARGET_ID``: UUID of the scan target to start scan [required]
 
 **Options**:
 
--  ``--profile TEXT``: Configuration file section to use for credentials
-   and other settings [default: default]
 -  ``--help``: Show this message and exit.
 
 ``zanshin version``
