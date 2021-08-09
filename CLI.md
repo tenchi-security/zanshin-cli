@@ -1,7 +1,8 @@
 # `zanshin`
 
-Command-line utility to interact with the Zanshin SaaS service offered by Tenchi Security, go to
-https://github.com/tenchi-security/zanshin-cli for license, source code and documentation
+Command-line utility to interact with the Zanshin SaaS service offered by Tenchi Security
+(https://tenchisecurity.com), go to https://github.com/tenchi-security/zanshin-cli for license, source code and
+documentation
 
 **Usage**:
 
@@ -61,10 +62,26 @@ $ zanshin following [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
+* `alert_summary`: Lists alerts of organizations that the API...
 * `alerts`: Lists alerts of organizations that the API...
 * `list`: Lists other organizations that a specified...
 * `requests`: Operations on requests submitted by third...
 * `stop`: Stops one organization from following another
+
+### `zanshin following alert_summary`
+
+Lists alerts of organizations that the API key owner is following
+
+**Usage**:
+
+```console
+$ zanshin following alert_summary [OPTIONS]
+```
+
+**Options**:
+
+* `--following-id UUID`: Only summarize alerts from the specified followed organizations
+* `--help`: Show this message and exit.
 
 ### `zanshin following alerts`
 
@@ -241,9 +258,30 @@ $ zanshin organization [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
+* `alert_summary`: List alerts from a given organization, with...
 * `alerts`: List alerts from a given organization, with...
 * `list`: Lists the organizations this user has direct...
+* `scan_summary`: List statistical summaries of changes brought...
 * `scan_target`: Operations on scan targets from organizations...
+
+### `zanshin organization alert_summary`
+
+List alerts from a given organization, with an optional filter by scan target.
+
+**Usage**:
+
+```console
+$ zanshin organization alert_summary [OPTIONS] ORGANIZATION_ID
+```
+
+**Arguments**:
+
+* `ORGANIZATION_ID`: UUID of the organization  [required]
+
+**Options**:
+
+* `--scan-target-id UUID`: Only summarize alerts from the specified scan targets, defaults to all.
+* `--help`: Show this message and exit.
 
 ### `zanshin organization alerts`
 
@@ -261,6 +299,7 @@ $ zanshin organization alerts [OPTIONS] ORGANIZATION_ID
 
 **Options**:
 
+* `--scan-target-id UUID`: Only list alerts from the specified scan targets.
 * `--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|RESOLVED|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED, RESOLVED]
 * `--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with the specified severities  [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
 * `--help`: Show this message and exit.
@@ -279,6 +318,26 @@ $ zanshin organization list [OPTIONS]
 
 * `--help`: Show this message and exit.
 
+### `zanshin organization scan_summary`
+
+List statistical summaries of changes brought by scans from a given organization, with optional filters by scan target.
+
+**Usage**:
+
+```console
+$ zanshin organization scan_summary [OPTIONS] ORGANIZATION_ID
+```
+
+**Arguments**:
+
+* `ORGANIZATION_ID`: UUID of the organization  [required]
+
+**Options**:
+
+* `--scan-target-id UUID`: Only summarize scans from the specified scan targets, defaults to all.
+* `--days INTEGER RANGE`: [default: 7]
+* `--help`: Show this message and exit.
+
 ### `zanshin organization scan_target`
 
 Operations on scan targets from organizations the API key owner has direct access to
@@ -295,9 +354,52 @@ $ zanshin organization scan_target [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
+* `alert_summary`: List statistical summaries of changes brought...
+* `alerts`: List alerts from a given scan target, with...
 * `check`: Checks if a scan target is correctly...
 * `list`: Lists the scan targets (i.e.
 * `scan`: Starts an ad-hoc scan of a specified scan...
+* `scan_summary`: Show summary of scans from a given scan...
+
+#### `zanshin organization scan_target alert_summary`
+
+List statistical summaries of changes brought by scans from a given scan target.
+
+**Usage**:
+
+```console
+$ zanshin organization scan_target alert_summary [OPTIONS] ORGANIZATION_ID SCAN_TARGET_ID
+```
+
+**Arguments**:
+
+* `ORGANIZATION_ID`: UUID of the scan target's organization  [required]
+* `SCAN_TARGET_ID`: UUID of the scan target to summarize alerts from  [required]
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+#### `zanshin organization scan_target alerts`
+
+List alerts from a given scan target, with optional filters by state or severity.
+
+**Usage**:
+
+```console
+$ zanshin organization scan_target alerts [OPTIONS] ORGANIZATION_ID SCAN_TARGET_ID
+```
+
+**Arguments**:
+
+* `ORGANIZATION_ID`: UUID of the scan target's organization  [required]
+* `SCAN_TARGET_ID`: UUID of the scan target to list alerts from  [required]
+
+**Options**:
+
+* `--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|RESOLVED|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED, RESOLVED]
+* `--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with the specified severities  [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
+* `--help`: Show this message and exit.
 
 #### `zanshin organization scan_target check`
 
@@ -311,7 +413,7 @@ $ zanshin organization scan_target check [OPTIONS] ORGANIZATION_ID SCAN_TARGET_I
 
 **Arguments**:
 
-* `ORGANIZATION_ID`: UUID of the organization to list alerts from  [required]
+* `ORGANIZATION_ID`: UUID of the scan target's organization  [required]
 * `SCAN_TARGET_ID`: UUID of the scan target to start scan  [required]
 
 **Options**:
@@ -348,11 +450,31 @@ $ zanshin organization scan_target scan [OPTIONS] ORGANIZATION_ID SCAN_TARGET_ID
 
 **Arguments**:
 
-* `ORGANIZATION_ID`: UUID of the organization to list alerts from  [required]
+* `ORGANIZATION_ID`: UUID of the scan target's organization  [required]
 * `SCAN_TARGET_ID`: UUID of the scan target to start scan  [required]
 
 **Options**:
 
+* `--help`: Show this message and exit.
+
+#### `zanshin organization scan_target scan_summary`
+
+Show summary of scans from a given scan target.
+
+**Usage**:
+
+```console
+$ zanshin organization scan_target scan_summary [OPTIONS] ORGANIZATION_ID SCAN_TARGET_ID
+```
+
+**Arguments**:
+
+* `ORGANIZATION_ID`: UUID of the scan target's organization  [required]
+* `SCAN_TARGET_ID`: UUID of the scan target to summarize alerts from  [required]
+
+**Options**:
+
+* `--days INTEGER RANGE`: [default: 7]
 * `--help`: Show this message and exit.
 
 ## `zanshin version`

@@ -8,6 +8,18 @@ Is it based on the Zanshin Python SDK available on [Github](https://github.com/t
 
 If you are a Zanshin customer and have any questions regarding the use of the service, its API or this command-line utility, please get in touch via e-mail at support {at} tenchisecurity {dot} com or via the support widget on the [Zanshin Portal](https://zanshin.tenchisecurity.com).
 
+## Installation
+
+We recommend the CLI is installed using [pipx](https://pypa.github.io/pipx/installation/), using the command:
+```shell
+pipx install zanshincli
+```
+
+When a new version is available, you can upgrade it with:
+```shell
+pipx upgrade zanshincli
+```
+
 ## Configuration File
 
 The way the SDK and CLI handles credentials is by using a configuration file in the format created by the Python [RawConfigParser](https://docs.python.org/3/library/configparser.html#configparser.RawConfigParser) class. 

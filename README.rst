@@ -18,6 +18,22 @@ touch via e-mail at support {at} tenchisecurity {dot} com or via the
 support widget on the `Zanshin
 Portal <https://zanshin.tenchisecurity.com>`__.
 
+Installation
+------------
+
+We recommend the CLI is installed using
+`pipx <https://pypa.github.io/pipx/installation/>`__, using the command:
+
+.. code:: shell
+
+   pipx install zanshincli
+
+When a new version is available, you can upgrade it with:
+
+.. code:: shell
+
+   pipx upgrade zanshincli
+
 Configuration File
 ------------------
 
@@ -76,8 +92,9 @@ Command Reference
 ===========
 
 Command-line utility to interact with the Zanshin SaaS service offered
-by Tenchi Security, go to https://github.com/tenchi-security/zanshin-cli
-for license, source code and documentation
+by Tenchi Security (https://tenchisecurity.com), go to
+https://github.com/tenchi-security/zanshin-cli for license, source code
+and documentation
 
 **Usage**:
 
@@ -144,10 +161,28 @@ organizations the API key owner is a member of
 
 **Commands**:
 
+-  ``alert_summary``: Lists alerts of organizations that the API...
 -  ``alerts``: Lists alerts of organizations that the API...
 -  ``list``: Lists other organizations that a specified...
 -  ``requests``: Operations on requests submitted by third...
 -  ``stop``: Stops one organization from following another
+
+``zanshin following alert_summary``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Lists alerts of organizations that the API key owner is following
+
+**Usage**:
+
+.. code:: console
+
+   $ zanshin following alert_summary [OPTIONS]
+
+**Options**:
+
+-  ``--following-id UUID``: Only summarize alerts from the specified
+   followed organizations
+-  ``--help``: Show this message and exit.
 
 ``zanshin following alerts``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -345,9 +380,33 @@ Operations on organizations the API key owner has direct access to
 
 **Commands**:
 
+-  ``alert_summary``: List alerts from a given organization, with...
 -  ``alerts``: List alerts from a given organization, with...
 -  ``list``: Lists the organizations this user has direct...
+-  ``scan_summary``: List statistical summaries of changes brought...
 -  ``scan_target``: Operations on scan targets from organizations...
+
+``zanshin organization alert_summary``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+List alerts from a given organization, with an optional filter by scan
+target.
+
+**Usage**:
+
+.. code:: console
+
+   $ zanshin organization alert_summary [OPTIONS] ORGANIZATION_ID
+
+**Arguments**:
+
+-  ``ORGANIZATION_ID``: UUID of the organization [required]
+
+**Options**:
+
+-  ``--scan-target-id UUID``: Only summarize alerts from the specified
+   scan targets, defaults to all.
+-  ``--help``: Show this message and exit.
 
 ``zanshin organization alerts``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -367,6 +426,8 @@ target, state or severity.
 
 **Options**:
 
+-  ``--scan-target-id UUID``: Only list alerts from the specified scan
+   targets.
 -  ``--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|RESOLVED|CLOSED]``:
    Only list alerts in the specified states. [default: OPEN, ACTIVE,
    IN_PROGRESS, RISK_ACCEPTED, RESOLVED]
@@ -389,6 +450,29 @@ Lists the organizations this user has direct access to as a member.
 
 -  ``--help``: Show this message and exit.
 
+``zanshin organization scan_summary``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+List statistical summaries of changes brought by scans from a given
+organization, with optional filters by scan target.
+
+**Usage**:
+
+.. code:: console
+
+   $ zanshin organization scan_summary [OPTIONS] ORGANIZATION_ID
+
+**Arguments**:
+
+-  ``ORGANIZATION_ID``: UUID of the organization [required]
+
+**Options**:
+
+-  ``--scan-target-id UUID``: Only summarize scans from the specified
+   scan targets, defaults to all.
+-  ``--days INTEGER RANGE``: [default: 7]
+-  ``--help``: Show this message and exit.
+
 ``zanshin organization scan_target``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -407,9 +491,63 @@ direct access to
 
 **Commands**:
 
+-  ``alert_summary``: List statistical summaries of changes brought...
+-  ``alerts``: List alerts from a given scan target, with...
 -  ``check``: Checks if a scan target is correctly...
 -  ``list``: Lists the scan targets (i.e.
 -  ``scan``: Starts an ad-hoc scan of a specified scan...
+-  ``scan_summary``: Show summary of scans from a given scan...
+
+``zanshin organization scan_target alert_summary``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+List statistical summaries of changes brought by scans from a given scan
+target.
+
+**Usage**:
+
+.. code:: console
+
+   $ zanshin organization scan_target alert_summary [OPTIONS] ORGANIZATION_ID SCAN_TARGET_ID
+
+**Arguments**:
+
+-  ``ORGANIZATION_ID``: UUID of the scan target's organization
+   [required]
+-  ``SCAN_TARGET_ID``: UUID of the scan target to summarize alerts from
+   [required]
+
+**Options**:
+
+-  ``--help``: Show this message and exit.
+
+``zanshin organization scan_target alerts``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+List alerts from a given scan target, with optional filters by state or
+severity.
+
+**Usage**:
+
+.. code:: console
+
+   $ zanshin organization scan_target alerts [OPTIONS] ORGANIZATION_ID SCAN_TARGET_ID
+
+**Arguments**:
+
+-  ``ORGANIZATION_ID``: UUID of the scan target's organization
+   [required]
+-  ``SCAN_TARGET_ID``: UUID of the scan target to list alerts from
+   [required]
+
+**Options**:
+
+-  ``--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|RESOLVED|CLOSED]``:
+   Only list alerts in the specified states. [default: OPEN, ACTIVE,
+   IN_PROGRESS, RISK_ACCEPTED, RESOLVED]
+-  ``--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]``: Only list alerts with
+   the specified severities [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
+-  ``--help``: Show this message and exit.
 
 ``zanshin organization scan_target check``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -424,7 +562,7 @@ Checks if a scan target is correctly configured
 
 **Arguments**:
 
--  ``ORGANIZATION_ID``: UUID of the organization to list alerts from
+-  ``ORGANIZATION_ID``: UUID of the scan target's organization
    [required]
 -  ``SCAN_TARGET_ID``: UUID of the scan target to start scan [required]
 
@@ -466,12 +604,35 @@ Starts an ad-hoc scan of a specified scan target
 
 **Arguments**:
 
--  ``ORGANIZATION_ID``: UUID of the organization to list alerts from
+-  ``ORGANIZATION_ID``: UUID of the scan target's organization
    [required]
 -  ``SCAN_TARGET_ID``: UUID of the scan target to start scan [required]
 
 **Options**:
 
+-  ``--help``: Show this message and exit.
+
+``zanshin organization scan_target scan_summary``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Show summary of scans from a given scan target.
+
+**Usage**:
+
+.. code:: console
+
+   $ zanshin organization scan_target scan_summary [OPTIONS] ORGANIZATION_ID SCAN_TARGET_ID
+
+**Arguments**:
+
+-  ``ORGANIZATION_ID``: UUID of the scan target's organization
+   [required]
+-  ``SCAN_TARGET_ID``: UUID of the scan target to summarize alerts from
+   [required]
+
+**Options**:
+
+-  ``--days INTEGER RANGE``: [default: 7]
 -  ``--help``: Show this message and exit.
 
 ``zanshin version``
