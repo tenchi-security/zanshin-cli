@@ -4,13 +4,13 @@ from datetime import timedelta
 from enum import Enum
 from json import dumps
 from stat import S_IRUSR, S_IWUSR
-from sys import version as python_version
-from time import perf_counter
 from typing import Iterator, Dict, Any, Optional, List
 from uuid import UUID
 
 import typer
 from prettytable import PrettyTable
+from sys import version as python_version
+from time import perf_counter
 from typer import Typer
 from zanshinsdk import Client, AlertState, AlertSeverity, __version__ as sdk_version
 from zanshinsdk.client import _CONFIG_DIR, _CONFIG_FILE
@@ -46,7 +46,7 @@ def format_field(value: Any) -> str:
         return value
 
 
-def output_iterable(iterator: Iterator[Dict]) -> None:
+def output_iterable(iterator: Iterator[Dict], empty: Any = None) -> None:
     """
     Function that iterates over a series of dicts representing JSON objects returned by API list operations, and which
     outputs them using typer.echo in the specified format. Will use streaming processing for JSON, all others need to
@@ -55,11 +55,13 @@ def output_iterable(iterator: Iterator[Dict]) -> None:
     :param iterator: the iterator containing the JSON objects
     :return: None
     """
-    rows = 0
+    global global_options
+
+    global_options['entries'] = 0
     if global_options['format'] is OutputFormat.JSON:
         for entry in iterator:
             typer.echo(dumps(entry, indent=4))
-            rows += 1
+            global_options['entries'] += 1
     else:
         table = PrettyTable()
         for entry in iterator:
@@ -68,9 +70,9 @@ def output_iterable(iterator: Iterator[Dict]) -> None:
             else:
                 for k in entry.keys():
                     if k not in table.field_names:
-                        table.add_column(k, [None] * rows)
-            table.add_row([format_field(entry.get(fn, None)) for fn in table.field_names])
-            rows += 1
+                        table.add_column(k, [empty] * global_options['entries'])
+            table.add_row([format_field(entry.get(fn, empty)) for fn in table.field_names])
+            global_options['entries'] += 1
         if global_options['format'] is OutputFormat.TABLE:
             typer.echo(table.get_string())
         elif global_options['format'] is OutputFormat.CSV:
@@ -79,7 +81,6 @@ def output_iterable(iterator: Iterator[Dict]) -> None:
             typer.echo(table.get_html_string())
         else:
             raise NotImplementedError(f"unexpected format type {global_options['format']}")
-    global_options['entries'] = rows
 
 
 ###################################################
@@ -99,16 +100,19 @@ def global_options_callback(ctx: typer.Context,
                                                                        case_sensitive=False),
                             verbose: bool = typer.Option(True, help="Print timiing and other information to stderr")):
     """
-    Command-line utility to interact with the Zanshin SaaS service offered by Tenchi Security, go to
-    https://github.com/tenchi-security/zanshin-cli for license, source code and documentation
+    Command-line utility to interact with the Zanshin SaaS service offered by Tenchi Security
+    (https://tenchisecurity.com), go to https://github.com/tenchi-security/zanshin-cli for license, source code and
+    documentation
     """
     if verbose:
         # print summary of data processed and elapsed time at the end of the execution
         start_time = perf_counter()
+
         def print_elapsed_time():
             typer.echo(
                 f"zanshin: {global_options['entries']} object(s) processed in {timedelta(seconds=perf_counter() - start_time)}",
                 err=True)
+
         ctx.call_on_close(print_elapsed_time)
 
     global_options['verbose'] = verbose
@@ -184,6 +188,8 @@ def organization_list():
 
 @organization_app.command(name='alerts')
 def organization_alerts(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+                        scan_target_id: Optional[List[UUID]] = typer.Option(None,
+                                                                            help="Only list alerts from the specified scan targets."),
                         state: Optional[List[AlertState]] = typer.Option(
                             [x.value for x in AlertState if x != AlertState.CLOSED],
                             help="Only list alerts in the specified states.", case_sensitive=False),
@@ -195,7 +201,76 @@ def organization_alerts(organization_id: UUID = typer.Argument(..., help="UUID o
     """
     client = Client(profile=global_options['profile'])
     output_iterable(
-        client.iter_organization_alerts(organization_id=organization_id, states=state, severities=severity))
+        client.iter_organization_alerts(organization_id=organization_id, scan_target_ids=scan_target_id, states=state,
+                                        severities=severity))
+
+
+@organization_app.command(name='alert_summary')
+def organization_alerts_summary(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+                                scan_target_id: Optional[List[UUID]] = typer.Option(None,
+                                                                                    help="Only summarize alerts from the specified scan targets, defaults to all.")):
+    """
+    List alerts from a given organization, with an optional filter by scan target.
+    """
+    client = Client(profile=global_options['profile'])
+    api_response = client.get_organization_alert_summaries(organization_id=organization_id,
+                                                           scan_target_ids=scan_target_id)
+    def iterate_over_object(obj):
+        for scan_target_id in obj.get('scanTargets', {}):
+            summary = {
+                'organizationId': str(organization_id),
+                'scanTargetId': scan_target_id
+            }
+            for transition in obj['scanTargets'][scan_target_id].keys():
+                if transition not in {'OPEN', 'CLOSED'}:
+                    continue
+                elif global_options['format'] is OutputFormat.JSON:
+                    summary[transition] = obj['scanTargets'][scan_target_id][transition]
+                else:
+                    for severity, count in obj['scanTargets'][scan_target_id][transition].items():
+                        summary[f'{transition}-{severity}'] = count
+            yield summary
+
+    output_iterable(iterate_over_object(api_response), empty=0)
+
+
+@organization_app.command(name='scan_summary')
+def organization_scan_summary(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+                                scan_target_id: Optional[List[UUID]] = typer.Option(None,
+                                                                                    help="Only summarize scans from the specified scan targets, defaults to all."),
+                              days: int = typer.Option(7, min=1, max=365)):
+    """
+    List statistical summaries of changes brought by scans from a given organization, with optional filters by scan target.
+    """
+    client = Client(profile=global_options['profile'])
+
+    if not scan_target_id:
+        scan_target_id = list({x['id'] for x in client.iter_scan_targets(organization_id)})
+
+    api_response = client.get_organization_scan_summaries(organization_id=organization_id, scan_target_ids=scan_target_id, days=days)
+
+    def iterate_over_object(obj):
+        if not 'organization' in obj:
+            return
+        obj = obj['organization']
+        for scan_target_id in obj.keys():
+            for date in obj[scan_target_id]:
+                summary = {
+                    'organizationId': str(organization_id),
+                    'scanTargetId': scan_target_id
+                }
+                summary['date'] = date
+                for transition in ('OPEN', 'CLOSED'):
+                    if transition not in obj[scan_target_id][date]['infos']:
+                        continue
+                    elif global_options['format'] is OutputFormat.JSON:
+                        summary[transition] = obj[scan_target_id][date]['infos'][transition]
+                    else:
+                        for severity, count in obj[scan_target_id][date]['infos'][transition].items():
+                                summary[f'{transition}-{severity}'] = count
+                yield summary
+
+    output_iterable(iterate_over_object(api_response), empty=0)
 
 
 ###################################################
@@ -218,7 +293,7 @@ def scan_target_list(organization_id: UUID = typer.Argument(...,
 
 
 @scan_target_app.command(name='scan')
-def scan_target_scan(organization_id: UUID = typer.Argument(..., help="UUID of the organization to list alerts from"),
+def scan_target_scan(organization_id: UUID = typer.Argument(..., help="UUID of the scan target's organization"),
                      scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target to start scan")):
     """
     Starts an ad-hoc scan of a specified scan target
@@ -229,7 +304,7 @@ def scan_target_scan(organization_id: UUID = typer.Argument(..., help="UUID of t
 
 
 @scan_target_app.command(name='check')
-def scan_target_check(organization_id: UUID = typer.Argument(..., help="UUID of the organization to list alerts from"),
+def scan_target_check(organization_id: UUID = typer.Argument(..., help="UUID of the scan target's organization"),
                       scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target to start scan")):
     """
     Checks if a scan target is correctly configured
@@ -238,6 +313,41 @@ def scan_target_check(organization_id: UUID = typer.Argument(..., help="UUID of 
     typer.echo(
         dumps(client.check_scan_target(organization_id=organization_id, scan_target_id=scan_target_id), indent=4))
 
+
+@scan_target_app.command(name="alerts")
+def scan_target_alerts(organization_id: UUID = typer.Argument(..., help="UUID of the scan target's organization"),
+                       scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target to list alerts from"),
+                       state: Optional[List[AlertState]] = typer.Option(
+                           [x.value for x in AlertState if x != AlertState.CLOSED],
+                           help="Only list alerts in the specified states.", case_sensitive=False),
+                       severity: Optional[List[AlertSeverity]] = typer.Option([x.value for x in AlertSeverity],
+                                                                              help="Only list alerts with the specified severities",
+                                                                              case_sensitive=False)):
+    """
+    List alerts from a given scan target, with optional filters by state or severity.
+    """
+    organization_alerts(organization_id, [scan_target_id], state, severity)
+
+
+@scan_target_app.command(name="alert_summary")
+def scan_target_alert_summary(
+        organization_id: UUID = typer.Argument(..., help="UUID of the scan target's organization"),
+        scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target to summarize alerts from")):
+    """
+    List statistical summaries of changes brought by scans from a given scan target.
+    """
+    organization_alerts_summary(organization_id, [scan_target_id])
+
+
+@scan_target_app.command(name="scan_summary")
+def scan_target_scan_summary(
+        organization_id: UUID = typer.Argument(..., help="UUID of the scan target's organization"),
+        scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target to summarize alerts from"),
+        days: int = typer.Option(7, min=1, max=365)):
+    """
+    Show summary of scans from a given scan target.
+    """
+    organization_scan_summary(organization_id, [scan_target_id], days)
 
 ###################################################
 # Following App
@@ -282,10 +392,43 @@ def following_alerts(following_id: Optional[List[UUID]] = typer.Option(None,
     """
     client = Client(profile=global_options['profile'])
     if not following_id:
-        following_id = []
+        following_id = set()
         for org in client.iter_organizations():
-            following_id.extend([x['id'] for x in client.iter_following(org['id'])])
+            following_id |= {x['id'] for x in client.iter_following(org['id'])}
     output_iterable(client.iter_following_alerts(following_ids=following_id, states=state, severities=severity))
+
+
+@following_app.command(name='alert_summary')
+def following_alert_summary(following_id: Optional[List[UUID]] = typer.Option(None,
+                                                                              help="Only summarize alerts from the specified followed organizations")):
+    """
+    Lists alerts of organizations that the API key owner is following
+    """
+    client = Client(profile=global_options['profile'])
+    if not following_id:
+        following_id = set()
+        for org in client.iter_organizations():
+            following_id |= {x['id'] for x in client.iter_following(org['id'])}
+
+    api_response = client.get_following_alert_summaries(following_ids=following_id)
+
+    def iterate_over_object(obj):
+        if not 'following' in obj:
+            return
+        obj = obj['following']
+        for following_id in obj.keys():
+            summary = {'followingId': following_id}
+            for transition in obj[following_id].keys():
+                if transition not in {"OPEN", "CLOSED"}:
+                    continue
+                elif global_options['format'] is OutputFormat.JSON:
+                    summary[transition] = obj[following_id][transition]
+                else:
+                    for severity, count in obj[following_id][transition].items():
+                        summary[f'{transition}-{severity}'] = count
+            yield summary
+
+    output_iterable(iterate_over_object(api_response), empty=0)
 
 
 ###################################################
