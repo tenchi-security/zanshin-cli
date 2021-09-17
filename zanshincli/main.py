@@ -303,7 +303,9 @@ def organization_member_get(
 def organization_member_update(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     organization_member_id: UUID = typer.Argument(..., help="UUID of the organization member"),
-    role: Optional[Roles] = typer.Argument(None, help="role of the organization member")
+    role: Optional[List[Roles]] = typer.Option([x.value for x in Roles],
+                                                help="Role of the organization member",
+                                                case_sensitive=False)
     ):
     """
     Update organization member.
@@ -342,7 +344,9 @@ def organization_member_invite_list(organization_id: UUID = typer.Argument(..., 
 def organization_member_invite_create(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     organization_member_invite_email: str = typer.Argument(..., help="E-mail of the organization member"),
-    organization_member_invite_role: Optional[Roles] = typer.Argument(None, help="Role of the organization member")
+    organization_member_invite_role: Optional[List[Roles]] = typer.Option([x.value for x in Roles],
+                                                                           help="Role of the organization member",
+                                                                           case_sensitive=False)
     ):
     """
     Create organization member invite.
