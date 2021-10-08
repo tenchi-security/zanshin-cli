@@ -1,3 +1,4 @@
+import sys
 from collections.abc import Sequence, Mapping
 from configparser import RawConfigParser
 from datetime import timedelta
@@ -33,6 +34,20 @@ class OutputFormat(str, Enum):
     CSV = "csv"
     HTML = "html"
 
+
+###################################################
+# Exchandler
+###################################################
+
+def zanshin_exchandler(type, value, traceback):
+  print(value)
+
+sys.excepthook = zanshin_exchandler
+
+
+###################################################
+# Utils
+###################################################
 
 def format_field(value: Any) -> str:
     """
