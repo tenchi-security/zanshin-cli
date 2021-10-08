@@ -1,22 +1,29 @@
+import sys
 from collections.abc import Sequence, Mapping
 from configparser import RawConfigParser
 from datetime import timedelta
 from enum import Enum
 from json import dumps
 from stat import S_IRUSR, S_IWUSR
-from typing import Iterator, Dict, Any, Optional, List
+from typing import Iterable, Iterator, Dict, Any, Optional, List
 from uuid import UUID
 
 import typer
+import click
+from click import Context
 from prettytable import PrettyTable
 from sys import version as python_version
 from time import perf_counter
 from typer import Typer
 from zanshinsdk import Client, AlertState, AlertSeverity, __version__ as sdk_version
-from zanshinsdk.client import _CONFIG_DIR, _CONFIG_FILE
+from zanshinsdk.client import Roles, ScanTargetKind, _CONFIG_DIR, _CONFIG_FILE
 
 from zanshincli import __version__ as cli_version
 
+
+class OrderedCommands(click.Group):
+    def list_commands(self, ctx: Context) -> Iterable[str]:
+        return self.commands.keys()
 
 class OutputFormat(str, Enum):
     """
@@ -27,6 +34,20 @@ class OutputFormat(str, Enum):
     CSV = "csv"
     HTML = "html"
 
+
+###################################################
+# Exchandler
+###################################################
+
+def zanshin_exchandler(type, value, traceback):
+  print(value)
+
+sys.excepthook = zanshin_exchandler
+
+
+###################################################
+# Utils
+###################################################
 
 def format_field(value: Any) -> str:
     """
@@ -88,7 +109,7 @@ def output_iterable(iterator: Iterator[Dict], empty: Any = None) -> None:
 ###################################################
 
 global_options: dict = {'entries': 1}
-main_app: Typer = typer.Typer()
+main_app: Typer = typer.Typer(cls=OrderedCommands)
 
 
 @main_app.callback()
@@ -139,25 +160,6 @@ def init():
         cfg.write(f)
     _CONFIG_FILE.chmod(S_IRUSR | S_IWUSR)
 
-
-@main_app.command()
-def me():
-    """
-    Show details about the owner of the API key being used.
-    """
-    client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.me(), indent=4))
-
-
-@main_app.command()
-def alert(alert_id: UUID = typer.Argument(..., help="UUID of the alert to look up")):
-    """
-    Returns details about a specified alert
-    """
-    client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_alert(alert_id), indent=4))
-
-
 @main_app.command()
 def version():
     """
@@ -167,12 +169,91 @@ def version():
     typer.echo(f'Zanshin Python SDK v{sdk_version}')
     typer.echo(f'Python {python_version}')
 
+###################################################
+# Account App
+###################################################
+
+account_app = typer.Typer(cls=OrderedCommands)
+main_app.add_typer(account_app, name="account",
+                   help="Operations on user the API key owner has direct access to")
+
+@account_app.command(name='me')
+def account_me():
+    """
+    Returns the details of the user account that owns the API key used by this Connection instance as per
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.get_me(), indent=4))
+
+###################################################
+# Account Invites App
+###################################################
+
+invites_app = typer.Typer(cls=OrderedCommands)
+account_app.add_typer(invites_app, name="invites",
+                      help="Operations on invites from account the API key owner has direct access to")
+
+@invites_app.command(name='list')
+def account_invite_list():
+    """
+    Iterates over the invites of current logged user.
+    """
+    client = Client(profile=global_options['profile'])
+    output_iterable(client.iter_invites())
+
+@invites_app.command(name='get')
+def account_invite_get(invite_id: UUID = typer.Argument(..., help="UUID of the invite")):
+    """
+    Gets an specific invitation details, it only works if the invitation was made for the current logged user.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.get_invite(invite_id), indent=4))
+
+@invites_app.command(name='accept')
+def account_invite_accept(invite_id: UUID = typer.Argument(..., help="UUID of the invite")):
+    """
+    Accepts an inivitation with the informed ID, it only works if the user accepting the invitation is the user that received the invitation.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.get_invite(invite_id), indent=4))
+
+###################################################
+# Account API key App
+###################################################
+
+api_key_app = typer.Typer(cls=OrderedCommands)
+account_app.add_typer(api_key_app, name="api_key",
+                      help="Operations on API keys from account the API key owner has direct access to")
+
+@api_key_app.command(name='list')
+def account_api_key_list():
+    """
+    Iterates over the API keys of current logged user.
+    """
+    client = Client(profile=global_options['profile'])
+    output_iterable(client.iter_api_keys())
+
+@api_key_app.command(name='create')
+def account_api_key_create(name: str = typer.Argument(..., help="Name of the new API key")):
+    """
+    Creates a new API key for the current logged user, API Keys can be used to interact with the zanshin api directly on behalf of that user.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.create_api_key(name), indent=4))
+
+@api_key_app.command(name='delete')
+def account_api_key_delete(api_key_id: UUID = typer.Argument(..., help="UUID of the invite to delete")):
+    """
+    Deletes a given API key by its id, it will only work if the informed ID belongs to the current logged user.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.delete_api_key(api_key_id), indent=4))
 
 ###################################################
 # Organization App
 ###################################################
 
-organization_app = typer.Typer()
+organization_app = typer.Typer(cls=OrderedCommands)
 main_app.add_typer(organization_app, name="organization",
                    help="Operations on organizations the API key owner has direct access to")
 
@@ -185,293 +266,563 @@ def organization_list():
     client = Client(profile=global_options['profile'])
     output_iterable(client.iter_organizations())
 
+@organization_app.command(name='get')
+def organization_get(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
+    """
+    Gets an organization given its ID.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.get_organization(organization_id), indent=4))
 
-@organization_app.command(name='alerts')
-def organization_alerts(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
-                        scan_target_id: Optional[List[UUID]] = typer.Option(None,
-                                                                            help="Only list alerts from the specified scan targets."),
-                        state: Optional[List[AlertState]] = typer.Option(
-                            [x.value for x in AlertState if x != AlertState.CLOSED],
-                            help="Only list alerts in the specified states.", case_sensitive=False),
-                        severity: Optional[List[AlertSeverity]] = typer.Option([x.value for x in AlertSeverity],
-                                                                               help="Only list alerts with the specified severities",
-                                                                               case_sensitive=False)):
+@organization_app.command(name='update')
+def organization_update(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    name: Optional[str] = typer.Argument(None, help="Name of the organization"),
+    picture: Optional[str] = typer.Argument(None, help="Picture of the organization"),
+    email: Optional[str] = typer.Argument(None, help="Contact e-mail of the organization")
+    ):
+    """
+    Gets an organization given its ID.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.update_organization(organization_id, name, picture, email), indent=4))
+
+###################################################
+# Organization Member App
+###################################################
+
+organization_member_app = typer.Typer(cls=OrderedCommands)
+organization_app.add_typer(organization_member_app, name="member",
+                   help="Operations on members of organization the API key owner has direct access to")
+
+@organization_member_app.command(name='list')
+def organization_member_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
+    """
+    Lists the members of organization this user has direct access to.
+    """
+    client = Client(profile=global_options['profile'])
+    output_iterable(client.iter_organization_members(organization_id))
+
+@organization_member_app.command(name='get')
+def organization_member_get(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    organization_member_id: UUID = typer.Argument(..., help="UUID of the organization member")
+    ):
+    """
+    Get organization member.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.get_organization_member(organization_id, organization_member_id), indent=4))
+
+@organization_member_app.command(name='update')
+def organization_member_update(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    organization_member_id: UUID = typer.Argument(..., help="UUID of the organization member"),
+    role: Optional[List[Roles]] = typer.Option([x.value for x in Roles],
+                                                help="Role of the organization member",
+                                                case_sensitive=False)
+    ):
+    """
+    Update organization member.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.update_organization_member(organization_id, organization_member_id, role), indent=4))
+
+@organization_member_app.command(name='delete')
+def organization_member_delete(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    organization_member_id: UUID = typer.Argument(..., help="UUID of the organization member")
+    ):
+    """
+    Delete organization member.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.delete_organization_member(organization_id, organization_member_id), indent=4))
+
+###################################################
+# Organization Member Invite App
+###################################################
+
+organization_member_invite_app = typer.Typer(cls=OrderedCommands)
+organization_member_app.add_typer(organization_member_invite_app, name="invite",
+                   help="Operations on member invites of organization the API key owner has direct access to")
+
+@organization_member_invite_app.command(name='list')
+def organization_member_invite_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
+    """
+    Lists the member invites of organization this user has direct access to.
+    """
+    client = Client(profile=global_options['profile'])
+    output_iterable(client.iter_organization_members_invites(organization_id))
+
+@organization_member_invite_app.command(name='create')
+def organization_member_invite_create(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    organization_member_invite_email: str = typer.Argument(..., help="E-mail of the organization member"),
+    organization_member_invite_role: Optional[List[Roles]] = typer.Option([x.value for x in Roles],
+                                                                           help="Role of the organization member",
+                                                                           case_sensitive=False)
+    ):
+    """
+    Create organization member invite.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.create_organization_members_invite(organization_id, organization_member_invite_email, organization_member_invite_role), indent=4))
+
+@organization_member_invite_app.command(name='get')
+def organization_member_invite_get(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    organization_member_invite_email: str = typer.Argument(..., help="E-mail of the organization member invite")
+    ):
+    """
+    Get organization member invite.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.get_organization_member(organization_id, organization_member_invite_email), indent=4))
+
+@organization_member_invite_app.command(name='delete')
+def organization_member_invite_delete(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    organization_member_invite_email: str = typer.Argument(..., help="E-mail of the organization member")
+    ):
+    """
+    Delete organization member invite.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.delete_organization_member_invite(organization_id, organization_member_invite_email), indent=4))
+
+@organization_member_invite_app.command(name='resend')
+def organization_member_invite_resend(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    organization_member_invite_email: str = typer.Argument(..., help="E-mail of the organization member")
+    ):
+    """
+    Resend organization member invitation.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.resend_organization_member_invite(organization_id, organization_member_invite_email), indent=4))
+
+###################################################
+# Organization Follower App
+###################################################
+
+organization_follower_app = typer.Typer(cls=OrderedCommands)
+organization_app.add_typer(organization_follower_app, name="follower",
+                   help="Operations on followers of organization the API key owner has direct access to")
+
+@organization_follower_app.command(name='list')
+def organization_follower_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
+    """
+    Lists the followers of organization this user has direct access to.
+    """
+    client = Client(profile=global_options['profile'])
+    output_iterable(client.iter_organization_followers(organization_id))
+
+@organization_follower_app.command(name='stop')
+def organization_follower_stop(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    organization_follower_id: UUID = typer.Argument(..., help="UUID of the organization follower")
+    ):
+    """
+    Stops one organization follower of another.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.stop_organization_follower(organization_id, organization_follower_id), indent=4))
+
+###################################################
+# Organization Follower Request App
+###################################################
+
+organization_follower_request_app = typer.Typer(cls=OrderedCommands)
+organization_follower_app.add_typer(organization_follower_request_app, name="request",
+                   help="Operations on follower requests of organization the API key owner has direct access to")
+
+@organization_follower_request_app.command(name='list')
+def organization_follower_request_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
+    """
+    Lists the follower requests of organization this user has direct access to.
+    """
+    client = Client(profile=global_options['profile'])
+    output_iterable(client.iter_organization_followers(organization_id))
+
+@organization_follower_request_app.command(name='create')
+def organization_follower_request_create(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    token: UUID = typer.Argument(..., help="Token of the follower request")
+    ):
+    """
+    Create organization follower request.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.create_organization_follower_request(organization_id, token), indent=4))
+
+@organization_follower_request_app.command(name='get')
+def organization_follower_request_get(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    token: UUID = typer.Argument(..., help="Token of the follower request")
+    ):
+    """
+    Get organization follower request.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.get_organization_follower_request(organization_id, token), indent=4))
+
+@organization_follower_request_app.command(name='delete')
+def organization_follower_request_delete(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    token: UUID = typer.Argument(..., help="Token of the follower request")
+    ):
+    """
+    Delete organization follower request.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.delete_organization_follower_request(organization_id, token), indent=4))
+
+###################################################
+# Organization Following App
+###################################################
+
+organization_following_app = typer.Typer(cls=OrderedCommands)
+organization_app.add_typer(organization_following_app, name="following",
+                   help="Operations on following of organization the API key owner has direct access to")
+
+@organization_following_app.command(name='list')
+def organization_follower_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
+    """
+    Lists the following of organization this user has direct access to.
+    """
+    client = Client(profile=global_options['profile'])
+    output_iterable(client.iter_organization_following(organization_id))
+
+@organization_following_app.command(name='stop')
+def organization_follower_stop(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    organization_following_id: UUID = typer.Argument(..., help="UUID of the organization following")
+    ):
+    """
+    Stops one organization following of another.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.stop_organization_following(organization_id, organization_following_id), indent=4))
+
+###################################################
+# Organization Following Request App
+###################################################
+
+organization_following_request_app = typer.Typer(cls=OrderedCommands)
+organization_following_app.add_typer(organization_following_request_app, name="request",
+                   help="Operations on following requests of organization the API key owner has direct access to")
+
+@organization_following_request_app.command(name='list')
+def organization_following_request_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
+    """
+    Lists the following requests of organization this user has direct access to.
+    """
+    client = Client(profile=global_options['profile'])
+    output_iterable(client.iter_organization_following_requests(organization_id))
+
+@organization_following_request_app.command(name='get')
+def organization_following_request_get(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    following_id: UUID = typer.Argument(..., help="UUID of the following request")
+    ):
+    """
+    Returns a request received by an organization to follow another.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.get_organization_following_request(organization_id, following_id), indent=4))
+
+@organization_following_request_app.command(name='accept')
+def organization_following_request_accept(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    following_id: UUID = typer.Argument(..., help="UUID of the following request")
+    ):
+    """
+    Accepts a request to follow another organization.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.accept_organization_following_request(organization_id, following_id), indent=4))
+
+@organization_following_request_app.command(name='decline')
+def organization_following_request_decline(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    following_id: UUID = typer.Argument(..., help="UUID of the following request")
+    ):
+    """
+    Declines a request to follow another organization.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.decline_organization_following_request(organization_id, following_id), indent=4))
+
+###################################################
+# Organization Scan Target App
+###################################################
+
+organization_scan_target_app = typer.Typer(cls=OrderedCommands)
+organization_app.add_typer(organization_scan_target_app, name="scan_target",
+                           help="Operations on scan targets from organizations the API key owner has direct access to")
+
+@organization_scan_target_app.command(name='list')
+def organization_scan_target_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
+    """
+    Lists the scan targets of organization this user has direct access to.
+    """
+    client = Client(profile=global_options['profile'])
+    output_iterable(client.iter_organization_scan_targets(organization_id))
+
+@organization_scan_target_app.command(name='create')
+def organization_scan_target_create(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    kind: ScanTargetKind = typer.Argument(..., help="kind of the scan target"),
+    name: str = typer.Argument(..., help="name of the scan target"),
+    credential: str = typer.Argument(..., help="credential of the scan target"),
+    schedule: str = typer.Argument("0 0 * * *", help="schedule of the scan target")
+    ):
+    """
+    Create a new scan target in organization.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.create_organization_scan_target(organization_id, kind, name, credential, schedule), indent=4))
+
+@organization_scan_target_app.command(name='get')
+def organization_scan_target_get(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target")
+    ):
+    """
+    Get scan target of organization.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.get_organization_scan_target(organization_id, scan_target_id), indent=4))
+
+@organization_scan_target_app.command(name='update')
+def organization_scan_target_update(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target"),
+    name: Optional[str] = typer.Argument(None, help="name of the scan target"),
+    schedule: Optional[str] = typer.Argument(None, help="schedule of the scan target")
+    ):
+    """
+    Update scan target of organization.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.update_organization_scan_target(organization_id, scan_target_id, name, schedule), indent=4))
+
+@organization_scan_target_app.command(name='delete')
+def organization_scan_target_delete(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target")
+    ):
+    """
+    Delete scan target of organization.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.delete_organization_scan_target(organization_id, scan_target_id), indent=4))
+
+@organization_scan_target_app.command(name='check')
+def organization_scan_target_check(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target")
+    ):
+    """
+    Check scan target.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.check_organization_scan_target(organization_id, scan_target_id), indent=4))
+
+###################################################
+# Organization Scan Target Scan App
+###################################################
+
+organization_scan_target_scan_app = typer.Typer(cls=OrderedCommands)
+organization_scan_target_app.add_typer(organization_scan_target_scan_app, name="scan",
+                           help="Operations on scan targets from organizations the API key owner has direct access to")
+
+@organization_scan_target_scan_app.command(name='start')
+def organization_scan_target_scan_start(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target")
+    ):
+    """
+    Starts a scan on the specified scan target.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.start_organization_scan_target_scan(organization_id, scan_target_id), indent=4))
+
+@organization_scan_target_scan_app.command(name='list')
+def organization_scan_target_scan_list(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target")
+    ):
+    """
+    Lists the scan target scans of organization this user has direct access to.
+    """
+    client = Client(profile=global_options['profile'])
+    output_iterable(client.iter_organization_scan_target_scans(organization_id, scan_target_id))
+
+@organization_scan_target_scan_app.command(name='get')
+def organization_scan_target_scan_get(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target"),
+    scan_id: UUID = typer.Argument(..., help="UUID of the scan")
+    ):
+    """
+    Get scan of scan target.
+    """
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.get_organization_scan_target_scan(organization_id, scan_target_id, scan_id), indent=4))
+
+###################################################
+# Alert
+###################################################
+
+alert_app = typer.Typer(cls=OrderedCommands)
+main_app.add_typer(alert_app, name="alert",
+                   help="Operations on alerts the API key owner has direct access to")
+
+@alert_app.command(name='list')
+def alert_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+               scan_target_id: Optional[List[UUID]] = typer.Option(None, help="Only list alerts from the specified scan targets."),
+               state: Optional[List[AlertState]] = typer.Option(
+                        [x.value for x in AlertState if x != AlertState.CLOSED],
+                        help="Only list alerts in the specified states.", case_sensitive=False),
+               severity: Optional[List[AlertSeverity]] = typer.Option([x.value for x in AlertSeverity],
+                                                                       help="Only list alerts with the specified severities",
+                                                                       case_sensitive=False)):
     """
     List alerts from a given organization, with optional filters by scan target, state or severity.
     """
     client = Client(profile=global_options['profile'])
     output_iterable(
-        client.iter_organization_alerts(organization_id=organization_id, scan_target_ids=scan_target_id, states=state,
-                                        severities=severity))
+        client.iter_alerts(organization_id=organization_id, scan_target_ids=scan_target_id, states=state,
+                           severities=severity))
 
-
-@organization_app.command(name='alert_summary')
-def organization_alerts_summary(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
-                                scan_target_id: Optional[List[UUID]] = typer.Option(None,
-                                                                                    help="Only summarize alerts from the specified scan targets, defaults to all.")):
+@alert_app.command(name='list_following')
+def alert_following_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+                         following_ids: Optional[List[UUID]] = typer.Option(None, help="Only list alerts from the specified scan targets."),
+                         state: Optional[List[AlertState]] = typer.Option(
+                                [x.value for x in AlertState if x != AlertState.CLOSED],
+                                help="Only list alerts in the specified states.", case_sensitive=False),
+                         severity: Optional[List[AlertSeverity]] = typer.Option([x.value for x in AlertSeverity],
+                                                                                help="Only list alerts with the specified severities",
+                                                                                case_sensitive=False)):
     """
-    List alerts from a given organization, with an optional filter by scan target.
-    """
-    client = Client(profile=global_options['profile'])
-    api_response = client.get_organization_alert_summaries(organization_id=organization_id,
-                                                           scan_target_ids=scan_target_id)
-    def iterate_over_object(obj):
-        for scan_target_id in obj.get('scanTargets', {}):
-            summary = {
-                'organizationId': str(organization_id),
-                'scanTargetId': scan_target_id
-            }
-            for transition in obj['scanTargets'][scan_target_id].keys():
-                if transition not in {'OPEN', 'CLOSED'}:
-                    continue
-                elif global_options['format'] is OutputFormat.JSON:
-                    summary[transition] = obj['scanTargets'][scan_target_id][transition]
-                else:
-                    for severity, count in obj['scanTargets'][scan_target_id][transition].items():
-                        summary[f'{transition}-{severity}'] = count
-            yield summary
-
-    output_iterable(iterate_over_object(api_response), empty=0)
-
-
-@organization_app.command(name='scan_summary')
-def organization_scan_summary(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
-                                scan_target_id: Optional[List[UUID]] = typer.Option(None,
-                                                                                    help="Only summarize scans from the specified scan targets, defaults to all."),
-                              days: int = typer.Option(7, min=1, max=365)):
-    """
-    List statistical summaries of changes brought by scans from a given organization, with optional filters by scan target.
+    List following alerts from a given organization, with optional filters by following ids, state or severity.
     """
     client = Client(profile=global_options['profile'])
+    output_iterable(
+        client.iter_following_alerts(organization_id=organization_id, following_ids=following_ids, states=state,
+                                     severities=severity))
 
-    if not scan_target_id:
-        scan_target_id = list({x['id'] for x in client.iter_scan_targets(organization_id)})
-
-    api_response = client.get_organization_scan_summaries(organization_id=organization_id, scan_target_ids=scan_target_id, days=days)
-
-    def iterate_over_object(obj):
-        if not 'organization' in obj:
-            return
-        obj = obj['organization']
-        for scan_target_id in obj.keys():
-            for date in obj[scan_target_id]:
-                summary = {
-                    'organizationId': str(organization_id),
-                    'scanTargetId': scan_target_id
-                }
-                summary['date'] = date
-                for transition in ('OPEN', 'CLOSED'):
-                    if transition not in obj[scan_target_id][date]['infos']:
-                        continue
-                    elif global_options['format'] is OutputFormat.JSON:
-                        summary[transition] = obj[scan_target_id][date]['infos'][transition]
-                    else:
-                        for severity, count in obj[scan_target_id][date]['infos'][transition].items():
-                                summary[f'{transition}-{severity}'] = count
-                yield summary
-
-    output_iterable(iterate_over_object(api_response), empty=0)
-
-
-###################################################
-# Organization / Scan Target App
-###################################################
-
-scan_target_app = typer.Typer()
-organization_app.add_typer(scan_target_app, name="scan_target",
-                           help="Operations on scan targets from organizations the API key owner has direct access to")
-
-
-@scan_target_app.command(name='list')
-def scan_target_list(organization_id: UUID = typer.Argument(...,
-                                                            help="UUID of the organizations whose scan targets should be listed")):
-    """
-    Lists the scan targets (i.e. linked cloud accounts) from an organization that user has access to as a member.
-    """
-    client = Client(profile=global_options['profile'])
-    output_iterable(client.iter_scan_targets(organization_id=organization_id))
-
-
-@scan_target_app.command(name='scan')
-def scan_target_scan(organization_id: UUID = typer.Argument(..., help="UUID of the scan target's organization"),
-                     scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target to start scan")):
-    """
-    Starts an ad-hoc scan of a specified scan target
-    """
-    client = Client(profile=global_options['profile'])
-    typer.echo(
-        dumps(client.start_scan_target(organization_id=organization_id, scan_target_id=scan_target_id), indent=4))
-
-
-@scan_target_app.command(name='check')
-def scan_target_check(organization_id: UUID = typer.Argument(..., help="UUID of the scan target's organization"),
-                      scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target to start scan")):
-    """
-    Checks if a scan target is correctly configured
-    """
-    client = Client(profile=global_options['profile'])
-    typer.echo(
-        dumps(client.check_scan_target(organization_id=organization_id, scan_target_id=scan_target_id), indent=4))
-
-
-@scan_target_app.command(name="alerts")
-def scan_target_alerts(organization_id: UUID = typer.Argument(..., help="UUID of the scan target's organization"),
-                       scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target to list alerts from"),
+@alert_app.command(name='grouped_list')
+def grouped_alert_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+                       scan_target_id: Optional[List[UUID]] = typer.Option(None, help="Only list alerts from the specified scan targets."),
                        state: Optional[List[AlertState]] = typer.Option(
-                           [x.value for x in AlertState if x != AlertState.CLOSED],
-                           help="Only list alerts in the specified states.", case_sensitive=False),
+                                   [x.value for x in AlertState if x != AlertState.CLOSED],
+                                   help="Only list alerts in the specified states.", case_sensitive=False),
                        severity: Optional[List[AlertSeverity]] = typer.Option([x.value for x in AlertSeverity],
-                                                                              help="Only list alerts with the specified severities",
-                                                                              case_sensitive=False)):
+                                                                               help="Only list alerts with the specified severities",
+                                                                               case_sensitive=False)):
     """
-    List alerts from a given scan target, with optional filters by state or severity.
+    List grouped alerts from a given organization, with optional filters by scan target, state or severity.
     """
-    organization_alerts(organization_id, [scan_target_id], state, severity)
+    client = Client(profile=global_options['profile'])
+    output_iterable(
+        client.iter_grouped_alerts(organization_id=organization_id, scan_target_ids=scan_target_id, states=state,
+                                   severities=severity))
 
+@alert_app.command(name='grouped_list_following')
+def grouped_alert_following_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+                       following_ids: Optional[List[UUID]] = typer.Option(None, help="Only list alerts from the specified scan targets."),
+                       state: Optional[List[AlertState]] = typer.Option(
+                                   [x.value for x in AlertState if x != AlertState.CLOSED],
+                                   help="Only list alerts in the specified states.", case_sensitive=False),
+                       severity: Optional[List[AlertSeverity]] = typer.Option([x.value for x in AlertSeverity],
+                                                                               help="Only list alerts with the specified severities",
+                                                                               case_sensitive=False)):
+    """
+    List grouped following alerts from a given organization, with optional filters by scan target, state or severity.
+    """
+    client = Client(profile=global_options['profile'])
+    output_iterable(
+        client.iter_grouped_following_alerts(organization_id=organization_id, following_ids=following_ids, states=state,
+                                             severities=severity))
 
-@scan_target_app.command(name="alert_summary")
-def scan_target_alert_summary(
-        organization_id: UUID = typer.Argument(..., help="UUID of the scan target's organization"),
-        scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target to summarize alerts from")):
+@alert_app.command(name='get')
+def alert_get(alert_id: UUID = typer.Argument(..., help="UUID of the alert to look up")):
     """
-    List statistical summaries of changes brought by scans from a given scan target.
+    Returns details about a specified alert
     """
-    organization_alerts_summary(organization_id, [scan_target_id])
+    client = Client(profile=global_options['profile'])
+    typer.echo(dumps(client.get_alert(alert_id), indent=4))
 
+@alert_app.command(name='list_history')
+def alert_list_history(alert_id: UUID = typer.Argument(..., help="UUID of the alert to look up")):
+    """
+    Lists the alert history of organization this user has direct access to.
+    """
+    client = Client(profile=global_options['profile'])
+    output_iterable(client.iter_alert_history(alert_id))
 
-@scan_target_app.command(name="scan_summary")
-def scan_target_scan_summary(
-        organization_id: UUID = typer.Argument(..., help="UUID of the scan target's organization"),
-        scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target to summarize alerts from"),
-        days: int = typer.Option(7, min=1, max=365)):
+@alert_app.command(name='list_comment')
+def alert_list_comment(alert_id: UUID = typer.Argument(..., help="UUID of the alert to look up")):
     """
-    Show summary of scans from a given scan target.
+    Lists the alert comments of organization this user has direct access to.
     """
-    organization_scan_summary(organization_id, [scan_target_id], days)
+    client = Client(profile=global_options['profile'])
+    output_iterable(client.iter_alert_comments(alert_id))
 
 ###################################################
-# Following App
+# Summary
 ###################################################
 
-following_app = typer.Typer()
-main_app.add_typer(following_app, name="following",
-                   help="Operations on organizations that are being followed by one of the organizations the API key owner is a member of")
+summary_app = typer.Typer(cls=OrderedCommands)
+main_app.add_typer(summary_app, name="summary",
+                   help="Operations on summaries the API key owner has direct access to")
 
-
-@following_app.command(name='list')
-def following_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
+@summary_app.command(name='alert')
+def summary_alert(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+                  scan_target_id: Optional[List[UUID]] = typer.Option(None, help="Only summarize alerts from the specified scan targets, defaults to all.")):
     """
-    Lists other organizations that a specified organization is following
-    """
-    client = Client(profile=global_options['profile'])
-    output_iterable(client.iter_following(organization_id))
-
-
-@following_app.command(name='stop')
-def following_stop(organization_id: UUID = typer.Argument(...,
-                                                          help="UUID of the follower organization (which the API key owner must be a member of)"),
-                   following_id: UUID = typer.Argument(..., help="UUID of the followed organization")):
-    """
-    Stops one organization from following another
+    Gets a summary of the current state of alerts for an organization, both in total and broken down by scan target.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(client.stop_following(organization_id, following_id))
 
+    output_iterable(client.get_alert_summaries(organization_id, scan_target_id), empty=0)
 
-@following_app.command(name='alerts')
-def following_alerts(following_id: Optional[List[UUID]] = typer.Option(None,
-                                                                       help="Only list alerts from the specified followed organizations"),
-                     state: Optional[List[AlertState]] = typer.Option(
-                         [x.value for x in AlertState if x != AlertState.CLOSED],
-                         help="Only list alerts in the specified states.", case_sensitive=False),
-                     severity: Optional[List[AlertSeverity]] = typer.Option([x.value for x in AlertSeverity],
-                                                                            help="Only list alerts with the specified severities",
-                                                                            case_sensitive=False)):
+@summary_app.command(name='alert_following')
+def summary_alert_following(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+                            following_ids: Optional[List[UUID]] = typer.Option(None, help="Only summarize alerts from the specified following, defaults to all.")):
     """
-    Lists alerts of organizations that the API key owner is following
+    Gets a summary of the current state of alerts for followed organizations.
     """
     client = Client(profile=global_options['profile'])
-    if not following_id:
-        following_id = set()
-        for org in client.iter_organizations():
-            following_id |= {x['id'] for x in client.iter_following(org['id'])}
-    output_iterable(client.iter_following_alerts(following_ids=following_id, states=state, severities=severity))
 
+    output_iterable(client.get_following_alert_summaries(organization_id, following_ids), empty=0)
 
-@following_app.command(name='alert_summary')
-def following_alert_summary(following_id: Optional[List[UUID]] = typer.Option(None,
-                                                                              help="Only summarize alerts from the specified followed organizations")):
+@summary_app.command(name='scan')
+def summary_scan(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+                 scan_target_ids: Optional[List[UUID]] = typer.Option(None, help="Only summarize alerts from the specified scan targets, defaults to all."),
+                 days: Optional[int] = typer.Option(7, help="Number of days to go back in time in historical search")
+                ):
     """
-    Lists alerts of organizations that the API key owner is following
+    Returns summaries of scan results over a period of time, summarizing number of alerts that changed states.
     """
     client = Client(profile=global_options['profile'])
-    if not following_id:
-        following_id = set()
-        for org in client.iter_organizations():
-            following_id |= {x['id'] for x in client.iter_following(org['id'])}
 
-    api_response = client.get_following_alert_summaries(following_ids=following_id)
+    output_iterable(client.get_scan_summaries(organization_id, scan_target_ids, days), empty=0)
 
-    def iterate_over_object(obj):
-        if not 'following' in obj:
-            return
-        obj = obj['following']
-        for following_id in obj.keys():
-            summary = {'followingId': following_id}
-            for transition in obj[following_id].keys():
-                if transition not in {"OPEN", "CLOSED"}:
-                    continue
-                elif global_options['format'] is OutputFormat.JSON:
-                    summary[transition] = obj[following_id][transition]
-                else:
-                    for severity, count in obj[following_id][transition].items():
-                        summary[f'{transition}-{severity}'] = count
-            yield summary
-
-    output_iterable(iterate_over_object(api_response), empty=0)
-
-
-###################################################
-# Following / Requests App
-###################################################
-
-following_requests_app = typer.Typer()
-following_app.add_typer(following_requests_app, name="requests",
-                        help="Operations on requests submitted by third parties to be followed by one of the organizations the API key owner is a member of")
-
-
-@following_requests_app.command(name='list')
-def following_requests_list(
-        organization_id: UUID = typer.Argument(..., help="UUID of the organization that received the request")):
+@summary_app.command(name='scan_following')
+def summary_scan_following(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+                           following_ids: Optional[List[UUID]] = typer.Option(None, help="Only summarize alerts from the specified following, defaults to all."),
+                           days: Optional[int] = typer.Option(7, help="Number of days to go back in time in historical search")
+                          ):
     """
-    Lists all of the requests from organizations that want to be followed by a specified organization that the API key
-    owner is a member of
+    Returns summaries of scan results over a period of time, summarizing number of alerts that changed states.
     """
     client = Client(profile=global_options['profile'])
-    output_iterable(client.iter_following_requests(organization_id))
 
-
-@following_requests_app.command(name='accept')
-def following_requests_accept(
-        organization_id: UUID = typer.Argument(..., help="UUID of the organization that received the request"),
-        following_id: UUID = typer.Argument(..., help="UUID of the organization that requested to be followed")):
-    """
-    Accepts a request to follow another organization
-    """
-    client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.accept_following_request(organization_id, following_id), indent=4))
-
-
-@following_requests_app.command(name='decline')
-def following_requests_decline(
-        organization_id: UUID = typer.Argument(..., help="UUID of the organization that received the request"),
-        following_id: UUID = typer.Argument(..., help="UUID of the organization that requested to be followed")):
-    """
-    Declines a request to follow another organization
-    """
-    client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.decline_following_request(organization_id, following_id), indent=4))
-
+    output_iterable(client.get_scan_summaries(organization_id, following_ids, days), empty=0)
 
 if __name__ == "__main__":
     main_app()
