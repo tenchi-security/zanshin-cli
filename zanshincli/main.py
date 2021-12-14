@@ -39,8 +39,8 @@ class OutputFormat(str, Enum):
 # Exchandler
 ###################################################
 
-def zanshin_exchandler(type, value, traceback):
-  print(value)
+def zanshin_exchandler(_, value, __):
+    print(value)
 
 sys.excepthook = zanshin_exchandler
 
@@ -59,12 +59,12 @@ def format_field(value: Any) -> str:
     if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
         if all(isinstance(x, (str, bytes, int, float)) for x in value):
             return ", ".join([str(x) for x in value])
-        else:
-            return dumps(value)
-    elif isinstance(value, Mapping):
         return dumps(value)
-    else:
-        return value
+
+    if isinstance(value, Mapping):
+        return dumps(value)
+
+    return value
 
 
 def output_iterable(iterator: Iterator[Dict], empty: Any = None) -> None:
@@ -103,6 +103,8 @@ def output_iterable(iterator: Iterator[Dict], empty: Any = None) -> None:
         else:
             raise NotImplementedError(f"unexpected format type {global_options['format']}")
 
+def dump_json(out: Dict) -> None:
+    typer.echo(dumps(out, indent=4))
 
 ###################################################
 # Main App
@@ -183,7 +185,7 @@ def account_me():
     Returns the details of the user account that owns the API key used by this Connection instance as per
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_me(), indent=4))
+    dump_json(client.get_me())
 
 ###################################################
 # Account Invites App
@@ -207,7 +209,7 @@ def account_invite_get(invite_id: UUID = typer.Argument(..., help="UUID of the i
     Gets an specific invitation details, it only works if the invitation was made for the current logged user.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_invite(invite_id), indent=4))
+    dump_json(client.get_invite(invite_id))
 
 @invites_app.command(name='accept')
 def account_invite_accept(invite_id: UUID = typer.Argument(..., help="UUID of the invite")):
@@ -215,7 +217,7 @@ def account_invite_accept(invite_id: UUID = typer.Argument(..., help="UUID of th
     Accepts an inivitation with the informed ID, it only works if the user accepting the invitation is the user that received the invitation.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_invite(invite_id), indent=4))
+    dump_json(client.get_invite(invite_id))
 
 ###################################################
 # Account API key App
@@ -239,7 +241,7 @@ def account_api_key_create(name: str = typer.Argument(..., help="Name of the new
     Creates a new API key for the current logged user, API Keys can be used to interact with the zanshin api directly on behalf of that user.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.create_api_key(name), indent=4))
+    dump_json(client.create_api_key(name))
 
 @api_key_app.command(name='delete')
 def account_api_key_delete(api_key_id: UUID = typer.Argument(..., help="UUID of the invite to delete")):
@@ -247,7 +249,7 @@ def account_api_key_delete(api_key_id: UUID = typer.Argument(..., help="UUID of 
     Deletes a given API key by its id, it will only work if the informed ID belongs to the current logged user.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.delete_api_key(api_key_id), indent=4))
+    dump_json(client.delete_api_key(api_key_id))
 
 ###################################################
 # Organization App
@@ -272,7 +274,7 @@ def organization_get(organization_id: UUID = typer.Argument(..., help="UUID of t
     Gets an organization given its ID.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_organization(organization_id), indent=4))
+    dump_json(client.get_organization(organization_id))
 
 @organization_app.command(name='update')
 def organization_update(
@@ -285,7 +287,7 @@ def organization_update(
     Gets an organization given its ID.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.update_organization(organization_id, name, picture, email), indent=4))
+    dump_json(client.update_organization(organization_id, name, picture, email))
 
 ###################################################
 # Organization Member App
@@ -312,7 +314,7 @@ def organization_member_get(
     Get organization member.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_organization_member(organization_id, organization_member_id), indent=4))
+    dump_json(client.get_organization_member(organization_id, organization_member_id))
 
 @organization_member_app.command(name='update')
 def organization_member_update(
@@ -326,7 +328,7 @@ def organization_member_update(
     Update organization member.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.update_organization_member(organization_id, organization_member_id, role), indent=4))
+    dump_json(client.update_organization_member(organization_id, organization_member_id, role))
 
 @organization_member_app.command(name='delete')
 def organization_member_delete(
@@ -337,7 +339,7 @@ def organization_member_delete(
     Delete organization member.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.delete_organization_member(organization_id, organization_member_id), indent=4))
+    dump_json(client.delete_organization_member(organization_id, organization_member_id))
 
 ###################################################
 # Organization Member Invite App
@@ -367,7 +369,7 @@ def organization_member_invite_create(
     Create organization member invite.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.create_organization_members_invite(organization_id, organization_member_invite_email, organization_member_invite_role), indent=4))
+    dump_json(client.create_organization_members_invite(organization_id, organization_member_invite_email, organization_member_invite_role))
 
 @organization_member_invite_app.command(name='get')
 def organization_member_invite_get(
@@ -378,7 +380,7 @@ def organization_member_invite_get(
     Get organization member invite.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_organization_member(organization_id, organization_member_invite_email), indent=4))
+    dump_json(client.get_organization_member(organization_id, organization_member_invite_email))
 
 @organization_member_invite_app.command(name='delete')
 def organization_member_invite_delete(
@@ -389,7 +391,7 @@ def organization_member_invite_delete(
     Delete organization member invite.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.delete_organization_member_invite(organization_id, organization_member_invite_email), indent=4))
+    dump_json(client.delete_organization_member_invite(organization_id, organization_member_invite_email))
 
 @organization_member_invite_app.command(name='resend')
 def organization_member_invite_resend(
@@ -400,7 +402,7 @@ def organization_member_invite_resend(
     Resend organization member invitation.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.resend_organization_member_invite(organization_id, organization_member_invite_email), indent=4))
+    dump_json(client.resend_organization_member_invite(organization_id, organization_member_invite_email))
 
 ###################################################
 # Organization Follower App
@@ -427,7 +429,7 @@ def organization_follower_stop(
     Stops one organization follower of another.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.stop_organization_follower(organization_id, organization_follower_id), indent=4))
+    dump_json(client.stop_organization_follower(organization_id, organization_follower_id))
 
 ###################################################
 # Organization Follower Request App
@@ -454,7 +456,7 @@ def organization_follower_request_create(
     Create organization follower request.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.create_organization_follower_request(organization_id, token), indent=4))
+    dump_json(client.create_organization_follower_request(organization_id, token))
 
 @organization_follower_request_app.command(name='get')
 def organization_follower_request_get(
@@ -465,7 +467,7 @@ def organization_follower_request_get(
     Get organization follower request.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_organization_follower_request(organization_id, token), indent=4))
+    dump_json(client.get_organization_follower_request(organization_id, token))
 
 @organization_follower_request_app.command(name='delete')
 def organization_follower_request_delete(
@@ -476,7 +478,7 @@ def organization_follower_request_delete(
     Delete organization follower request.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.delete_organization_follower_request(organization_id, token), indent=4))
+    dump_json(client.delete_organization_follower_request(organization_id, token))
 
 ###################################################
 # Organization Following App
@@ -487,7 +489,7 @@ organization_app.add_typer(organization_following_app, name="following",
                    help="Operations on following of organization the API key owner has direct access to")
 
 @organization_following_app.command(name='list')
-def organization_follower_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
+def organization_following_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
     """
     Lists the following of organization this user has direct access to.
     """
@@ -495,7 +497,7 @@ def organization_follower_list(organization_id: UUID = typer.Argument(..., help=
     output_iterable(client.iter_organization_following(organization_id))
 
 @organization_following_app.command(name='stop')
-def organization_follower_stop(
+def organization_following_stop(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     organization_following_id: UUID = typer.Argument(..., help="UUID of the organization following")
     ):
@@ -503,7 +505,7 @@ def organization_follower_stop(
     Stops one organization following of another.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.stop_organization_following(organization_id, organization_following_id), indent=4))
+    dump_json(client.stop_organization_following(organization_id, organization_following_id))
 
 ###################################################
 # Organization Following Request App
@@ -530,7 +532,7 @@ def organization_following_request_get(
     Returns a request received by an organization to follow another.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_organization_following_request(organization_id, following_id), indent=4))
+    dump_json(client.get_organization_following_request(organization_id, following_id))
 
 @organization_following_request_app.command(name='accept')
 def organization_following_request_accept(
@@ -541,7 +543,7 @@ def organization_following_request_accept(
     Accepts a request to follow another organization.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.accept_organization_following_request(organization_id, following_id), indent=4))
+    dump_json(client.accept_organization_following_request(organization_id, following_id))
 
 @organization_following_request_app.command(name='decline')
 def organization_following_request_decline(
@@ -552,7 +554,7 @@ def organization_following_request_decline(
     Declines a request to follow another organization.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.decline_organization_following_request(organization_id, following_id), indent=4))
+    dump_json(client.decline_organization_following_request(organization_id, following_id))
 
 ###################################################
 # Organization Scan Target App
@@ -582,7 +584,7 @@ def organization_scan_target_create(
     Create a new scan target in organization.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.create_organization_scan_target(organization_id, kind, name, credential, schedule), indent=4))
+    dump_json(client.create_organization_scan_target(organization_id, kind, name, credential, schedule))
 
 @organization_scan_target_app.command(name='get')
 def organization_scan_target_get(
@@ -593,7 +595,7 @@ def organization_scan_target_get(
     Get scan target of organization.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_organization_scan_target(organization_id, scan_target_id), indent=4))
+    dump_json(client.get_organization_scan_target(organization_id, scan_target_id))
 
 @organization_scan_target_app.command(name='update')
 def organization_scan_target_update(
@@ -606,7 +608,7 @@ def organization_scan_target_update(
     Update scan target of organization.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.update_organization_scan_target(organization_id, scan_target_id, name, schedule), indent=4))
+    dump_json(client.update_organization_scan_target(organization_id, scan_target_id, name, schedule))
 
 @organization_scan_target_app.command(name='delete')
 def organization_scan_target_delete(
@@ -617,7 +619,7 @@ def organization_scan_target_delete(
     Delete scan target of organization.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.delete_organization_scan_target(organization_id, scan_target_id), indent=4))
+    dump_json(client.delete_organization_scan_target(organization_id, scan_target_id))
 
 @organization_scan_target_app.command(name='check')
 def organization_scan_target_check(
@@ -628,7 +630,7 @@ def organization_scan_target_check(
     Check scan target.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.check_organization_scan_target(organization_id, scan_target_id), indent=4))
+    dump_json(client.check_organization_scan_target(organization_id, scan_target_id))
 
 ###################################################
 # Organization Scan Target Scan App
@@ -647,7 +649,7 @@ def organization_scan_target_scan_start(
     Starts a scan on the specified scan target.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.start_organization_scan_target_scan(organization_id, scan_target_id), indent=4))
+    dump_json(client.start_organization_scan_target_scan(organization_id, scan_target_id))
 
 @organization_scan_target_scan_app.command(name='list')
 def organization_scan_target_scan_list(
@@ -670,7 +672,7 @@ def organization_scan_target_scan_get(
     Get scan of scan target.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_organization_scan_target_scan(organization_id, scan_target_id, scan_id), indent=4))
+    dump_json(client.get_organization_scan_target_scan(organization_id, scan_target_id, scan_id))
 
 ###################################################
 # Alert
@@ -754,7 +756,7 @@ def alert_get(alert_id: UUID = typer.Argument(..., help="UUID of the alert to lo
     Returns details about a specified alert
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_alert(alert_id), indent=4))
+    dump_json(client.get_alert(alert_id))
 
 @alert_app.command(name='list_history')
 def alert_list_history(alert_id: UUID = typer.Argument(..., help="UUID of the alert to look up")):
@@ -787,8 +789,7 @@ def summary_alert(organization_id: UUID = typer.Argument(..., help="UUID of the 
     Gets a summary of the current state of alerts for an organization, both in total and broken down by scan target.
     """
     client = Client(profile=global_options['profile'])
-
-    output_iterable(client.get_alert_summaries(organization_id, scan_target_id), empty=0)
+    dump_json(client.get_alert_summaries(organization_id, scan_target_id))
 
 @summary_app.command(name='alert_following')
 def summary_alert_following(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
@@ -797,8 +798,7 @@ def summary_alert_following(organization_id: UUID = typer.Argument(..., help="UU
     Gets a summary of the current state of alerts for followed organizations.
     """
     client = Client(profile=global_options['profile'])
-
-    output_iterable(client.get_following_alert_summaries(organization_id, following_ids), empty=0)
+    dump_json(client.get_following_alert_summaries(organization_id, following_ids))
 
 @summary_app.command(name='scan')
 def summary_scan(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
@@ -809,8 +809,7 @@ def summary_scan(organization_id: UUID = typer.Argument(..., help="UUID of the o
     Returns summaries of scan results over a period of time, summarizing number of alerts that changed states.
     """
     client = Client(profile=global_options['profile'])
-
-    output_iterable(client.get_scan_summaries(organization_id, scan_target_ids, days), empty=0)
+    dump_json(client.get_scan_summaries(organization_id, scan_target_ids, days))
 
 @summary_app.command(name='scan_following')
 def summary_scan_following(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
@@ -821,8 +820,7 @@ def summary_scan_following(organization_id: UUID = typer.Argument(..., help="UUI
     Returns summaries of scan results over a period of time, summarizing number of alerts that changed states.
     """
     client = Client(profile=global_options['profile'])
-
-    output_iterable(client.get_scan_summaries(organization_id, following_ids, days), empty=0)
+    dump_json(client.get_scan_summaries(organization_id, following_ids, days))
 
 if __name__ == "__main__":
     main_app()
