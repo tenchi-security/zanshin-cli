@@ -22,6 +22,7 @@ jobs:
         pip install flake8 pytest
         pip install zanshinsdk
         pip install typer
+        pip install prettytable
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: |
