@@ -39,8 +39,8 @@ class OutputFormat(str, Enum):
 # Exchandler
 ###################################################
 
-def zanshin_exchandler(type, value, traceback):
-  print(value)
+def zanshin_exchandler(_, value, __):
+    print(value)
 
 sys.excepthook = zanshin_exchandler
 
@@ -59,12 +59,12 @@ def format_field(value: Any) -> str:
     if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
         if all(isinstance(x, (str, bytes, int, float)) for x in value):
             return ", ".join([str(x) for x in value])
-        else:
-            return dumps(value)
-    elif isinstance(value, Mapping):
         return dumps(value)
-    else:
-        return value
+
+    if isinstance(value, Mapping):
+        return dumps(value)
+
+    return value
 
 
 def output_iterable(iterator: Iterator[Dict], empty: Any = None) -> None:
@@ -489,7 +489,7 @@ organization_app.add_typer(organization_following_app, name="following",
                    help="Operations on following of organization the API key owner has direct access to")
 
 @organization_following_app.command(name='list')
-def organization_follower_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
+def organization_following_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
     """
     Lists the following of organization this user has direct access to.
     """
@@ -497,7 +497,7 @@ def organization_follower_list(organization_id: UUID = typer.Argument(..., help=
     output_iterable(client.iter_organization_following(organization_id))
 
 @organization_following_app.command(name='stop')
-def organization_follower_stop(
+def organization_following_stop(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     organization_following_id: UUID = typer.Argument(..., help="UUID of the organization following")
     ):
@@ -790,7 +790,7 @@ def summary_alert(organization_id: UUID = typer.Argument(..., help="UUID of the 
     """
     client = Client(profile=global_options['profile'])
     dump_json(client.get_alert_summaries(organization_id, scan_target_id))
- 
+
 @summary_app.command(name='alert_following')
 def summary_alert_following(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
                             following_ids: Optional[List[UUID]] = typer.Option(None, help="Only summarize alerts from the specified following, defaults to all.")):
@@ -798,7 +798,7 @@ def summary_alert_following(organization_id: UUID = typer.Argument(..., help="UU
     Gets a summary of the current state of alerts for followed organizations.
     """
     client = Client(profile=global_options['profile'])
-    dump_json(client.get_following_alert_summaries(organization_id, following_ids), empty=0)
+    dump_json(client.get_following_alert_summaries(organization_id, following_ids))
 
 @summary_app.command(name='scan')
 def summary_scan(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
@@ -809,7 +809,7 @@ def summary_scan(organization_id: UUID = typer.Argument(..., help="UUID of the o
     Returns summaries of scan results over a period of time, summarizing number of alerts that changed states.
     """
     client = Client(profile=global_options['profile'])
-    dump_json(client.get_scan_summaries(organization_id, scan_target_ids, days), empty=0)
+    dump_json(client.get_scan_summaries(organization_id, scan_target_ids, days))
 
 @summary_app.command(name='scan_following')
 def summary_scan_following(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
@@ -820,7 +820,7 @@ def summary_scan_following(organization_id: UUID = typer.Argument(..., help="UUI
     Returns summaries of scan results over a period of time, summarizing number of alerts that changed states.
     """
     client = Client(profile=global_options['profile'])
-    dump_json(client.get_scan_summaries(organization_id, following_ids, days), empty=0)
+    dump_json(client.get_scan_summaries(organization_id, following_ids, days))
 
 if __name__ == "__main__":
     main_app()

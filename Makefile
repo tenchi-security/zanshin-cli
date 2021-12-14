@@ -20,4 +20,5 @@ pypitest: README.rst sdist
 	twine upload --repository pypitest dist/*
 
 test: 
+	python -m py_compile zanshincli/main.py
 	python -m unittest zanshincli/test_main.py
