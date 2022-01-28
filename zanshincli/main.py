@@ -42,7 +42,7 @@ class OutputFormat(str, Enum):
 # Exchanger
 ###################################################
 
-def zanshin_exchanger(value):
+def zanshin_exchanger(_, value, __):
     print(value)
 
 
@@ -71,12 +71,13 @@ def format_field(value: Any) -> str:
         return value
 
 
-def output_iterable(iterator: Iterator[Dict], empty: Any = None) -> None:
+def output_iterable(iterator: Iterator[Dict], empty: Any = None, _eachIterationFunction: Any = None) -> None:
     """
     Function that iterates over a series of dicts representing JSON objects returned by API list operations, and which
     outputs them using typer.echo in the specified format. Will use streaming processing for JSON, all others need to
     load all responses in memory in a PrettyTable prior to output, which could be problematic for large number of
     entries
+    :param _eachIterationFunction:
     :param empty:
     :param iterator: the iterator containing the JSON objects
     :return: None
@@ -88,6 +89,8 @@ def output_iterable(iterator: Iterator[Dict], empty: Any = None) -> None:
         for entry in iterator:
             typer.echo(dumps(entry, indent=4))
             global_options['entries'] += 1
+            if _eachIterationFunction:
+                _eachIterationFunction()
     else:
         table = PrettyTable()
         for entry in iterator:
@@ -99,6 +102,8 @@ def output_iterable(iterator: Iterator[Dict], empty: Any = None) -> None:
                         table.add_column(k, [empty] * global_options['entries'])
             table.add_row([format_field(entry.get(fn, empty)) for fn in table.field_names])
             global_options['entries'] += 1
+            if _eachIterationFunction:
+                _eachIterationFunction()
         if global_options['format'] is OutputFormat.TABLE:
             typer.echo(table.get_string())
         elif global_options['format'] is OutputFormat.CSV:
@@ -636,7 +641,7 @@ def organization_scan_target_create(
         organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
         kind: ScanTargetKind = typer.Argument(..., help="kind of the scan target"),
         name: str = typer.Argument(..., help="name of the scan target"),
-        credential: Dict[str, any] = typer.Argument(..., help="credential of the scan target"),
+        credential: str = typer.Argument(..., help="credential of the scan target"),
         schedule: str = typer.Argument("0 0 * * *", help="schedule of the scan target")
 ):
     """
@@ -812,9 +817,12 @@ def alert_list(organization_id: UUID = typer.Argument(..., help="UUID of the org
     client = Client(profile=global_options['profile'])
 
     if persist:
+        iter_alerts = FilePersistentAlertsIterator(filename='zanshin', client=client, organization_id=organization_id,
+                                                   scan_target_ids=scan_target_id, cursor=cursor)
         output_iterable(
-            FilePersistentAlertsIterator(filename='zanshin', client=client, organization_id=organization_id,
-                                         scan_target_ids=scan_target_id, cursor=cursor)
+            iter_alerts,
+            None,
+            iter_alerts.save
         )
     else:
         output_iterable(
@@ -836,10 +844,13 @@ def alert_list(organization_id: UUID = typer.Argument(..., help="UUID of the org
     client = Client(profile=global_options['profile'])
 
     if persist:
+        iter_alerts = FilePersistentFollowingAlertsIterator(filename='zanshin', client=client,
+                                                            organization_id=organization_id,
+                                                            following_ids=following_ids, cursor=cursor)
         output_iterable(
-            FilePersistentFollowingAlertsIterator(filename='zanshin_following', client=client,
-                                                  organization_id=organization_id, following_ids=following_ids,
-                                                  cursor=cursor)
+            iter_alerts,
+            None,
+            iter_alerts.save
         )
     else:
         output_iterable(
