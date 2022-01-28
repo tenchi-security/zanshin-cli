@@ -56,7 +56,7 @@ sys.excepthook = zanshin_exchanger
 def format_field(value: Any) -> str:
     """
     Function that formats a single field for output on a table or CSV output, in order to deal with nested arrays or
-    objects in the JSON outputs of the API.
+    objects in the JSON outputs of the API
     :param value: the value to format
     :return: a string that is fit for console output
     """
@@ -129,7 +129,7 @@ def global_options_callback(ctx: typer.Context,
                             output_format: OutputFormat = typer.Option(OutputFormat.JSON, '--format',
                                                                        help="Output format to use for list operations",
                                                                        case_sensitive=False),
-                            verbose: bool = typer.Option(True, help="Print timiing and other information to stderr")):
+                            verbose: bool = typer.Option(True, help="Print more information to stderr")):
     """
     Command-line utility to interact with the Zanshin SaaS service offered by Tenchi Security
     (https://tenchisecurity.com), go to https://github.com/tenchi-security/zanshin-cli for license, source code and
