@@ -1,4 +1,4 @@
-__version__ = "1.0.2"
+__version__ = "1.2.0"
 
 # set up package logger
 import logging

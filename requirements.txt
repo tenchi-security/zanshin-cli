@@ -1,0 +1,6 @@
+setuptools~=45.2.0
+typer~=0.3.2
+click~=7.1.2
+prettytable~=2.1.0
+zanshinsdk~=1.2.0
+zanshincli~=1.0.2
