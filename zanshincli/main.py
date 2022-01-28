@@ -109,6 +109,10 @@ def output_iterable(iterator: Iterator[Dict], empty: Any = None) -> None:
             raise NotImplementedError(f"unexpected format type {global_options['format']}")
 
 
+def dump_json(out: [Dict, any]) -> None:
+    typer.echo(dumps(out, indent=4))
+
+
 ###################################################
 # Main App
 ###################################################
@@ -193,7 +197,7 @@ def account_me():
     Returns the details of the user account that owns the API key used by this Connection instance as per
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_me(), indent=4))
+    dump_json(client.get_me())
 
 
 ###################################################
@@ -220,7 +224,7 @@ def account_invite_get(invite_id: UUID = typer.Argument(..., help="UUID of the i
     Gets a specific invitation details, it only works if the invitation was made for the current logged user.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_invite(invite_id), indent=4))
+    dump_json(client.get_invite(invite_id))
 
 
 @invites_app.command(name='accept')
@@ -230,7 +234,7 @@ def account_invite_accept(invite_id: UUID = typer.Argument(..., help="UUID of th
     received the invitation.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_invite(invite_id), indent=4))
+    dump_json(client.get_invite(invite_id))
 
 
 ###################################################
@@ -258,7 +262,7 @@ def account_api_key_create(name: str = typer.Argument(..., help="Name of the new
     a behalf of that user.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.create_api_key(name), indent=4))
+    dump_json(client.create_api_key(name))
 
 
 @api_key_app.command(name='delete')
@@ -267,7 +271,7 @@ def account_api_key_delete(api_key_id: UUID = typer.Argument(..., help="UUID of 
     Deletes a given API key by its id, it will only work if the informed ID belongs to the current logged user.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.delete_api_key(api_key_id), indent=4))
+    dump_json(client.delete_api_key(api_key_id))
 
 
 ###################################################
@@ -294,7 +298,7 @@ def organization_get(organization_id: UUID = typer.Argument(..., help="UUID of t
     Gets an organization given its ID.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_organization(organization_id), indent=4))
+    dump_json(client.get_organization(organization_id))
 
 
 @organization_app.command(name='update')
@@ -308,7 +312,7 @@ def organization_update(
     Gets an organization given its ID.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.update_organization(organization_id, name, picture, email), indent=4))
+    dump_json(client.update_organization(organization_id, name, picture, email))
 
 
 ###################################################
@@ -338,7 +342,7 @@ def organization_member_get(
     Get organization member.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_organization_member(organization_id, organization_member_id), indent=4))
+    dump_json(client.get_organization_member(organization_id, organization_member_id))
 
 
 @organization_member_app.command(name='update')
@@ -353,7 +357,7 @@ def organization_member_update(
     Update organization member.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.update_organization_member(organization_id, organization_member_id, role), indent=4))
+    dump_json(client.update_organization_member(organization_id, organization_member_id, role))
 
 
 @organization_member_app.command(name='delete')
@@ -365,7 +369,7 @@ def organization_member_delete(
     Delete organization member.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.delete_organization_member(organization_id, organization_member_id), indent=4))
+    dump_json(client.delete_organization_member(organization_id, organization_member_id))
 
 
 ###################################################
@@ -399,8 +403,8 @@ def organization_member_invite_create(
     Create organization member invite.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.create_organization_members_invite(organization_id, organization_member_invite_email,
-                                                               organization_member_invite_role), indent=4))
+    dump_json(client.create_organization_members_invite(organization_id, organization_member_invite_email,
+                                                        organization_member_invite_role))
 
 
 @organization_member_invite_app.command(name='get')
@@ -412,7 +416,7 @@ def organization_member_invite_get(
     Get organization member invite.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_organization_member(organization_id, organization_member_invite_email), indent=4))
+    dump_json(client.get_organization_member(organization_id, organization_member_invite_email))
 
 
 @organization_member_invite_app.command(name='delete')
@@ -424,8 +428,7 @@ def organization_member_invite_delete(
     Delete organization member invite.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(
-        dumps(client.delete_organization_member_invite(organization_id, organization_member_invite_email), indent=4))
+    dump_json(client.delete_organization_member_invite(organization_id, organization_member_invite_email))
 
 
 @organization_member_invite_app.command(name='resend')
@@ -437,8 +440,7 @@ def organization_member_invite_resend(
     Resend organization member invitation.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(
-        dumps(client.resend_organization_member_invite(organization_id, organization_member_invite_email), indent=4))
+    dump_json(client.resend_organization_member_invite(organization_id, organization_member_invite_email))
 
 
 ###################################################
@@ -468,7 +470,7 @@ def organization_follower_stop(
     Stops one organization follower of another.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.stop_organization_follower(organization_id, organization_follower_id), indent=4))
+    dump_json(client.stop_organization_follower(organization_id, organization_follower_id))
 
 
 ###################################################
@@ -499,7 +501,7 @@ def organization_follower_request_create(
     Create organization follower request.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.create_organization_follower_request(organization_id, token), indent=4))
+    dump_json(client.create_organization_follower_request(organization_id, token))
 
 
 @organization_follower_request_app.command(name='get')
@@ -511,7 +513,7 @@ def organization_follower_request_get(
     Get organization follower request.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_organization_follower_request(organization_id, token), indent=4))
+    dump_json(client.get_organization_follower_request(organization_id, token))
 
 
 @organization_follower_request_app.command(name='delete')
@@ -523,7 +525,7 @@ def organization_follower_request_delete(
     Delete organization follower request.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.delete_organization_follower_request(organization_id, token), indent=4))
+    dump_json(client.delete_organization_follower_request(organization_id, token))
 
 
 ###################################################
@@ -553,7 +555,7 @@ def organization_follower_stop(
     Stops one organization following of another.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.stop_organization_following(organization_id, organization_following_id), indent=4))
+    dump_json(client.stop_organization_following(organization_id, organization_following_id))
 
 
 ###################################################
@@ -584,7 +586,7 @@ def organization_following_request_get(
     Returns a request received by an organization to follow another.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_organization_following_request(organization_id, following_id), indent=4))
+    dump_json(client.get_organization_following_request(organization_id, following_id))
 
 
 @organization_following_request_app.command(name='accept')
@@ -596,7 +598,7 @@ def organization_following_request_accept(
     Accepts a request to follow another organization.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.accept_organization_following_request(organization_id, following_id), indent=4))
+    dump_json(client.accept_organization_following_request(organization_id, following_id))
 
 
 @organization_following_request_app.command(name='decline')
@@ -608,7 +610,7 @@ def organization_following_request_decline(
     Declines a request to follow another organization.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.decline_organization_following_request(organization_id, following_id), indent=4))
+    dump_json(client.decline_organization_following_request(organization_id, following_id))
 
 
 ###################################################
@@ -641,8 +643,7 @@ def organization_scan_target_create(
     Create a new scan target in organization.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(
-        dumps(client.create_organization_scan_target(organization_id, kind, name, credential, schedule), indent=4))
+    dump_json(client.create_organization_scan_target(organization_id, kind, name, credential, schedule))
 
 
 @organization_scan_target_app.command(name='get')
@@ -654,7 +655,7 @@ def organization_scan_target_get(
     Get scan target of organization.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_organization_scan_target(organization_id, scan_target_id), indent=4))
+    dump_json(client.get_organization_scan_target(organization_id, scan_target_id))
 
 
 @organization_scan_target_app.command(name='update')
@@ -668,7 +669,7 @@ def organization_scan_target_update(
     Update scan target of organization.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.update_organization_scan_target(organization_id, scan_target_id, name, schedule), indent=4))
+    dump_json(client.update_organization_scan_target(organization_id, scan_target_id, name, schedule))
 
 
 @organization_scan_target_app.command(name='delete')
@@ -680,7 +681,7 @@ def organization_scan_target_delete(
     Delete scan target of organization.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.delete_organization_scan_target(organization_id, scan_target_id), indent=4))
+    dump_json(client.delete_organization_scan_target(organization_id, scan_target_id))
 
 
 @organization_scan_target_app.command(name='check')
@@ -692,7 +693,7 @@ def organization_scan_target_check(
     Check scan target.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.check_organization_scan_target(organization_id, scan_target_id), indent=4))
+    dump_json(client.check_organization_scan_target(organization_id, scan_target_id))
 
 
 ###################################################
@@ -714,7 +715,7 @@ def organization_scan_target_scan_start(
     Starts a scan on the specified scan target.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.start_organization_scan_target_scan(organization_id, scan_target_id), indent=4))
+    dump_json(client.start_organization_scan_target_scan(organization_id, scan_target_id))
 
 
 @organization_scan_target_scan_app.command(name='list')
@@ -739,7 +740,7 @@ def organization_scan_target_scan_get(
     Get scan of scan target.
     """
     client = Client(profile=global_options['profile'])
-    typer.echo(dumps(client.get_organization_scan_target_scan(organization_id, scan_target_id, scan_id), indent=4))
+    dump_json(client.get_organization_scan_target_scan(organization_id, scan_target_id, scan_id))
 
 
 ###################################################
@@ -926,7 +927,7 @@ def summary_alert(organization_id: UUID = typer.Argument(..., help="UUID of the 
     """
     client = Client(profile=global_options['profile'])
 
-    output_iterable(client.get_alert_summaries(organization_id, scan_target_id), empty=0)
+    dump_json(client.get_alert_summaries(organization_id, scan_target_id))
 
 
 @summary_app.command(name='alert_following')
@@ -940,7 +941,7 @@ def summary_alert_following(organization_id: UUID = typer.Argument(..., help="UU
     """
     client = Client(profile=global_options['profile'])
 
-    output_iterable(client.get_following_alert_summaries(organization_id, following_ids), empty=0)
+    dump_json(client.get_following_alert_summaries(organization_id, following_ids))
 
 
 @summary_app.command(name='scan')
@@ -955,7 +956,7 @@ def summary_scan(organization_id: UUID = typer.Argument(..., help="UUID of the o
     """
     client = Client(profile=global_options['profile'])
 
-    output_iterable(client.get_scan_summaries(organization_id, scan_target_ids, days), empty=0)
+    dump_json(client.get_scan_summaries(organization_id, scan_target_ids, days))
 
 
 @summary_app.command(name='scan_following')
@@ -973,7 +974,7 @@ def summary_scan_following(organization_id: UUID = typer.Argument(..., help="UUI
     """
     client = Client(profile=global_options['profile'])
 
-    output_iterable(client.get_scan_summaries(organization_id, following_ids, days), empty=0)
+    dump_json(client.get_scan_summaries(organization_id, following_ids, days))
 
 
 if __name__ == "__main__":
