@@ -71,13 +71,13 @@ def format_field(value: Any) -> str:
         return value
 
 
-def output_iterable(iterator: Iterator[Dict], empty: Any = None, _eachIterationFunction: Any = None) -> None:
+def output_iterable(iterator: Iterator[Dict], empty: Any = None, _each_iteration_function: Any = None) -> None:
     """
     Function that iterates over a series of dicts representing JSON objects returned by API list operations, and which
     outputs them using typer.echo in the specified format. Will use streaming processing for JSON, all others need to
     load all responses in memory in a PrettyTable prior to output, which could be problematic for large number of
     entries
-    :param _eachIterationFunction:
+    :param _each_iteration_function:
     :param empty:
     :param iterator: the iterator containing the JSON objects
     :return: None
@@ -89,8 +89,8 @@ def output_iterable(iterator: Iterator[Dict], empty: Any = None, _eachIterationF
         for entry in iterator:
             typer.echo(dumps(entry, indent=4))
             global_options['entries'] += 1
-            if _eachIterationFunction:
-                _eachIterationFunction()
+            if _each_iteration_function:
+                _each_iteration_function()
     else:
         table = PrettyTable()
         for entry in iterator:
@@ -102,8 +102,8 @@ def output_iterable(iterator: Iterator[Dict], empty: Any = None, _eachIterationF
                         table.add_column(k, [empty] * global_options['entries'])
             table.add_row([format_field(entry.get(fn, empty)) for fn in table.field_names])
             global_options['entries'] += 1
-            if _eachIterationFunction:
-                _eachIterationFunction()
+            if _each_iteration_function:
+                _each_iteration_function()
         if global_options['format'] is OutputFormat.TABLE:
             typer.echo(table.get_string())
         elif global_options['format'] is OutputFormat.CSV:
