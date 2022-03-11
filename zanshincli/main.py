@@ -202,7 +202,10 @@ def account_me():
     Returns the details of the user account that owns the API key used by this Connection instance as per
     """
     client = Client(profile=global_options['profile'])
-    dump_json(client.get_me())
+    try:
+        dump_json(client.get_me())
+    except Exception as e:
+        print(e)
 
 
 ###################################################
@@ -543,7 +546,7 @@ organization_app.add_typer(organization_following_app, name="following",
 
 
 @organization_following_app.command(name='list')
-def organization_follower_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
+def organization_following_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
     """
     Lists the following of organization this user has direct access to.
     """
@@ -552,7 +555,7 @@ def organization_follower_list(organization_id: UUID = typer.Argument(..., help=
 
 
 @organization_following_app.command(name='stop')
-def organization_follower_stop(
+def organization_following_stop(
         organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
         organization_following_id: UUID = typer.Argument(..., help="UUID of the organization following")
 ):
@@ -723,6 +726,18 @@ def organization_scan_target_scan_start(
     dump_json(client.start_organization_scan_target_scan(organization_id, scan_target_id))
 
 
+@organization_scan_target_scan_app.command(name='stop')
+def organization_scan_target_scan_stop(
+        organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+        scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target")
+):
+    """
+    Stop a scan on the specified scan target.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.stop_organization_scan_target_scan(organization_id, scan_target_id))
+
+
 @organization_scan_target_scan_app.command(name='list')
 def organization_scan_target_scan_list(
         organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
@@ -804,13 +819,13 @@ def alert_following_list(organization_id: UUID = typer.Argument(..., help="UUID 
 
 
 @alert_app.command(name='list_history')
-def alert_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
-               scan_target_id: Optional[List[UUID]] = typer.Option(None,
-                                                                   help="Only list alerts from the specified"
-                                                                        "scan targets."),
-               cursor: Optional[str] = typer.Option(None, help="Cursor."),
-               persist: Optional[bool] = typer.Option(False, help="Persist.")
-               ):
+def alert_history_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+                       scan_target_id: Optional[List[UUID]] = typer.Option(None,
+                                                                           help="Only list alerts from the specified"
+                                                                                "scan targets."),
+                       cursor: Optional[str] = typer.Option(None, help="Cursor."),
+                       persist: Optional[bool] = typer.Option(False, help="Persist.")
+                       ):
     """
     List alerts from a given organization, with optional filters by scan target, state or severity.
     """
@@ -831,7 +846,7 @@ def alert_list(organization_id: UUID = typer.Argument(..., help="UUID of the org
 
 
 @alert_app.command(name='list_history_following')
-def alert_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+def alert_history_following_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
                following_ids: Optional[List[UUID]] = typer.Option(None,
                                                                   help="Only list alerts from the specified"
                                                                        "scan targets."),
