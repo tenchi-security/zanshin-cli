@@ -905,6 +905,7 @@ $ zanshin organization scan_target [OPTIONS] COMMAND [ARGS]...
 * `delete`: Delete scan target of organization.
 * `check`: Check scan target.
 * `scan`: Operations on scan targets from organizations...
+* `onboard_aws`: Operations on scan targets from organizations...
 
 #### `zanshin organization scan_target list`
 
@@ -1097,6 +1098,63 @@ $ zanshin organization scan_target scan get [OPTIONS] ORGANIZATION_ID SCAN_TARGE
 * `ORGANIZATION_ID`: UUID of the organization  [required]
 * `SCAN_TARGET_ID`: UUID of the scan target  [required]
 * `SCAN_ID`: UUID of the scan  [required]
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+
+#### `zanshin organization scan_target onboard_aws`
+
+Create a new scan target in organization and perform onboard. Requires `boto3` and correct AWS IAM Privileges.
+
+##### Minimum required AWS IAM Privileges
+
+The minimum required privileges that you need in your boto3 profile to deploy sucessfully the CloudFormation for Zanshin Tenchi Service Role are below:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "cloudformation:CreateStack",
+                "cloudformation:DescribeStacks",
+                "iam:GetRole",
+                "iam:CreateRole",
+                "iam:CreatePolicy",
+                "iam:CreatePolicyVersion",
+                "iam:PutRolePolicy",
+                "iam:AttachRolePolicy"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        }
+    ]
+}
+```
+
+
+**Usage**:
+
+```console
+$ zanshin organization scan_target onboard_aws [OPTIONS] BOTO3_PROFILE  REGION ORGANIZATION_ID KIND:[AWS|GCP|AZURE|HUAWEI|DOMAIN] NAME CREDENTIAL [SCHEDULE]
+```
+
+**Example**:
+```console
+$ zanshin organization scan_target onboard_aws default_boto3_session us-east-1 00000-00000-00000 AWS my_new_scan_target 123456789012 
+```
+
+**Arguments**:
+
+* `BOTO3_PROFILE`: Boto3 profile name to use for Onboard AWS Account  [required]
+* `REGION`: AWS Region to deploy CloudFormation [required]
+* `ORGANIZATION_ID`: UUID of the organization  [required]
+* `KIND:[AWS|GCP|AZURE]`: kind of the scan target  [required]
+* `NAME`: name of the scan target  [required]
+* `CREDENTIAL`: credential of the scan target  [required], if ScanTarget kind is AWS, then Account ID goes here
+* `[SCHEDULE]`: schedule of the scan target  [default: 0 0 * * *]
 
 **Options**:
 

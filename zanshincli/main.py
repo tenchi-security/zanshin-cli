@@ -16,7 +16,7 @@ from sys import version as python_version
 from time import perf_counter
 from typer import Typer
 from zanshinsdk import Client, AlertState, AlertSeverity, __version__ as sdk_version
-from zanshinsdk.client import ScanTargetKind, Roles, CONFIG_DIR, CONFIG_FILE
+from zanshinsdk.client import ScanTargetKind, ScanTargetAWS, Roles, CONFIG_DIR, CONFIG_FILE
 from zanshinsdk.alerts_history import FilePersistentAlertsIterator
 from zanshinsdk.following_alerts_history import FilePersistentFollowingAlertsIterator
 
@@ -703,6 +703,23 @@ def organization_scan_target_check(
     client = Client(profile=global_options['profile'])
     dump_json(client.check_organization_scan_target(organization_id, scan_target_id))
 
+
+@organization_scan_target_app.command(name='onboard_aws')
+def onboard_organization_aws_scan_target(
+        boto3_profile: str = typer.Argument(..., help="Boto3 profile name to use for Onboard AWS Account"),
+        region: str = typer.Argument(..., help="AWS Region to deploy CloudFormation"),
+        organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+        kind: ScanTargetKind = typer.Argument(..., help="kind of the scan target"),
+        name: str = typer.Argument(..., help="name of the scan target"),
+        credential: str = typer.Argument(..., help="credential of the scan target"),
+        schedule: str = typer.Argument("0 0 * * *", help="schedule of the scan target")
+):
+    """
+    Create a new scan target in organization and perform onboard. Requires boto3 and correct AWS IAM Privileges.
+    """
+    client = Client(profile=global_options['profile'])
+    credential = ScanTargetAWS(credential)
+    dump_json(client.onboard_scan_target(boto3_profile, region, organization_id, kind, name, credential, schedule))
 
 ###################################################
 # Organization Scan Target Scan App
