@@ -1148,8 +1148,8 @@ Check scan target.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Create a new scan target in organization and perform onboard. Requires
-boto3 and correct AWS IAM Privileges. Checkout the required privileges
-here
+boto3 and correct AWS IAM Privileges. Checkout the required AWS IAM
+privileges here
 https://github.com/tenchi-security/zanshin-sdk-python/blob/main/zanshinsdk/docs/README.md
 
 **Usage**:

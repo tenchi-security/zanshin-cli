@@ -1030,7 +1030,7 @@ $ zanshin organization scan_target check [OPTIONS] ORGANIZATION_ID SCAN_TARGET_I
 #### `zanshin organization scan_target onboard_aws`
 
 Create a new scan target in organization and perform onboard. Requires boto3 and correct AWS IAM Privileges.
-Checkout the required privileges here https://github.com/tenchi-security/zanshin-sdk-python/blob/main/zanshinsdk/docs/README.md
+Checkout the required AWS IAM privileges here https://github.com/tenchi-security/zanshin-sdk-python/blob/main/zanshinsdk/docs/README.md
 
 **Usage**:
 

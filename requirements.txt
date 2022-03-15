@@ -4,5 +4,4 @@ typer-cli~=0.0.12
 click~=7.1.2
 prettytable~=2.1.0
 zanshinsdk~=1.2.0
-zanshincli~=1.2.0
 twine~=3.8.0
