@@ -20,7 +20,7 @@ pypitest: README.rst sdist
 	twine upload --repository pypitest dist/*
 
 lint:
-	flake8 zanshinsdk --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+	flake8 zanshincli --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
 test:
 	python -m unittest discover -s zanshincli -v

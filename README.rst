@@ -58,8 +58,7 @@ These are the supported options:
 -  ``user_agent`` (optional) allows you to override the default
    user-agent header used by the SDK when making API requests.
 -  ``api_url`` (optional) directs the SDK and CLI to use a different API
-   endpoint than the default
-   (`https://api.zanshin.tenchisecurity.com <https://api.zanshin.tenchisecurity.com>`__).
+   endpoint than the default (https://api.zanshin.tenchisecurity.com).
 
 You can populate the file with the ``zanshin init`` command of the CLI
 tool. This is what a minimal configuration file would look like:
@@ -93,10 +92,9 @@ Command Reference
 ===========
 
 Command-line utility to interact with the Zanshin SaaS service offered
-by Tenchi Security
-(`https://tenchisecurity.com <https://tenchisecurity.com>`__), go to
-`https://github.com/tenchi-security/zanshin-cli <https://github.com/tenchi-security/zanshin-cli>`__
-for license, source code and documentation
+by Tenchi Security (https://tenchisecurity.com), go to
+https://github.com/tenchi-security/zanshin-cli for license, source code
+and documentation
 
 **Usage**:
 
@@ -106,12 +104,12 @@ for license, source code and documentation
 
 **Options**:
 
--  ``--profile TEXT``: Configuration file section to read API key and
-   configutation from [default: default]
+-  ``--profile TEXT``: Configuration file section to read API keyand
+   configuration from [default: default]
 -  ``--format [json|table|csv|html]``: Output format to use for list
    operations [default: json]
--  ``--verbose / --no-verbose``: Print timiing and other information to
-   stderr [default: True]
+-  ``--verbose / --no-verbose``: Print more information to stderr
+   [default: True]
 -  ``--install-completion``: Install completion for the current shell.
 -  ``--show-completion``: Show completion for the current shell, to copy
    it or customize the installation.
@@ -212,8 +210,8 @@ to
 **Commands**:
 
 -  ``list``: Iterates over the invites of current logged...
--  ``get``: Gets an specific invitation details, it only...
--  ``accept``: Accepts an inivitation with the informed ID,...
+-  ``get``: Gets a specific invitation details, it only...
+-  ``accept``: Accepts an invitation with the informed ID,...
 
 ``zanshin account invites list``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -233,7 +231,7 @@ Iterates over the invites of current logged user.
 ``zanshin account invites get``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Gets an specific invitation details, it only works if the invitation was
+Gets a specific invitation details, it only works if the invitation was
 made for the current logged user.
 
 **Usage**:
@@ -253,7 +251,7 @@ made for the current logged user.
 ``zanshin account invites accept``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Accepts an inivitation with the informed ID, it only works if the user
+Accepts an invitation with the informed ID, it only works if the user
 accepting the invitation is the user that received the invitation.
 
 **Usage**:
@@ -311,7 +309,7 @@ Iterates over the API keys of current logged user.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Creates a new API key for the current logged user, API Keys can be used
-to interact with the zanshin api directly on behalf of that user.
+to interact with the zanshin api directly a behalf of that user.
 
 **Usage**:
 
@@ -539,7 +537,7 @@ Delete organization member.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Operations on member invites of organization the API key owner has
-direct access to
+directaccess to
 
 **Usage**:
 
@@ -730,7 +728,7 @@ Stops one organization follower of another.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Operations on follower requests of organization the API key owner has
-direct access to
+directaccess to
 
 **Usage**:
 
@@ -894,8 +892,8 @@ Stops one organization following of another.
 ``zanshin organization following request``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Operations on following requests of organization the API key owner has
-direct access to
+Operations on following requests of organization the API key owner
+hasdirect access to
 
 **Usage**:
 
@@ -1018,6 +1016,7 @@ direct access to
 -  ``update``: Update scan target of organization.
 -  ``delete``: Delete scan target of organization.
 -  ``check``: Check scan target.
+-  ``onboard_aws``: Create a new scan target in organization and...
 -  ``scan``: Operations on scan targets from organizations...
 
 ``zanshin organization scan_target list``
@@ -1048,12 +1047,13 @@ Create a new scan target in organization.
 
 .. code:: console
 
-   $ zanshin organization scan_target create [OPTIONS] ORGANIZATION_ID KIND:[AWS|GCP|AZURE] NAME CREDENTIAL [SCHEDULE]
+   $ zanshin organization scan_target create [OPTIONS] ORGANIZATION_ID KIND:[AWS|GCP|AZURE|HUAWEI|DOMAIN] NAME CREDENTIAL [SCHEDULE]
 
 **Arguments**:
 
 -  ``ORGANIZATION_ID``: UUID of the organization [required]
--  ``KIND:[AWS|GCP|AZURE]``: kind of the scan target [required]
+-  ``KIND:[AWS|GCP|AZURE|HUAWEI|DOMAIN]``: kind of the scan target
+   [required]
 -  ``NAME``: name of the scan target [required]
 -  ``CREDENTIAL``: credential of the scan target [required]
 -  ``[SCHEDULE]``: schedule of the scan target [default: 0 0 \* \* \*]
@@ -1144,11 +1144,41 @@ Check scan target.
 
 -  ``--help``: Show this message and exit.
 
+``zanshin organization scan_target onboard_aws``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Create a new scan target in organization and perform onboard. Requires
+boto3 and correct AWS IAM Privileges. Checkout the required privileges
+here
+https://github.com/tenchi-security/zanshin-sdk-python/blob/main/zanshinsdk/docs/README.md
+
+**Usage**:
+
+.. code:: console
+
+   $ zanshin organization scan_target onboard_aws [OPTIONS] BOTO3_PROFILE REGION ORGANIZATION_ID KIND:[AWS|GCP|AZURE|HUAWEI|DOMAIN] NAME CREDENTIAL [SCHEDULE]
+
+**Arguments**:
+
+-  ``BOTO3_PROFILE``: Boto3 profile name to use for Onboard AWS Account
+   [required]
+-  ``REGION``: AWS Region to deploy CloudFormation [required]
+-  ``ORGANIZATION_ID``: UUID of the organization [required]
+-  ``KIND:[AWS|GCP|AZURE|HUAWEI|DOMAIN]``: kind of the scan target
+   [required]
+-  ``NAME``: name of the scan target [required]
+-  ``CREDENTIAL``: credential of the scan target [required]
+-  ``[SCHEDULE]``: schedule of the scan target [default: 0 0 \* \* \*]
+
+**Options**:
+
+-  ``--help``: Show this message and exit.
+
 ``zanshin organization scan_target scan``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Operations on scan targets from organizations the API key owner has
-direct access to
+directaccess to
 
 **Usage**:
 
@@ -1163,6 +1193,7 @@ direct access to
 **Commands**:
 
 -  ``start``: Starts a scan on the specified scan target.
+-  ``stop``: Stop a scan on the specified scan target.
 -  ``list``: Lists the scan target scans of organization...
 -  ``get``: Get scan of scan target.
 
@@ -1176,6 +1207,26 @@ Starts a scan on the specified scan target.
 .. code:: console
 
    $ zanshin organization scan_target scan start [OPTIONS] ORGANIZATION_ID SCAN_TARGET_ID
+
+**Arguments**:
+
+-  ``ORGANIZATION_ID``: UUID of the organization [required]
+-  ``SCAN_TARGET_ID``: UUID of the scan target [required]
+
+**Options**:
+
+-  ``--help``: Show this message and exit.
+
+``zanshin organization scan_target scan stop``
+''''''''''''''''''''''''''''''''''''''''''''''
+
+Stop a scan on the specified scan target.
+
+**Usage**:
+
+.. code:: console
+
+   $ zanshin organization scan_target scan stop [OPTIONS] ORGANIZATION_ID SCAN_TARGET_ID
 
 **Arguments**:
 
@@ -1247,12 +1298,13 @@ Operations on alerts the API key owner has direct access to
 
 -  ``list``: List alerts from a given organization, with...
 -  ``list_following``: List following alerts from a given...
--  ``grouped_list``: List grouped alerts from a given...
--  ``grouped_list_following``: List grouped following alerts from a
+-  ``list_history``: List alerts from a given organization, with...
+-  ``list_history_following``: List alerts from a given organization,
+   with...
+-  ``list_grouped``: List grouped alerts from a given...
+-  ``list_grouped_following``: List grouped following alerts from a
    given...
 -  ``get``: Returns details about a specified alert
--  ``list_history``: Lists the alert history of organization this...
--  ``list_comment``: Lists the alert comments of organization this...
 
 ``zanshin alert list``
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -1272,13 +1324,13 @@ target, state or severity.
 
 **Options**:
 
--  ``--scan-target-id UUID``: Only list alerts from the specified scan
+-  ``--scan-target-id UUID``: Only list alerts from the specifiedscan
    targets.
--  ``--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|SOLVED|CLOSED]``:
-   Only list alerts in the specified states. [default: OPEN, ACTIVE,
-   IN_PROGRESS, RISK_ACCEPTED, SOLVED]
+-  ``--states [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|CLOSED]``: Only
+   list alerts in the specified states. [default: OPEN, ACTIVE,
+   IN_PROGRESS, RISK_ACCEPTED]
 -  ``--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]``: Only list alerts with
-   the specified severities [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
+   the specifiedseverities [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
 -  ``--help``: Show this message and exit.
 
 ``zanshin alert list_following``
@@ -1299,16 +1351,64 @@ by following ids, state or severity.
 
 **Options**:
 
--  ``--following-ids UUID``: Only list alerts from the specified scan
+-  ``--following-ids UUID``: Only list alerts from the specifiedscan
    targets.
--  ``--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|SOLVED|CLOSED]``:
-   Only list alerts in the specified states. [default: OPEN, ACTIVE,
-   IN_PROGRESS, RISK_ACCEPTED, SOLVED]
+-  ``--states [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|CLOSED]``: Only
+   list alerts in the specified states. [default: OPEN, ACTIVE,
+   IN_PROGRESS, RISK_ACCEPTED]
 -  ``--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]``: Only list alerts with
-   the specified severities [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
+   thespecified severities [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
 -  ``--help``: Show this message and exit.
 
-``zanshin alert grouped_list``
+``zanshin alert list_history``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+List alerts from a given organization, with optional filters by scan
+target, state or severity.
+
+**Usage**:
+
+.. code:: console
+
+   $ zanshin alert list_history [OPTIONS] ORGANIZATION_ID
+
+**Arguments**:
+
+-  ``ORGANIZATION_ID``: UUID of the organization [required]
+
+**Options**:
+
+-  ``--scan-target-id UUID``: Only list alerts from the specifiedscan
+   targets.
+-  ``--cursor TEXT``: Cursor.
+-  ``--persist / --no-persist``: Persist. [default: False]
+-  ``--help``: Show this message and exit.
+
+``zanshin alert list_history_following``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+List alerts from a given organization, with optional filters by scan
+target, state or severity.
+
+**Usage**:
+
+.. code:: console
+
+   $ zanshin alert list_history_following [OPTIONS] ORGANIZATION_ID
+
+**Arguments**:
+
+-  ``ORGANIZATION_ID``: UUID of the organization [required]
+
+**Options**:
+
+-  ``--following-ids UUID``: Only list alerts from the specifiedscan
+   targets.
+-  ``--cursor TEXT``: Cursor.
+-  ``--persist / --no-persist``: Persist. [default: False]
+-  ``--help``: Show this message and exit.
+
+``zanshin alert list_grouped``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 List grouped alerts from a given organization, with optional filters by
@@ -1318,7 +1418,7 @@ scan target, state or severity.
 
 .. code:: console
 
-   $ zanshin alert grouped_list [OPTIONS] ORGANIZATION_ID
+   $ zanshin alert list_grouped [OPTIONS] ORGANIZATION_ID
 
 **Arguments**:
 
@@ -1326,16 +1426,16 @@ scan target, state or severity.
 
 **Options**:
 
--  ``--scan-target-id UUID``: Only list alerts from the specified scan
+-  ``--scan-target-id UUID``: Only list alerts from the specifiedscan
    targets.
--  ``--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|SOLVED|CLOSED]``:
-   Only list alerts in the specified states. [default: OPEN, ACTIVE,
-   IN_PROGRESS, RISK_ACCEPTED, SOLVED]
+-  ``--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|CLOSED]``: Only list
+   alerts in the specified states. [default: OPEN, ACTIVE, IN_PROGRESS,
+   RISK_ACCEPTED]
 -  ``--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]``: Only list alerts with
-   the specified severities [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
+   the specifiedseverities [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
 -  ``--help``: Show this message and exit.
 
-``zanshin alert grouped_list_following``
+``zanshin alert list_grouped_following``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 List grouped following alerts from a given organization, with optional
@@ -1345,7 +1445,7 @@ filters by scan target, state or severity.
 
 .. code:: console
 
-   $ zanshin alert grouped_list_following [OPTIONS] ORGANIZATION_ID
+   $ zanshin alert list_grouped_following [OPTIONS] ORGANIZATION_ID
 
 **Arguments**:
 
@@ -1353,11 +1453,11 @@ filters by scan target, state or severity.
 
 **Options**:
 
--  ``--following-ids UUID``: Only list alerts from the specified scan
+-  ``--following-ids UUID``: Only list alerts from thespecified scan
    targets.
--  ``--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|SOLVED|CLOSED]``:
-   Only list alerts in the specified states. [default: OPEN, ACTIVE,
-   IN_PROGRESS, RISK_ACCEPTED, SOLVED]
+-  ``--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|CLOSED]``: Only list
+   alerts in the specified states. [default: OPEN, ACTIVE, IN_PROGRESS,
+   RISK_ACCEPTED]
 -  ``--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]``: Only list alerts with
    the specified severities [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
 -  ``--help``: Show this message and exit.
@@ -1379,44 +1479,10 @@ Returns details about a specified alert
 
 **Options**:
 
--  ``--help``: Show this message and exit.
-
-``zanshin alert list_history``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Lists the alert history of organization this user has direct access to.
-
-**Usage**:
-
-.. code:: console
-
-   $ zanshin alert list_history [OPTIONS] ALERT_ID
-
-**Arguments**:
-
--  ``ALERT_ID``: UUID of the alert to look up [required]
-
-**Options**:
-
--  ``--help``: Show this message and exit.
-
-``zanshin alert list_comment``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Lists the alert comments of organization this user has direct access to.
-
-**Usage**:
-
-.. code:: console
-
-   $ zanshin alert list_comment [OPTIONS] ALERT_ID
-
-**Arguments**:
-
--  ``ALERT_ID``: UUID of the alert to look up [required]
-
-**Options**:
-
+-  ``--list-history / --no-list-history``: History of this alert.
+   [default: False]
+-  ``--list-comments / --no-list-comments``: Comments of this alert.
+   [default: False]
 -  ``--help``: Show this message and exit.
 
 ``zanshin summary``
@@ -1459,8 +1525,8 @@ in total and broken down by scan target.
 
 **Options**:
 
--  ``--scan-target-id UUID``: Only summarize alerts from the specified
-   scan targets, defaults to all.
+-  ``--scan-target-id UUID``: Only summarize alerts from the
+   specifiedscan targets, defaults to all.
 -  ``--help``: Show this message and exit.
 
 ``zanshin summary alert_following``
@@ -1481,8 +1547,8 @@ organizations.
 
 **Options**:
 
--  ``--following-ids UUID``: Only summarize alerts from the specified
-   following, defaults to all.
+-  ``--following-ids UUID``: Only summarize alerts from thespecified
+   following, defaults toall.
 -  ``--help``: Show this message and exit.
 
 ``zanshin summary scan``
@@ -1503,8 +1569,8 @@ number of alerts that changed states.
 
 **Options**:
 
--  ``--scan-target-ids UUID``: Only summarize alerts from the specified
-   scan targets, defaults to all.
+-  ``--scan-target-ids UUID``: Only summarize alerts from the
+   specifiedscan targets, defaults to all.
 -  ``--days INTEGER``: Number of days to go back in time in historical
    search [default: 7]
 -  ``--help``: Show this message and exit.
@@ -1527,10 +1593,10 @@ number of alerts that changed states.
 
 **Options**:
 
--  ``--following-ids UUID``: Only summarize alerts from the specified
-   following, defaults to all.
--  ``--days INTEGER``: Number of days to go back in time in historical
-   search [default: 7]
+-  ``--following-ids UUID``: Only summarize alerts from thespecified
+   following, defaults toall.
+-  ``--days INTEGER``: Number of days to go back in time in
+   historicalsearch [default: 7]
 -  ``--help``: Show this message and exit.
 
 .. |PyPI version shields.io| image:: https://img.shields.io/pypi/v/zanshincli.svg

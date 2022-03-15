@@ -716,6 +716,7 @@ def onboard_organization_aws_scan_target(
 ):
     """
     Create a new scan target in organization and perform onboard. Requires boto3 and correct AWS IAM Privileges.
+    Checkout the required AWS IAM privileges here https://github.com/tenchi-security/zanshin-sdk-python/blob/main/zanshinsdk/docs/README.md
     """
     client = Client(profile=global_options['profile'])
     credential = ScanTargetAWS(credential)
