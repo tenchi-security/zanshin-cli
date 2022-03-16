@@ -19,6 +19,16 @@ pypitest: README.rst sdist
 	python setup.py clean
 	twine upload --repository pypitest dist/*
 
-test: 
-	python -m py_compile zanshincli/main.py
-	python -m unittest zanshincli/test_main.py
+lint:
+	flake8 zanshincli --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+test:
+	python -m unittest discover -s zanshincli -v
+
+coverage:
+	coverage run --source zanshincli -m unittest discover -s zanshincli
+	coverage report
+
+coverage_missing:
+	coverage run --source zanshincli -m unittest discover -s zanshincli
+	coverage report -m
