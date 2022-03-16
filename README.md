@@ -1,3 +1,4 @@
+![ Coverage badge ](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/wiki/tenchi-security/zanshin-cli/python-coverage-comment-action-badge.json)
 [![PyPI version shields.io](https://img.shields.io/pypi/v/zanshincli.svg)](https://pypi.python.org/pypi/zanshincli/) [![PyPI pyversions](https://img.shields.io/pypi/pyversions/zanshincli.svg)](https://pypi.python.org/pypi/zanshincli/)
 
 # Zanshin CLI
