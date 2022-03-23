@@ -783,13 +783,13 @@ def onboard_organization_aws_scan_target(
     organization_aws_scan_targets: List[ScanTargetAWS] = [sc for sc in organization_current_scan_targets if
                                                           sc['kind'] == ScanTargetKind.AWS]
 
-    if target_accounts:
-        # Add all accounts found in zanshin organization to be excluded
-        exclude_account_list = list(exclude_account)
-        for scan_target in organization_aws_scan_targets:
-            exclude_account_list.append(scan_target['credential']['account'])
-        exclude_account = tuple(exclude_account_list)
+    # Add all accounts found in zanshin organization to be excluded
+    exclude_account_list = list(exclude_account)
+    for scan_target in organization_aws_scan_targets:
+        exclude_account_list.append(scan_target['credential']['account'])
+    exclude_account = tuple(exclude_account_list)
 
+    if target_accounts:
         awsorgrun(session=boto3_session, role=aws_role_name, target=target_accounts, accounts=None,
                   exclude=exclude_account, func=_sdk_onboard_scan_target, region=region,
                   organization_id=organization_id, schedule=schedule)
@@ -828,8 +828,11 @@ def onboard_organization_aws_scan_target(
             acc for acc in onboard_accounts if acc["Onboard"]]
         typer.echo(
             f"{len(aws_accounts_selected_to_onboard)} Account(s) marked to Onboard")
-        awsorgrun(target=AWSOrgRunTarget.NONE, exclude=[], session=boto3_session, role=aws_role_name, accounts=aws_accounts_selected_to_onboard,
-                  func=_sdk_onboard_scan_target, region=region, organization_id=organization_id, schedule=schedule)
+        if not aws_accounts_selected_to_onboard:
+            raise typer.Exit()
+        awsorgrun(target=AWSOrgRunTarget.NONE, exclude=exclude_account_list, session=boto3_session, role=aws_role_name, 
+        accounts=aws_accounts_selected_to_onboard, func=_sdk_onboard_scan_target, region=region, 
+        organization_id=organization_id, schedule=schedule)
 
 
 def _sdk_onboard_scan_target(target, aws_account_id, aws_account_name, boto3_session, region, organization_id, schedule):
