@@ -8,6 +8,7 @@ from pathlib import Path
 from moto import mock_organizations, mock_sts
 from boto3_type_annotations.organizations import Client as Boto3OrganizationsClient
 import boto3
+import warnings
 
 from zanshincli import main
 from zanshincli.main import global_options, zanshin_exchanger
@@ -24,6 +25,8 @@ class TestStringMethods(unittest.TestCase):
 
     def setUp(self):
         global_options['profile'] = 'default'
+        warnings.filterwarnings("ignore", category=ResourceWarning, message="unclosed.*<ssl.SSLSocket.*>") 
+
 
     ###################################################
     # General Functions
@@ -328,6 +331,7 @@ class TestStringMethods(unittest.TestCase):
         for acc_id in mock_aws_accounts_ids:
             organizations.remove_account_from_organization(AccountId=acc_id)
         organizations.delete_organization()
+        
 
     @mock_organizations
     @mock_sts
