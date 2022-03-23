@@ -1,5 +1,5 @@
 setuptools~=45.2.0
-typer~=0.4.0
+typer~=0.3.2
 typer-cli~=0.0.12
 click~=8.0.4
 prettytable~=2.1.0
