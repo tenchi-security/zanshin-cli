@@ -908,6 +908,7 @@ $ zanshin organization scan_target [OPTIONS] COMMAND [ARGS]...
 * `delete`: Delete scan target of organization.
 * `check`: Check scan target.
 * `onboard_aws`: Create a new scan target in organization and...
+* `onboard_aws_organization`: For each of selected accounts in AWS...
 * `scan`: Operations on scan targets from organizations...
 
 #### `zanshin organization scan_target list`
@@ -1036,21 +1037,47 @@ Checkout the required AWS IAM privileges here https://github.com/tenchi-security
 **Usage**:
 
 ```console
-$ zanshin organization scan_target onboard_aws [OPTIONS] BOTO3_PROFILE REGION ORGANIZATION_ID KIND:[AWS|GCP|AZURE|HUAWEI|DOMAIN] NAME CREDENTIAL [SCHEDULE]
+$ zanshin organization scan_target onboard_aws [OPTIONS] REGION ORGANIZATION_ID NAME CREDENTIAL [SCHEDULE]
 ```
 
 **Arguments**:
 
-* `BOTO3_PROFILE`: Boto3 profile name to use for Onboard AWS Account  [required]
 * `REGION`: AWS Region to deploy CloudFormation  [required]
 * `ORGANIZATION_ID`: UUID of the organization  [required]
-* `KIND:[AWS|GCP|AZURE|HUAWEI|DOMAIN]`: kind of the scan target  [required]
 * `NAME`: name of the scan target  [required]
 * `CREDENTIAL`: credential of the scan target  [required]
 * `[SCHEDULE]`: schedule of the scan target  [default: 0 0 * * *]
 
 **Options**:
 
+* `--boto3-profile TEXT`: Boto3 profile name to use for Onboard AWS Account  [default: default]
+* `--help`: Show this message and exit.
+
+#### `zanshin organization scan_target onboard_aws_organization`
+
+For each of selected accounts in AWS Organization, creates a new Scan Target in informed zanshin organization 
+and performs onboarding. Requires boto3 and correct AWS IAM Privileges.
+Checkout the required AWS IAM privileges at 
+https://github.com/tenchi-security/zanshin-cli/blob/main/zanshincli/docs/README.md
+
+**Usage**:
+
+```console
+$ zanshin organization scan_target onboard_aws_organization [OPTIONS] REGION ORGANIZATION_ID [SCHEDULE]
+```
+
+**Arguments**:
+
+* `REGION`: AWS Region to deploy CloudFormation  [required]
+* `ORGANIZATION_ID`: UUID of the organization  [required]
+* `[SCHEDULE]`: schedule of the scan target  [default: 0 0 * * *]
+
+**Options**:
+
+* `--target-accounts [ALL|MASTER|MEMBERS|NONE]`: choose which accounts to onboard
+* `--exclude-account TEXT`: ID, Name, E-mail or ARN of AWS Account not to be onboarded.   [default: ]
+* `--boto3-profile TEXT`: Boto3 profile name to use for Onboard AWS Account. If not informed will use 'default' profile  [default: default]
+* `--aws-role-name TEXT`: Name of AWS role that allow access from Management Account to Member accounts. If not informed will use OrganizationAccountAccessRole.  [default: OrganizationAccountAccessRole]
 * `--help`: Show this message and exit.
 
 #### `zanshin organization scan_target scan`
