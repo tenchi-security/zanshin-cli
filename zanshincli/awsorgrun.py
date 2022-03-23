@@ -102,25 +102,3 @@ def run_command(target: AWSOrgRunTarget, account_id: str, session: boto3.session
         del env['AWS_SESSION_TOKEN']
     proc = subprocess.run(command, shell=True, env=env)
     logger.info('command finished with exit status {0:d}'.format(proc.returncode))
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        prog='awsorgrun',
-        description='Command-line utility to execute commands across an AWS Organization (v{0:s})'.format(__version__),
-        epilog="Copyright 2019 Tenchi Security - All rights reserved")
-    parser.add_argument("-p", "--profile",
-                        help="which profile to obtain AWS credentials for the Organization master account",
-                        required=False)
-    parser.add_argument("-r", "--role",
-                        help="IAM role name to assume in organization member accounts",
-                        default='OrganizationAccountAccessRole')
-    parser.add_argument("-t", "--target",
-                        help="choose which accounts the command should be executed on, defaults to ALL",
-                        default='ALL', choices=AWSOrgRunTarget.__members__)
-    parser.add_argument("-x", "--exclude",
-                        help="exclude one or more accounts from processing (name, ID, ARN or e-mail accepted)",
-                        action='append')
-    parser.add_argument("command", help="command to execute", nargs="+")
-    args = parser.parse_args()
-    awsorgrun(args.profile, args.role, AWSOrgRunTarget[args.target.upper()], args.exclude, run_command, ' '.join(args.command))
