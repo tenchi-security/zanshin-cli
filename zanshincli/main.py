@@ -734,24 +734,25 @@ def onboard_organization_aws_scan_target(
     client = Client(profile=global_options['profile'])
     credential = ScanTargetAWS(credential)
     kind = ScanTargetKind.AWS
-    
+
     if len(name) < 3:
-        raise ValueError(f"Scan Target name must be at least 3 characters long")
+        raise ValueError("Scan Target name must be at least 3 characters long")
 
     dump_json(client.onboard_scan_target(boto3_profile=boto3_profile, region=region,
               organization_id=organization_id, kind=kind, name=name, credential=credential, schedule=schedule))
 
 
 @organization_scan_target_app.command(name='onboard_aws_organization')
-def onboard_organization_aws_scan_target(
+def onboard_organization_aws_organization_scan_target(
         target_accounts: AWSOrgRunTarget = typer.Option(
             None, help="choose which accounts to onboard"),
         exclude_account: Optional[List[str]] = typer.Option(
             [], help="ID, Name, E-mail or ARN of AWS Account not to be onboarded. "),
         boto3_profile: str = typer.Option(
             "default", help="Boto3 profile name to use for Onboard AWS Account. If not informed will use \'default\' profile"),
-        aws_role_name: str = typer.Option(
-            "OrganizationAccountAccessRole", help="Name of AWS role that allow access from Management Account to Member accounts. If not informed will use OrganizationAccountAccessRole."),
+        aws_role_name: str = typer.Option("OrganizationAccountAccessRole",
+            help="Name of AWS role that allow access from Management Account to Member accounts.\
+                   If not informed will use OrganizationAccountAccessRole."),
         region: str = typer.Argument(...,
                                      help="AWS Region to deploy CloudFormation"),
         organization_id: UUID = typer.Argument(...,
@@ -760,9 +761,9 @@ def onboard_organization_aws_scan_target(
             "0 0 * * *", help="schedule of the scan target")
 ):
     """
-    For each of selected accounts in AWS Organization, creates a new Scan Target in informed zanshin organization 
+    For each of selected accounts in AWS Organization, creates a new Scan Target in informed zanshin organization
     and performs onboarding. Requires boto3 and correct AWS IAM Privileges.
-    Checkout the required AWS IAM privileges at 
+    Checkout the required AWS IAM privileges at
     https://github.com/tenchi-security/zanshin-cli/blob/main/zanshincli/docs/README.md
     """
     client = Client(profile=global_options['profile'])
@@ -773,11 +774,11 @@ def onboard_organization_aws_scan_target(
 
     if not target_accounts and exclude_account:
         raise ValueError(
-            f"exclude_account can only be informed using target-accounts ALL, MEMBERS or MASTER")
+            "exclude_account can only be informed using target-accounts ALL, MEMBERS or MASTER")
 
     # Fetching organization's existing Scan Targets of kind AWS
     # in order to see if AWS Accounts are already in Zanshin
-    typer.echo(f"Looking for Zanshin AWS Scan Targets")
+    typer.echo("Looking for Zanshin AWS Scan Targets")
     organization_current_scan_targets: Iterator[Dict] = client.iter_organization_scan_targets(
         organization_id=organization_id)
     organization_aws_scan_targets: List[ScanTargetAWS] = [sc for sc in organization_current_scan_targets if
@@ -800,7 +801,7 @@ def onboard_organization_aws_scan_target(
             aws_organizations_client)
 
         # Check if there're new AWS Accounts in Customer Organization that aren't in Zanshin yet
-        typer.echo(f"Detecting AWS Accounts already in Zanshin Organization")
+        typer.echo("Detecting AWS Accounts already in Zanshin Organization")
         onboard_accounts: List[AWSAccount] = []
 
         for customer_acc in customer_aws_accounts:
@@ -818,10 +819,10 @@ def onboard_organization_aws_scan_target(
             acc["Onboard"] = onboard_acc
             if onboard_acc:
                 onboard_acc_name: str = typer.prompt(
-                    f"Scan Target Name", default=acc['Name'], type=str)
+                    "Scan Target Name", default=acc['Name'], type=str)
                 while (len(onboard_acc_name.strip()) < 3):
                     onboard_acc_name = typer.prompt(
-                        f"Name must be minimum 3 characters. Scan Target Name", default=acc['Name'], type=str)
+                        "Name must be minimum 3 characters. Scan Target Name", default=acc['Name'], type=str)
                 acc["Name"] = onboard_acc_name
 
         aws_accounts_selected_to_onboard = [
@@ -830,18 +831,18 @@ def onboard_organization_aws_scan_target(
             f"{len(aws_accounts_selected_to_onboard)} Account(s) marked to Onboard")
         if not aws_accounts_selected_to_onboard:
             raise typer.Exit()
-        awsorgrun(target=AWSOrgRunTarget.NONE, exclude=exclude_account_list, session=boto3_session, role=aws_role_name, 
-        accounts=aws_accounts_selected_to_onboard, func=_sdk_onboard_scan_target, region=region, 
-        organization_id=organization_id, schedule=schedule)
+        awsorgrun(target=AWSOrgRunTarget.NONE, exclude=exclude_account_list, session=boto3_session, role=aws_role_name,
+                  accounts=aws_accounts_selected_to_onboard, func=_sdk_onboard_scan_target, region=region,
+                  organization_id=organization_id, schedule=schedule)
 
 
 def _sdk_onboard_scan_target(target, aws_account_id, aws_account_name, boto3_session, region, organization_id, schedule):
     client = Client(profile=global_options['profile'])
-    account_credential =  ScanTargetAWS(aws_account_id)
+    account_credential = ScanTargetAWS(aws_account_id)
     client.onboard_scan_target(boto3_session=boto3_session, region=region, kind=ScanTargetKind.AWS, name=aws_account_name,
                                schedule=schedule, organization_id=organization_id, credential=account_credential)
-    
-    
+
+
 def _validate_role_name(aws_cross_account_role_name: str):
     """
     Make sure provided role name is valid as in it's not an ARN, and not bigger than AWS constraints.
