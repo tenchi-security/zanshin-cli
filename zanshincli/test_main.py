@@ -417,3 +417,9 @@ class TestStringMethods(unittest.TestCase):
         for acc_id in mock_aws_accounts_ids:
             organizations.remove_account_from_organization(AccountId=acc_id)
         organizations.delete_organization()
+
+    def test_typer(self):
+        result = runner.invoke(main.main_app, ["--help"])
+        assert result.exit_code == 0
+        print(result.stdout)
+
