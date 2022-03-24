@@ -1,11 +1,10 @@
 import unittest
-import json
 from io import StringIO
 from unittest.mock import patch
 import os
 from pathlib import Path
 
-from moto import mock_organizations, mock_sts
+from moto import mock_organizations, mock_sts, mock_s3
 from boto3_type_annotations.organizations import Client as Boto3OrganizationsClient
 import boto3
 import warnings
@@ -418,4 +417,19 @@ class TestStringMethods(unittest.TestCase):
             organizations.remove_account_from_organization(AccountId=acc_id)
         organizations.delete_organization()
 
+    @mock_s3
+    def test_my_model_save(self):
+        conn = boto3.resource('s3', region_name='us-east-1')
+        # We need to create the bucket since this is all in Moto's 'virtual' AWS account
+        conn.create_bucket(Bucket='mybucket')
 
+        boto3_session = boto3.Session(
+            aws_access_key_id="123",
+            aws_secret_access_key="123",
+            aws_session_token="123",
+        )
+        s3_client = boto3_session.client("s3")
+
+        s3_client.put_object(Bucket="mybucket", Key="hello", Body="world")
+        body = conn.Object('mybucket', 'hello').get()['Body'].read().decode("utf-8")
+        assert body == 'world'
