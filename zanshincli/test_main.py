@@ -331,7 +331,6 @@ class TestStringMethods(unittest.TestCase):
         for acc_id in mock_aws_accounts_ids:
             organizations.remove_account_from_organization(AccountId=acc_id)
         organizations.delete_organization()
-        
 
     @mock_organizations
     @mock_sts
@@ -379,7 +378,7 @@ class TestStringMethods(unittest.TestCase):
     @mock_sts
     def test_onboard_aws_organization_automatic_mode_excluding_accounts(self):
         """
-        Assert that the CLI method onboard_aws_organization is excluding accounts to onboard according to 
+        Assert that the CLI method onboard_aws_organization is excluding accounts to onboard according to
         CLI Arguments
         """
         # Mock AWS Boto3 profile 'foo'
@@ -404,9 +403,12 @@ class TestStringMethods(unittest.TestCase):
                 mocked_acc['CreateAccountStatus']['AccountId'])
 
         with patch("zanshinsdk.Client.onboard_scan_target") as mock_sdk:
-            result = runner.invoke(main.organization_scan_target_app, ["onboard_aws_organization", "us-east-1", "2a061fef-a9d3-486e-a2c2-8fe6e69bd0ee",
-                                   "--boto3-profile", "foo", "--target-accounts", "MEMBERS", "--exclude-account", "AWS_Account_1", "--exclude-account", "AWS_Account_2"])
-            # assert result.exit_code == 0
+            result = runner.invoke(main.organization_scan_target_app, [
+                "onboard_aws_organization", "us-east-1",
+                "2a061fef-a9d3-486e-a2c2-8fe6e69bd0ee", "--boto3-profile", "foo",
+                "--target-accounts", "MEMBERS", "--exclude-account", "AWS_Account_1",
+                "--exclude-account", "AWS_Account_2"])
+            assert result.exit_code == 0
             assert "Looking for Zanshin AWS Scan Targets" in result.stdout
             assert 8 == mock_sdk.call_count
             assert mock_sdk.has_any_call()
