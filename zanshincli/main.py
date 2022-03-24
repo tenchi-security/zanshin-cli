@@ -7,6 +7,10 @@ from json import dumps
 from stat import S_IRUSR, S_IWUSR
 from typing import Iterable, Iterator, Dict, Any, Optional, List
 from uuid import UUID
+import boto3
+from boto3_type_annotations.organizations import Client as Boto3OrganizationsClient
+from boto3_type_annotations.sts import Client as Boto3STSClient
+from .awsorgrun import AWSOrgRunTarget, awsorgrun
 
 import typer
 import click
@@ -36,6 +40,16 @@ class OutputFormat(str, Enum):
     TABLE = "table"
     CSV = "csv"
     HTML = "html"
+
+
+class AWSAccount(dict):
+    """
+    Class representing a AWS Account as returned by boto3
+    """
+
+    def __init__(self, Id: str, Name: str, Arn: str, Email: str, Onboard: bool = False):
+        dict.__init__(self, Id=Id, Name=Name, Arn=Arn,
+                      Email=Email, Onboard=Onboard)
 
 
 ###################################################
@@ -706,10 +720,9 @@ def organization_scan_target_check(
 
 @organization_scan_target_app.command(name='onboard_aws')
 def onboard_organization_aws_scan_target(
-        boto3_profile: str = typer.Argument(..., help="Boto3 profile name to use for Onboard AWS Account"),
+        boto3_profile: str = typer.Option("default", help="Boto3 profile name to use for Onboard AWS Account"),
         region: str = typer.Argument(..., help="AWS Region to deploy CloudFormation"),
         organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
-        kind: ScanTargetKind = typer.Argument(..., help="kind of the scan target"),
         name: str = typer.Argument(..., help="name of the scan target"),
         credential: str = typer.Argument(..., help="credential of the scan target"),
         schedule: str = typer.Argument("0 0 * * *", help="schedule of the scan target")
@@ -720,7 +733,157 @@ def onboard_organization_aws_scan_target(
     """
     client = Client(profile=global_options['profile'])
     credential = ScanTargetAWS(credential)
-    dump_json(client.onboard_scan_target(boto3_profile, region, organization_id, kind, name, credential, schedule))
+    kind = ScanTargetKind.AWS
+
+    if len(name) < 3:
+        raise ValueError("Scan Target name must be at least 3 characters long")
+
+    dump_json(client.onboard_scan_target(boto3_profile=boto3_profile, region=region,
+              organization_id=organization_id, kind=kind, name=name, credential=credential, schedule=schedule))
+
+
+@organization_scan_target_app.command(name='onboard_aws_organization')
+def onboard_organization_aws_organization_scan_target(
+        target_accounts: AWSOrgRunTarget = typer.Option(
+            None, help="choose which accounts to onboard"),
+        exclude_account: Optional[List[str]] = typer.Option(
+            [], help="ID, Name, E-mail or ARN of AWS Account not to be onboarded. "),
+        boto3_profile: str = typer.Option(
+            "default", help="Boto3 profile name to use for Onboard AWS Account. If not informed will use \'default\' profile"),
+        aws_role_name: str = typer.Option("OrganizationAccountAccessRole",
+            help="Name of AWS role that allow access from Management Account to Member accounts.\
+                   If not informed will use OrganizationAccountAccessRole."),
+        region: str = typer.Argument(...,
+                                     help="AWS Region to deploy CloudFormation"),
+        organization_id: UUID = typer.Argument(...,
+                                               help="UUID of the organization"),
+        schedule: str = typer.Argument(
+            "0 0 * * *", help="schedule of the scan target")
+):
+    """
+    For each of selected accounts in AWS Organization, creates a new Scan Target in informed zanshin organization
+    and performs onboarding. Requires boto3 and correct AWS IAM Privileges.
+    Checkout the required AWS IAM privileges at
+    https://github.com/tenchi-security/zanshin-cli/blob/main/zanshincli/docs/README.md
+    """
+    client = Client(profile=global_options['profile'])
+    boto3_session = boto3.Session(profile_name=boto3_profile)
+
+    # Validate user provided IAM Role Name not ARN
+    _validate_role_name(aws_role_name)
+
+    if not target_accounts and exclude_account:
+        raise ValueError(
+            "exclude_account can only be informed using target-accounts ALL, MEMBERS or MASTER")
+
+    # Fetching organization's existing Scan Targets of kind AWS
+    # in order to see if AWS Accounts are already in Zanshin
+    typer.echo("Looking for Zanshin AWS Scan Targets")
+    organization_current_scan_targets: Iterator[Dict] = client.iter_organization_scan_targets(
+        organization_id=organization_id)
+    organization_aws_scan_targets: List[ScanTargetAWS] = [sc for sc in organization_current_scan_targets if
+                                                          sc['kind'] == ScanTargetKind.AWS]
+
+    # Add all accounts found in zanshin organization to be excluded
+    exclude_account_list = list(exclude_account)
+    for scan_target in organization_aws_scan_targets:
+        exclude_account_list.append(scan_target['credential']['account'])
+    exclude_account = tuple(exclude_account_list)
+
+    if target_accounts:
+        awsorgrun(session=boto3_session, role=aws_role_name, target=target_accounts, accounts=None,
+                  exclude=exclude_account, func=_sdk_onboard_scan_target, region=region,
+                  organization_id=organization_id, schedule=schedule)
+    else:
+        aws_organizations_client: Boto3OrganizationsClient = boto3_session.client(
+            'organizations')
+        customer_aws_accounts: List[AWSAccount] = _get_aws_accounts_from_organization(
+            aws_organizations_client)
+
+        # Check if there're new AWS Accounts in Customer Organization that aren't in Zanshin yet
+        typer.echo("Detecting AWS Accounts already in Zanshin Organization")
+        onboard_accounts: List[AWSAccount] = []
+
+        for customer_acc in customer_aws_accounts:
+            current_acc_id = customer_acc['Id']
+            is_aws_account_already_in_zanshin = [
+                acc for acc in organization_aws_scan_targets if acc['credential']['account'] == current_acc_id]
+            if not is_aws_account_already_in_zanshin:
+                onboard_accounts.append(customer_acc)
+
+        # If flag all_accounts is present, it means all AWS Accounts that aren't already in Zanshin organization will be
+        # onboarded. Otherwise, we'll prompt the user to select the accounts they want to Onboard manually.
+        for acc in onboard_accounts:
+            onboard_acc = typer.confirm(
+                f"Onboard AWS account {acc['Name']} ({acc['Id']})?", default=True)
+            acc["Onboard"] = onboard_acc
+            if onboard_acc:
+                onboard_acc_name: str = typer.prompt(
+                    "Scan Target Name", default=acc['Name'], type=str)
+                while (len(onboard_acc_name.strip()) < 3):
+                    onboard_acc_name = typer.prompt(
+                        "Name must be minimum 3 characters. Scan Target Name", default=acc['Name'], type=str)
+                acc["Name"] = onboard_acc_name
+
+        aws_accounts_selected_to_onboard = [
+            acc for acc in onboard_accounts if acc["Onboard"]]
+        typer.echo(
+            f"{len(aws_accounts_selected_to_onboard)} Account(s) marked to Onboard")
+        if not aws_accounts_selected_to_onboard:
+            raise typer.Exit()
+        awsorgrun(target=AWSOrgRunTarget.NONE, exclude=exclude_account_list, session=boto3_session, role=aws_role_name,
+                  accounts=aws_accounts_selected_to_onboard, func=_sdk_onboard_scan_target, region=region,
+                  organization_id=organization_id, schedule=schedule)
+
+
+def _sdk_onboard_scan_target(target, aws_account_id, aws_account_name, boto3_session, region, organization_id, schedule):
+    client = Client(profile=global_options['profile'])
+    account_credential = ScanTargetAWS(aws_account_id)
+    client.onboard_scan_target(boto3_session=boto3_session, region=region, kind=ScanTargetKind.AWS, name=aws_account_name,
+                               schedule=schedule, organization_id=organization_id, credential=account_credential)
+
+
+def _validate_role_name(aws_cross_account_role_name: str):
+    """
+    Make sure provided role name is valid as in it's not an ARN, and not bigger than AWS constraints.
+    :param: aws_cross_account_role_name - Role name received from user input
+    """
+    if ':' in aws_cross_account_role_name:
+        raise ValueError(
+            f"IAM Role Name required. Value {aws_cross_account_role_name} is not a role name.")
+    if len(aws_cross_account_role_name) <= 1 or len(aws_cross_account_role_name) >= 65:
+        raise ValueError(f"IAM Role Name is invalid.")
+
+def _get_aws_accounts_from_organization(boto3_organizations_client: Boto3OrganizationsClient) -> List[AWSAccount]:
+    """
+    With boto3 Organizations Client, list AWS Accounts from Organization.
+    If [NextToken] is present, keeps fetching Accounts until complete.
+    Creates AWSAccount class with response data.
+
+    :param: boto3_organizations_client - boto3 Client for Organizations
+    :return: aws_accounts_response: List[AWSAccount]
+    """
+
+    aws_accounts_response: List[AWSAccount] = []
+    req_aws_accounts = boto3_organizations_client.list_accounts(MaxResults=5)
+
+    for acc in req_aws_accounts['Accounts']:
+        aws_accounts_response.append(AWSAccount(
+            Id=acc['Id'], Name=acc['Name'], Arn=acc['Arn'], Email=acc['Email']))
+
+    if not 'NextToken' in req_aws_accounts:
+        return aws_accounts_response
+
+    while req_aws_accounts['NextToken']:
+        req_aws_accounts = boto3_organizations_client.list_accounts(
+            MaxResults=5, NextToken=req_aws_accounts['NextToken'])
+        for acc in req_aws_accounts['Accounts']:
+            aws_accounts_response.append(AWSAccount(
+                Id=acc['Id'], Name=acc['Name'], Arn=acc['Arn'], Email=acc['Email']))
+        if not 'NextToken' in req_aws_accounts:
+            break
+    return aws_accounts_response
+
 
 ###################################################
 # Organization Scan Target Scan App
@@ -865,12 +1028,12 @@ def alert_history_list(organization_id: UUID = typer.Argument(..., help="UUID of
 
 @alert_app.command(name='list_history_following')
 def alert_history_following_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
-               following_ids: Optional[List[UUID]] = typer.Option(None,
-                                                                  help="Only list alerts from the specified"
-                                                                       "scan targets."),
-               cursor: Optional[str] = typer.Option(None, help="Cursor."),
-               persist: Optional[bool] = typer.Option(False, help="Persist.")
-               ):
+                                 following_ids: Optional[List[UUID]] = typer.Option(None,
+                                                                                    help="Only list alerts from the specified"
+                                                                                         "scan targets."),
+                                 cursor: Optional[str] = typer.Option(None, help="Cursor."),
+                                 persist: Optional[bool] = typer.Option(False, help="Persist.")
+                                 ):
     """
     List alerts from a given organization, with optional filters by scan target, state or severity.
     """
