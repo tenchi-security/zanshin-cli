@@ -19,12 +19,12 @@ from prettytable import PrettyTable
 from sys import version as python_version
 from time import perf_counter
 from typer import Typer
-from zanshinsdk import Client, AlertState, AlertSeverity, __version__ as sdk_version
+from zanshinsdk import Client, AlertState, AlertSeverity, version as sdk_version
 from zanshinsdk.client import ScanTargetKind, ScanTargetAWS, Roles, CONFIG_DIR, CONFIG_FILE
 from zanshinsdk.alerts_history import FilePersistentAlertsIterator
 from zanshinsdk.following_alerts_history import FilePersistentFollowingAlertsIterator
 
-from zanshincli import __version__ as cli_version
+from zanshincli.version import __version__ as cli_version
 
 
 class OrderedCommands(click.Group):
@@ -197,7 +197,7 @@ def version():
     Display the program and Python versions in use.
     """
     typer.echo(f'Zanshin CLI v{cli_version}')
-    typer.echo(f'Zanshin Python SDK v{sdk_version}')
+    typer.echo(f'Zanshin Python SDK v{sdk_version.version}')
     typer.echo(f'Python {python_version}')
 
 

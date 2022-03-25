@@ -1,4 +1,4 @@
-|Coverage badge| |PyPI version shields.io| |PyPI pyversions|
+|Coverage badge|PyPI version shields.io| |PyPI pyversions|
 
 Zanshin CLI
 ===========
@@ -1634,7 +1634,6 @@ number of alerts that changed states.
    historicalsearch [default: 7]
 -  ``--help``: Show this message and exit.
 
-.. |Coverage badge| image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/wiki/tenchi-security/zanshin-cli/python-coverage-comment-action-badge.json
 .. |PyPI version shields.io| image:: https://img.shields.io/pypi/v/zanshincli.svg
    :target: https://pypi.python.org/pypi/zanshincli/
 .. |PyPI pyversions| image:: https://img.shields.io/pypi/pyversions/zanshincli.svg

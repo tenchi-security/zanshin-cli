@@ -1000,9 +1000,9 @@ $ zanshin organization scan_target onboard_aws [OPTIONS] REGION ORGANIZATION_ID 
 
 #### `zanshin organization scan_target onboard_aws_organization`
 
-For each of selected accounts in AWS Organization, creates a new Scan Target in informed zanshin organization 
+For each of selected accounts in AWS Organization, creates a new Scan Target in informed zanshin organization
 and performs onboarding. Requires boto3 and correct AWS IAM Privileges.
-Checkout the required AWS IAM privileges at 
+Checkout the required AWS IAM privileges at
 https://github.com/tenchi-security/zanshin-cli/blob/main/zanshincli/docs/README.md
 
 **Usage**:
