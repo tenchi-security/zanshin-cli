@@ -1020,9 +1020,9 @@ $ zanshin organization scan_target onboard_aws_organization [OPTIONS] REGION ORG
 **Options**:
 
 * `--target-accounts [ALL|MASTER|MEMBERS|NONE]`: choose which accounts to onboard
-* `--exclude-account TEXT`: ID, Name, E-mail or ARN of AWS Account not to be onboarded.   [default: ]
-* `--boto3-profile TEXT`: Boto3 profile name to use for Onboard AWS Account. If not informed will use 'default' profile  [default: default]
-* `--aws-role-name TEXT`: Name of AWS role that allow access from Management Account to Member accounts.  [default: OrganizationAccountAccessRole]
+* `--exclude-account TEXT`: ID, Name, E-mail or ARN of AWS Account not to be onboarded  [default: ]
+* `--boto3-profile TEXT`: Boto3 profile name to use for Onboard AWS Account  [default: default]
+* `--aws-role-name TEXT`: Name of AWS role that allow access from Management Account to Member accounts  [default: OrganizationAccountAccessRole]
 * `--help`: Show this message and exit.
 
 #### `zanshin organization scan_target scan`

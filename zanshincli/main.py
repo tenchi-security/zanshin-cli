@@ -747,11 +747,11 @@ def onboard_organization_aws_organization_scan_target(
         target_accounts: AWSOrgRunTarget = typer.Option(
             None, help="choose which accounts to onboard"),
         exclude_account: Optional[List[str]] = typer.Option(
-            [], help="ID, Name, E-mail or ARN of AWS Account not to be onboarded. "),
+            [], help="ID, Name, E-mail or ARN of AWS Account not to be onboarded"),
         boto3_profile: str = typer.Option(
-            "default", help="Boto3 profile name to use for Onboard AWS Account. If not informed will use \'default\' profile"),
+            "default", help="Boto3 profile name to use for Onboard AWS Account"),
         aws_role_name: str = typer.Option("OrganizationAccountAccessRole",
-            help="Name of AWS role that allow access from Management Account to Member accounts."),
+            help="Name of AWS role that allow access from Management Account to Member accounts"),
         region: str = typer.Argument(...,
                                      help="AWS Region to deploy CloudFormation"),
         organization_id: UUID = typer.Argument(...,
