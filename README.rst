@@ -1232,11 +1232,9 @@ https://github.com/tenchi-security/zanshin-cli/blob/main/zanshincli/docs/README.
 -  ``--target-accounts [ALL|MASTER|MEMBERS|NONE]``: choose which
    accounts to onboard
 -  ``--exclude-account TEXT``: ID, Name, E-mail or ARN of AWS Account
-   not to be onboarded [default: ]
+   not to be onboarded
 -  ``--boto3-profile TEXT``: Boto3 profile name to use for Onboard AWS
-   Account [default: default]
--  ``--no-boto3-profile TEXT``: Won't use a boto3 profile. Useful if
-   using Zanshin CLI on EC2 instances or Lambdas [default: False]
+   Account
 -  ``--aws-role-name TEXT``: Name of AWS role that allow access from
    Management Account to Member accounts [default:
    OrganizationAccountAccessRole]
