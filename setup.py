@@ -39,3 +39,4 @@ setup(
         'console_scripts': ['zanshin=zanshincli.main:main_app']
     }
 )
+# flake8: noqa

@@ -197,7 +197,7 @@ def version():
     Display the program and Python versions in use.
     """
     typer.echo(f'Zanshin CLI v{cli_version}')
-    typer.echo(f'Zanshin Python SDK v{sdk_version.version}')
+    typer.echo(f'Zanshin Python SDK v{sdk_version.__version__}')
     typer.echo(f'Python {python_version}')
 
 
