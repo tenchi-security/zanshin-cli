@@ -750,6 +750,8 @@ def onboard_organization_aws_organization_scan_target(
             [], help="ID, Name, E-mail or ARN of AWS Account not to be onboarded"),
         boto3_profile: str = typer.Option(
             "default", help="Boto3 profile name to use for Onboard AWS Account"),
+        no_boto3_profile: str = typer.Option(
+            False, help="Won't use a boto3 profile. Useful if using Zanshin CLI on EC2 instances or Lambdas"),
         aws_role_name: str = typer.Option("OrganizationAccountAccessRole",
             help="Name of AWS role that allow access from Management Account to Member accounts"),
         region: str = typer.Argument(...,
@@ -766,7 +768,11 @@ def onboard_organization_aws_organization_scan_target(
     https://github.com/tenchi-security/zanshin-cli/blob/main/zanshincli/docs/README.md
     """
     client = Client(profile=global_options['profile'])
-    boto3_session = boto3.Session(profile_name=boto3_profile)
+    if no_boto3_profile:
+        boto3_session = boto3.Session()
+    else:
+        boto3_session = boto3.Session(profile_name=boto3_profile)
+
 
     # Validate user provided IAM Role Name not ARN
     _validate_role_name(aws_role_name)
