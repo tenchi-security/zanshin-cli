@@ -751,8 +751,7 @@ def onboard_organization_aws_organization_scan_target(
         boto3_profile: str = typer.Option(
             "default", help="Boto3 profile name to use for Onboard AWS Account. If not informed will use \'default\' profile"),
         aws_role_name: str = typer.Option("OrganizationAccountAccessRole",
-            help="Name of AWS role that allow access from Management Account to Member accounts.\
-                   If not informed will use OrganizationAccountAccessRole."),
+            help="Name of AWS role that allow access from Management Account to Member accounts."),
         region: str = typer.Argument(...,
                                      help="AWS Region to deploy CloudFormation"),
         organization_id: UUID = typer.Argument(...,
