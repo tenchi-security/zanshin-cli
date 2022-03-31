@@ -52,9 +52,12 @@ CLI:
 -  ``ZANSHIN_API_KEY``: Will setup your Zanshin credentials
 -  ``ZANSHIN_API_URL``: Will define the API URL. Default is
    ``https://api.zanshin.tenchisecurity.com``
--  ``ZANSHIN_PROXY_URL``: Configure a Proxy URL
 -  ``ZANSHIN_USER_AGENT``: If you want to overwrite the User Agent when
    calling Zanshin API
+-  ``HTTP_PROXY | HTTPS_PROXY``: Zanshin SDK uses HTTPX under the hood,
+   checkout the `Environment
+   Variables <https://www.python-httpx.org/environment_variables/#proxies>`__
+   section of their documentation for more use cases
 
 Usage
 ^^^^^
