@@ -1,5 +1,4 @@
-![ Coverage badge ](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/wiki/tenchi-security/zanshin-cli/python-coverage-comment-action-badge.json)
-[![PyPI version shields.io](https://img.shields.io/pypi/v/zanshincli.svg)](https://pypi.python.org/pypi/zanshincli/) [![PyPI pyversions](https://img.shields.io/pypi/pyversions/zanshincli.svg)](https://pypi.python.org/pypi/zanshincli/)
+![ Coverage badge ](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/wiki/tenchi-security/zanshin-cli/python-coverage-comment-action-badge.json)[![PyPI version shields.io](https://img.shields.io/pypi/v/zanshincli.svg)](https://pypi.python.org/pypi/zanshincli/) [![PyPI pyversions](https://img.shields.io/pypi/pyversions/zanshincli.svg)](https://pypi.python.org/pypi/zanshincli/)
 
 # Zanshin CLI
 
@@ -21,19 +20,41 @@ When a new version is available, you can upgrade it with:
 pipx upgrade zanshincli
 ```
 
-## Configuration File
 
-The way the SDK and CLI handles credentials is by using a configuration file in the format created by the Python [RawConfigParser](https://docs.python.org/3/library/configparser.html#configparser.RawConfigParser) class. 
+## Setting up Credentials
+
+There are two ways that the CLI handles credentials. The order of evaluation is:
+- [**1nd** Environment Variables](#environment-variables)
+- [**2rd** Config File](#config-file)
+
+### Environment Variables
+
+You can use the following Environment Variables to configure Zanshin CLI:
+- `ZANSHIN_API_KEY`: Will setup your Zanshin credentials
+- `ZANSHIN_API_URL`: Will define the API URL. Default is `https://api.zanshin.tenchisecurity.com` 
+- `ZANSHIN_USER_AGENT`: If you want to overwrite the User Agent when calling Zanshin API
+- `HTTP_PROXY | HTTPS_PROXY`: Zanshin CLI uses HTTPX under the hood, checkout the [Environment Variables](https://www.python-httpx.org/environment_variables/#proxies) section of their documentation for more use cases
+
+#### Usage
+
+```shell
+export ZANSHIN_API_KEY="eyJhbGciOiJIU..."
+```
+
+> :warning: These Environment Variables will overwrite anything you set on the Config File.
+
+### Config File
+Second is by using a configuration file in the format created by the Python [RawConfigParser](https://docs.python.org/3/library/configparser.html#configparser.RawConfigParser) class. 
 
 The file is located at `~/.tenchi/config`, where `~` is the [current user's home directory](https://docs.python.org/3/library/pathlib.html#pathlib.Path.home).
 
-Each section is treated as a configuration profile, and the SDK and CLI will look for a section called `default` if another is not explicitly selected. 
+Each section is treated as a configuration profile, and the CLI will look for a section called `default` if another is not explicitly selected. 
 
 These are the supported options:
 
 * `api_key` (required) which contains the Zanshin API key obtained at the [Zanshin web portal](https://zanshin.tenchisecurity.com/my-profile).
 * `user_agent` (optional) allows you to override the default user-agent header used by the SDK when making API requests.
-* `api_url` (optional) directs the SDK and CLI to use a different API endpoint than the default (https://api.zanshin.tenchisecurity.com).
+* `api_url` (optional) directs the SDK to use a different API endpoint than the default (https://api.zanshin.tenchisecurity.com).
 
 You can populate the file with the `zanshin init` command of the CLI tool. This is what a minimal configuration file would look like:
 ```ini
@@ -1055,9 +1076,9 @@ $ zanshin organization scan_target onboard_aws [OPTIONS] REGION ORGANIZATION_ID 
 
 #### `zanshin organization scan_target onboard_aws_organization`
 
-For each of selected accounts in AWS Organization, creates a new Scan Target in informed zanshin organization 
+For each of selected accounts in AWS Organization, creates a new Scan Target in informed zanshin organization
 and performs onboarding. Requires boto3 and correct AWS IAM Privileges.
-Checkout the required AWS IAM privileges at 
+Checkout the required AWS IAM privileges at
 https://github.com/tenchi-security/zanshin-cli/blob/main/zanshincli/docs/README.md
 
 **Usage**:
@@ -1075,9 +1096,9 @@ $ zanshin organization scan_target onboard_aws_organization [OPTIONS] REGION ORG
 **Options**:
 
 * `--target-accounts [ALL|MASTER|MEMBERS|NONE]`: choose which accounts to onboard
-* `--exclude-account TEXT`: ID, Name, E-mail or ARN of AWS Account not to be onboarded.   [default: ]
-* `--boto3-profile TEXT`: Boto3 profile name to use for Onboard AWS Account. If not informed will use 'default' profile  [default: default]
-* `--aws-role-name TEXT`: Name of AWS role that allow access from Management Account to Member accounts. If not informed will use OrganizationAccountAccessRole.  [default: OrganizationAccountAccessRole]
+* `--exclude-account TEXT`: ID, Name, E-mail or ARN of AWS Account not to be onboarded
+* `--boto3-profile TEXT`: Boto3 profile name to use for Onboard AWS Account
+* `--aws-role-name TEXT`: Name of AWS role that allow access from Management Account to Member accounts  [default: OrganizationAccountAccessRole]
 * `--help`: Show this message and exit.
 
 #### `zanshin organization scan_target scan`

@@ -19,12 +19,12 @@ from prettytable import PrettyTable
 from sys import version as python_version
 from time import perf_counter
 from typer import Typer
-from zanshinsdk import Client, AlertState, AlertSeverity, __version__ as sdk_version
+from zanshinsdk import Client, AlertState, AlertSeverity, version as sdk_version
 from zanshinsdk.client import ScanTargetKind, ScanTargetAWS, Roles, CONFIG_DIR, CONFIG_FILE
 from zanshinsdk.alerts_history import FilePersistentAlertsIterator
 from zanshinsdk.following_alerts_history import FilePersistentFollowingAlertsIterator
 
-from zanshincli import __version__ as cli_version
+from zanshincli.version import __version__ as cli_version
 
 
 class OrderedCommands(click.Group):
@@ -197,7 +197,7 @@ def version():
     Display the program and Python versions in use.
     """
     typer.echo(f'Zanshin CLI v{cli_version}')
-    typer.echo(f'Zanshin Python SDK v{sdk_version}')
+    typer.echo(f'Zanshin Python SDK v{sdk_version.__version__}')
     typer.echo(f'Python {python_version}')
 
 
@@ -747,12 +747,11 @@ def onboard_organization_aws_organization_scan_target(
         target_accounts: AWSOrgRunTarget = typer.Option(
             None, help="choose which accounts to onboard"),
         exclude_account: Optional[List[str]] = typer.Option(
-            [], help="ID, Name, E-mail or ARN of AWS Account not to be onboarded. "),
+            None, help="ID, Name, E-mail or ARN of AWS Account not to be onboarded"),
         boto3_profile: str = typer.Option(
-            "default", help="Boto3 profile name to use for Onboard AWS Account. If not informed will use \'default\' profile"),
+            None, help="Boto3 profile name to use for Onboard AWS Account"),
         aws_role_name: str = typer.Option("OrganizationAccountAccessRole",
-            help="Name of AWS role that allow access from Management Account to Member accounts.\
-                   If not informed will use OrganizationAccountAccessRole."),
+            help="Name of AWS role that allow access from Management Account to Member accounts"),
         region: str = typer.Argument(...,
                                      help="AWS Region to deploy CloudFormation"),
         organization_id: UUID = typer.Argument(...,
@@ -767,7 +766,10 @@ def onboard_organization_aws_organization_scan_target(
     https://github.com/tenchi-security/zanshin-cli/blob/main/zanshincli/docs/README.md
     """
     client = Client(profile=global_options['profile'])
-    boto3_session = boto3.Session(profile_name=boto3_profile)
+    if boto3_profile:
+        boto3_session = boto3.Session(profile_name=boto3_profile)
+    else:
+        boto3_session = boto3.Session()
 
     # Validate user provided IAM Role Name not ARN
     _validate_role_name(aws_role_name)
@@ -785,6 +787,8 @@ def onboard_organization_aws_organization_scan_target(
                                                           sc['kind'] == ScanTargetKind.AWS]
 
     # Add all accounts found in zanshin organization to be excluded
+    if not exclude_account:
+        exclude_account = []
     exclude_account_list = list(exclude_account)
     for scan_target in organization_aws_scan_targets:
         exclude_account_list.append(scan_target['credential']['account'])

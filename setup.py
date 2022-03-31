@@ -1,8 +1,9 @@
 from pathlib import Path
+from os.path import join
 
 from setuptools import setup
 
-from zanshincli import __version__
+exec(open(join('zanshincli','version.py')).read())
 
 setup(
     name='zanshincli',
@@ -13,7 +14,7 @@ setup(
     version=__version__,
     url='https://github.com/tenchi-security/zanshin-cli',
     license='Apache Software License',
-    install_requires=['zanshinsdk==1.2.2', 'typer==0.3.2', 'prettytable==2.5.0', 'boto3~=1.21.24', 'boto3_type_annotations~=0.3.1'],
+    install_requires=['zanshinsdk==1.2.4', 'typer==0.3.2', 'prettytable==2.5.0', 'boto3~=1.21.24', 'boto3_type_annotations~=0.3.1'],
     tests_require=['pytest>=6.2,<7'],
     setup_requires=['pytest-runner==6.0.0'],
     packages=['zanshincli'],
@@ -38,3 +39,4 @@ setup(
         'console_scripts': ['zanshin=zanshincli.main:main_app']
     }
 )
+# flake8: noqa

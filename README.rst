@@ -1,4 +1,4 @@
-|Coverage badge| |PyPI version shields.io| |PyPI pyversions|
+|Coverage badge|PyPI version shields.io| |PyPI pyversions|
 
 Zanshin CLI
 ===========
@@ -34,11 +34,48 @@ When a new version is available, you can upgrade it with:
 
    pipx upgrade zanshincli
 
-Configuration File
-------------------
+Setting up Credentials
+----------------------
 
-The way the SDK and CLI handles credentials is by using a configuration
-file in the format created by the Python
+There are two ways that the CLI handles credentials. The order of
+evaluation is:
+
+-  `1nd Environment Variables <#environment-variables>`__
+-  `2rd Config File <#config-file>`__
+
+Environment Variables
+~~~~~~~~~~~~~~~~~~~~~
+
+You can use the following Environment Variables to configure Zanshin
+CLI:
+
+-  ``ZANSHIN_API_KEY``: Will setup your Zanshin credentials
+-  ``ZANSHIN_API_URL``: Will define the API URL. Default is
+   ``https://api.zanshin.tenchisecurity.com``
+-  ``ZANSHIN_USER_AGENT``: If you want to overwrite the User Agent when
+   calling Zanshin API
+-  ``HTTP_PROXY | HTTPS_PROXY``: Zanshin SDK uses HTTPX under the hood,
+   checkout the `Environment
+   Variables <https://www.python-httpx.org/environment_variables/#proxies>`__
+   section of their documentation for more use cases
+
+Usage
+^^^^^
+
+.. code:: shell
+
+   export ZANSHIN_API_KEY="eyJhbGciOiJIU..."
+
+..
+
+   ⚠️ These Environment Variables will overwrite anything you set on the
+   Config File.
+
+Config File
+~~~~~~~~~~~
+
+Second is by using a configuration file in the format created by the
+Python
 `RawConfigParser <https://docs.python.org/3/library/configparser.html#configparser.RawConfigParser>`__
 class.
 
@@ -46,8 +83,8 @@ The file is located at ``~/.tenchi/config``, where ``~`` is the `current
 user's home
 directory <https://docs.python.org/3/library/pathlib.html#pathlib.Path.home>`__.
 
-Each section is treated as a configuration profile, and the SDK and CLI
-will look for a section called ``default`` if another is not explicitly
+Each section is treated as a configuration profile, and the CLI will
+look for a section called ``default`` if another is not explicitly
 selected.
 
 These are the supported options:
@@ -57,11 +94,10 @@ These are the supported options:
    portal <https://zanshin.tenchisecurity.com/my-profile>`__.
 -  ``user_agent`` (optional) allows you to override the default
    user-agent header used by the SDK when making API requests.
--  ``api_url`` (optional) directs the SDK and CLI to use a different API
+-  ``api_url`` (optional) directs the SDK to use a different API
    endpoint than the default (https://api.zanshin.tenchisecurity.com).
 
-You can populate the file with the ``zanshin init`` command of the CLI
-tool. This is what a minimal configuration file would look like:
+This is what a minimal configuration file looks like:
 
 .. code:: ini
 
@@ -1199,13 +1235,11 @@ https://github.com/tenchi-security/zanshin-cli/blob/main/zanshincli/docs/README.
 -  ``--target-accounts [ALL|MASTER|MEMBERS|NONE]``: choose which
    accounts to onboard
 -  ``--exclude-account TEXT``: ID, Name, E-mail or ARN of AWS Account
-   not to be onboarded. [default: ]
+   not to be onboarded
 -  ``--boto3-profile TEXT``: Boto3 profile name to use for Onboard AWS
-   Account. If not informed will use 'default' profile [default:
-   default]
+   Account
 -  ``--aws-role-name TEXT``: Name of AWS role that allow access from
-   Management Account to Member accounts. If not informed will use
-   OrganizationAccountAccessRole. [default:
+   Management Account to Member accounts [default:
    OrganizationAccountAccessRole]
 -  ``--help``: Show this message and exit.
 
