@@ -1,7 +1,7 @@
 typer~=0.3.2
 typer-cli~=0.0.12
 prettytable~=2.5.0
-httpx~=0.22.0
+httpx~=0.23.0
 zanshinsdk~=1.2.4
 twine~=3.8.0
 boto3~=1.21.24
