@@ -20,7 +20,9 @@ from sys import version as python_version
 from time import perf_counter
 from typer import Typer
 from zanshinsdk import Client, AlertState, AlertSeverity, __version__ as sdk_version
-from zanshinsdk.client import ScanTargetKind, ScanTargetAWS, Roles, CONFIG_DIR, CONFIG_FILE
+from zanshinsdk.client import ScanTargetKind, ScanTargetAWS, ScanTargetAZURE, \
+    ScanTargetDOMAIN, ScanTargetGCP, ScanTargetHUAWEI, \
+    Roles, CONFIG_DIR, CONFIG_FILE
 from zanshinsdk.alerts_history import FilePersistentAlertsIterator
 from zanshinsdk.following_alerts_history import FilePersistentFollowingAlertsIterator
 
@@ -665,6 +667,16 @@ def organization_scan_target_create(
     Create a new scan target in organization.
     """
     client = Client(profile=global_options['profile'])
+    if kind == ScanTargetKind.AWS:
+        credential = ScanTargetAWS(credential)
+    elif kind == ScanTargetKind.GCP:
+        credential = ScanTargetGCP(credential)
+    elif kind == ScanTargetKind.AZURE:
+        credential = ScanTargetAZURE(credential)
+    elif kind == ScanTargetKind.HUAWEI:
+        credential = ScanTargetHUAWEI(credential)
+    elif kind == ScanTargetKind.DOMAIN:
+        credential = ScanTargetDOMAIN(credential)
     dump_json(client.create_organization_scan_target(organization_id, kind, name, credential, schedule))
 
 
@@ -751,7 +763,7 @@ def onboard_organization_aws_organization_scan_target(
         boto3_profile: str = typer.Option(
             None, help="Boto3 profile name to use for Onboard AWS Account"),
         aws_role_name: str = typer.Option("OrganizationAccountAccessRole",
-            help="Name of AWS role that allow access from Management Account to Member accounts"),
+                                          help="Name of AWS role that allow access from Management Account to Member accounts"),
         region: str = typer.Argument(...,
                                      help="AWS Region to deploy CloudFormation"),
         organization_id: UUID = typer.Argument(...,
@@ -857,6 +869,7 @@ def _validate_role_name(aws_cross_account_role_name: str):
             f"IAM Role Name required. Value {aws_cross_account_role_name} is not a role name.")
     if len(aws_cross_account_role_name) <= 1 or len(aws_cross_account_role_name) >= 65:
         raise ValueError(f"IAM Role Name is invalid.")
+
 
 def _get_aws_accounts_from_organization(boto3_organizations_client: Boto3OrganizationsClient) -> List[AWSAccount]:
     """
