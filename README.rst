@@ -1206,7 +1206,7 @@ https://github.com/tenchi-security/zanshin-sdk-python/blob/main/zanshinsdk/docs/
 **Options**:
 
 -  ``--boto3-profile TEXT``: Boto3 profile name to use for Onboard AWS
-   Account [default: default]
+   Account
 -  ``--help``: Show this message and exit.
 
 ``zanshin organization scan_target onboard_aws_organization``

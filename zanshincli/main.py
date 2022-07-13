@@ -732,7 +732,7 @@ def organization_scan_target_check(
 
 @organization_scan_target_app.command(name='onboard_aws')
 def onboard_organization_aws_scan_target(
-        boto3_profile: str = typer.Option("default", help="Boto3 profile name to use for Onboard AWS Account"),
+        boto3_profile: str = typer.Option(None, help="Boto3 profile name to use for Onboard AWS Account"),
         region: str = typer.Argument(..., help="AWS Region to deploy CloudFormation"),
         organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
         name: str = typer.Argument(..., help="name of the scan target"),
@@ -750,7 +750,12 @@ def onboard_organization_aws_scan_target(
     if len(name) < 3:
         raise ValueError("Scan Target name must be at least 3 characters long")
 
-    dump_json(client.onboard_scan_target(boto3_profile=boto3_profile, region=region,
+    if boto3_profile:
+        boto3_session = boto3.Session(profile_name=boto3_profile)
+    else:
+        boto3_session = boto3.Session()
+
+    dump_json(client.onboard_scan_target(boto3_session=boto3_session, region=region,
               organization_id=organization_id, kind=kind, name=name, credential=credential, schedule=schedule))
 
 

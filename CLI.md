@@ -995,7 +995,7 @@ $ zanshin organization scan_target onboard_aws [OPTIONS] REGION ORGANIZATION_ID 
 
 **Options**:
 
-* `--boto3-profile TEXT`: Boto3 profile name to use for Onboard AWS Account  [default: default]
+* `--boto3-profile TEXT`: Boto3 profile name to use for Onboard AWS Account
 * `--help`: Show this message and exit.
 
 #### `zanshin organization scan_target onboard_aws_organization`
