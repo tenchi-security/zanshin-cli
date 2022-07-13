@@ -162,7 +162,7 @@ def global_options_callback(ctx: typer.Context,
 
         def print_elapsed_time():
             typer.echo(
-                f"zanshin: {global_options['entries']} object(s) processed in"
+                f"zanshin: {global_options['entries']} object(s) processed in "
                 f"{timedelta(seconds=perf_counter() - start_time)}",
                 err=True)
 
