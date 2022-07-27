@@ -139,7 +139,7 @@ def dump_json(out: [Dict, any]) -> None:
 ###################################################
 
 global_options: dict = {'entries': 1}
-main_app: Typer = typer.Typer(cls=OrderedCommands)
+main_app: Typer = typer.Typer()
 
 
 @main_app.callback()
@@ -207,7 +207,7 @@ def version():
 # Account App
 ###################################################
 
-account_app = typer.Typer(cls=OrderedCommands)
+account_app = typer.Typer()
 main_app.add_typer(account_app, name="account",
                    help="Operations on user the API key owner has direct access to")
 
@@ -228,7 +228,7 @@ def account_me():
 # Account Invites App
 ###################################################
 
-invites_app = typer.Typer(cls=OrderedCommands)
+invites_app = typer.Typer()
 account_app.add_typer(invites_app, name="invites",
                       help="Operations on invites from account the API key owner has direct access to")
 
@@ -265,7 +265,7 @@ def account_invite_accept(invite_id: UUID = typer.Argument(..., help="UUID of th
 # Account API key App
 ###################################################
 
-api_key_app = typer.Typer(cls=OrderedCommands)
+api_key_app = typer.Typer()
 account_app.add_typer(api_key_app, name="api_key",
                       help="Operations on API keys from account the API key owner has direct access to")
 
@@ -302,7 +302,7 @@ def account_api_key_delete(api_key_id: UUID = typer.Argument(..., help="UUID of 
 # Organization App
 ###################################################
 
-organization_app = typer.Typer(cls=OrderedCommands)
+organization_app = typer.Typer()
 main_app.add_typer(organization_app, name="organization",
                    help="Operations on organizations the API key owner has direct access to")
 
@@ -343,7 +343,7 @@ def organization_update(
 # Organization Member App
 ###################################################
 
-organization_member_app = typer.Typer(cls=OrderedCommands)
+organization_member_app = typer.Typer()
 organization_app.add_typer(organization_member_app, name="member",
                            help="Operations on members of organization the API key owner has direct access to")
 
@@ -400,7 +400,7 @@ def organization_member_delete(
 # Organization Member Invite App
 ###################################################
 
-organization_member_invite_app = typer.Typer(cls=OrderedCommands)
+organization_member_invite_app = typer.Typer()
 organization_member_app.add_typer(organization_member_invite_app, name="invite",
                                   help="Operations on member invites of organization the API key owner has direct"
                                        "access to")
@@ -471,7 +471,7 @@ def organization_member_invite_resend(
 # Organization Follower App
 ###################################################
 
-organization_follower_app = typer.Typer(cls=OrderedCommands)
+organization_follower_app = typer.Typer()
 organization_app.add_typer(organization_follower_app, name="follower",
                            help="Operations on followers of organization the API key owner has direct access to")
 
@@ -501,7 +501,7 @@ def organization_follower_stop(
 # Organization Follower Request App
 ###################################################
 
-organization_follower_request_app = typer.Typer(cls=OrderedCommands)
+organization_follower_request_app = typer.Typer()
 organization_follower_app.add_typer(organization_follower_request_app, name="request",
                                     help="Operations on follower requests of organization the API key owner has direct"
                                          "access to")
@@ -556,7 +556,7 @@ def organization_follower_request_delete(
 # Organization Following App
 ###################################################
 
-organization_following_app = typer.Typer(cls=OrderedCommands)
+organization_following_app = typer.Typer()
 organization_app.add_typer(organization_following_app, name="following",
                            help="Operations on following of organization the API key owner has direct access to")
 
@@ -586,7 +586,7 @@ def organization_following_stop(
 # Organization Following Request App
 ###################################################
 
-organization_following_request_app = typer.Typer(cls=OrderedCommands)
+organization_following_request_app = typer.Typer()
 organization_following_app.add_typer(organization_following_request_app, name="request",
                                      help="Operations on following requests of organization the API key owner has"
                                           "direct access to")
@@ -641,7 +641,7 @@ def organization_following_request_decline(
 # Organization Scan Target App
 ###################################################
 
-organization_scan_target_app = typer.Typer(cls=OrderedCommands)
+organization_scan_target_app = typer.Typer()
 organization_app.add_typer(organization_scan_target_app, name="scan_target",
                            help="Operations on scan targets from organizations the API key owner has direct access to")
 
@@ -911,7 +911,7 @@ def _get_aws_accounts_from_organization(boto3_organizations_client: Boto3Organiz
 # Organization Scan Target Scan App
 ###################################################
 
-organization_scan_target_scan_app = typer.Typer(cls=OrderedCommands)
+organization_scan_target_scan_app = typer.Typer()
 organization_scan_target_app.add_typer(organization_scan_target_scan_app, name="scan",
                                        help="Operations on scan targets from organizations the API key owner has direct"
                                             "access to")
@@ -970,7 +970,7 @@ def organization_scan_target_scan_get(
 # Alert
 ###################################################
 
-alert_app = typer.Typer(cls=OrderedCommands)
+alert_app = typer.Typer()
 main_app.add_typer(alert_app, name="alert",
                    help="Operations on alerts the API key owner has direct access to")
 
@@ -1141,7 +1141,7 @@ def alert_get(alert_id: UUID = typer.Argument(..., help="UUID of the alert to lo
 # Summary
 ###################################################
 
-summary_app = typer.Typer(cls=OrderedCommands)
+summary_app = typer.Typer()
 main_app.add_typer(summary_app, name="summary",
                    help="Operations on summaries the API key owner has direct access to")
 
