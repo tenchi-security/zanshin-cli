@@ -17,6 +17,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install --upgrade setuptools wheel twine
           pip install -r requirements.txt
+          python setup.py develop
       - name: Build and publish
         env:
           TWINE_USERNAME: __token__
@@ -25,4 +26,4 @@ jobs:
           sed -i 's/__PACKAGE_VERSION__/${{ github.event.release.tag_name }}/g' zanshincli/version.py setup.py
           rm CLI.md
           make CLI.md
-          #make pypi
+#         make pypi
