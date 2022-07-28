@@ -52,12 +52,17 @@ jobs:
           md $HOME\\.tenchi
           echo $'[default]\napi_key = apikey\n' > $HOME\\.tenchi\\config
 
-      - name: Unit test
+      - name: Unit tests
         run: |
           pip install -r requirements.txt
+          make test
+
+      - name: Generate updated documentation
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          pip install pandoc
           rm README.md CLI.md
           make README.md
-          make test
 
       - name: Test coverage
         if: matrix.os == 'ubuntu-latest'
