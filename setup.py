@@ -1,13 +1,6 @@
 from pathlib import Path
-from os.path import join
-import re
 
 from setuptools import setup
-
-def get_version():
-    version_py = join('zanshincli','version.py')
-    regex = re.compile('__version__\s*=\s*[\'\"](?P<version>[\d\.]+)')    
-    return regex.finditer(open(version_py, 'r', encoding='utf8').read()).__next__().group('version')
 
 setup(
     name='zanshincli',
@@ -15,7 +8,7 @@ setup(
     long_description=Path('README.rst').read_text(encoding="utf8"),
     author='Tenchi Security',
     author_email='contact@tenchisecurity.com',
-    version=get_version(),
+    version='__PACKAGE_VERSION__',
     url='https://github.com/tenchi-security/zanshin-cli',
     license='Apache Software License',
     install_requires=['zanshinsdk==1.2.7', 'typer==0.6.1', 'prettytable==3.3.0', 'boto3~=1.24.39', 'boto3_type_annotations~=0.3.1'],

@@ -1,8 +1,9 @@
 name: Upload Python Package
 
 on:
-  release:
-    types: [created]
+#  release:
+#    types: [created]
+  pull_request:
 
 jobs:
   deploy:
@@ -20,4 +21,8 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: |
-          make pypi
+          sed -i 's/__PACKAGE_VERSION__/${{ github.event.release.tag_name }}/g' version.py 
+          sed -i 's/__PACKAGE_VERSION__/${{ github.event.release.tag_name }}/g' setup.py
+          cat version.py
+          cat setup.py
+#          make pypi
