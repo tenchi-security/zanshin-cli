@@ -18,6 +18,7 @@ jobs:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
     name: Test and Coverage
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v2
 
@@ -52,11 +53,17 @@ jobs:
           md $HOME\\.tenchi
           echo $'[default]\napi_key = apikey\n' > $HOME\\.tenchi\\config
 
-      - name: Unit test
+      - name: Unit tests
         run: |
           pip install -r requirements.txt
           make test
-          make README.rst
+
+      - name: Generate updated documentation
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          pip install pandoc
+          rm README.md CLI.md
+          make README.md
 
       - name: Test coverage
         if: matrix.os == 'ubuntu-latest'
