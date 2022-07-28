@@ -49,8 +49,8 @@ jobs:
       - name: Create fake tenchi config on Windows
         if: matrix.os == 'windows-latest'
         run: |
-          md %HOMEPATH%\\.tenchi
-          echo $'[default]\napi_key = apikey\n' > %HOMEPATH%\\.tenchi\\config
+          md $HOME\\.tenchi
+          echo $'[default]\napi_key = apikey\n' > $HOME\\.tenchi\\config
 
       - name: Unit test
         run: |
