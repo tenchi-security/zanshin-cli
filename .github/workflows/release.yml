@@ -1,9 +1,8 @@
 name: Upload Python Package
 
 on:
-  pull_request:
-#  release:
-#    types: [published]
+  release:
+    types: [published]
 
 jobs:
   deploy:
@@ -24,6 +23,5 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: |
           sed -i 's/__PACKAGE_VERSION__/${{ github.event.release.tag_name }}/g' zanshincli/version.py setup.py
-          rm CLI.md
-          make CLI.md
-#         make pypi
+          rm README.md
+          make pypi
