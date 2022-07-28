@@ -9,7 +9,6 @@ from typing import Iterable, Iterator, Dict, Any, Optional, List
 from uuid import UUID
 import boto3
 from boto3_type_annotations.organizations import Client as Boto3OrganizationsClient
-from boto3_type_annotations.sts import Client as Boto3STSClient
 from .awsorgrun import AWSOrgRunTarget, awsorgrun
 
 import typer
@@ -162,7 +161,7 @@ def global_options_callback(ctx: typer.Context,
 
         def print_elapsed_time():
             typer.echo(
-                f"zanshin: {global_options['entries']} object(s) processed in"
+                f"zanshin: {global_options['entries']} object(s) processed in "
                 f"{timedelta(seconds=perf_counter() - start_time)}",
                 err=True)
 
@@ -756,7 +755,8 @@ def onboard_organization_aws_scan_target(
         boto3_session = boto3.Session()
 
     dump_json(client.onboard_scan_target(boto3_session=boto3_session, region=region,
-              organization_id=organization_id, kind=kind, name=name, credential=credential, schedule=schedule))
+                                         organization_id=organization_id, kind=kind, name=name, credential=credential,
+                                         schedule=schedule))
 
 
 @organization_scan_target_app.command(name='onboard_aws_organization')
@@ -857,10 +857,12 @@ def onboard_organization_aws_organization_scan_target(
                   organization_id=organization_id, schedule=schedule)
 
 
-def _sdk_onboard_scan_target(target, aws_account_id, aws_account_name, boto3_session, region, organization_id, schedule):
+def _sdk_onboard_scan_target(target, aws_account_id, aws_account_name, boto3_session, region, organization_id,
+                             schedule):
     client = Client(profile=global_options['profile'])
     account_credential = ScanTargetAWS(aws_account_id)
-    client.onboard_scan_target(boto3_session=boto3_session, region=region, kind=ScanTargetKind.AWS, name=aws_account_name,
+    client.onboard_scan_target(boto3_session=boto3_session, region=region, kind=ScanTargetKind.AWS,
+                               name=aws_account_name,
                                schedule=schedule, organization_id=organization_id, credential=account_credential)
 
 
@@ -873,7 +875,7 @@ def _validate_role_name(aws_cross_account_role_name: str):
         raise ValueError(
             f"IAM Role Name required. Value {aws_cross_account_role_name} is not a role name.")
     if len(aws_cross_account_role_name) <= 1 or len(aws_cross_account_role_name) >= 65:
-        raise ValueError(f"IAM Role Name is invalid.")
+        raise ValueError("IAM Role Name is invalid.")
 
 
 def _get_aws_accounts_from_organization(boto3_organizations_client: Boto3OrganizationsClient) -> List[AWSAccount]:
@@ -893,7 +895,7 @@ def _get_aws_accounts_from_organization(boto3_organizations_client: Boto3Organiz
         aws_accounts_response.append(AWSAccount(
             Id=acc['Id'], Name=acc['Name'], Arn=acc['Arn'], Email=acc['Email']))
 
-    if not 'NextToken' in req_aws_accounts:
+    if 'NextToken' not in req_aws_accounts:
         return aws_accounts_response
 
     while req_aws_accounts['NextToken']:
@@ -902,7 +904,7 @@ def _get_aws_accounts_from_organization(boto3_organizations_client: Boto3Organiz
         for acc in req_aws_accounts['Accounts']:
             aws_accounts_response.append(AWSAccount(
                 Id=acc['Id'], Name=acc['Name'], Arn=acc['Arn'], Email=acc['Email']))
-        if not 'NextToken' in req_aws_accounts:
+        if 'NextToken' not in req_aws_accounts:
             break
     return aws_accounts_response
 

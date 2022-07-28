@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 
-import argparse
 import logging
 import os
 import subprocess
-from enum import Enum, auto
+from enum import Enum
 from sys import stderr
 from typing import Callable, Iterable, Dict, List, Any
 
 import boto3
 import botocore
-
 
 __version__ = "1.0.0"
 
@@ -42,17 +40,18 @@ def awsorgrun(session: boto3.Session, role: str, target: AWSOrgRunTarget, exclud
     :param exclude: accounts not to be onboarded from selection
     :param func: the function to run for all accounts in organization    
     """
-    
+
     org_client = session.client('organizations')
     org_master_id = org_client.describe_organization()['Organization']['MasterAccountId']
 
     if not accounts:
         accounts = list_member_accounts(org_client)
-    
+
     for account in accounts:
         if not account:
             logger.error('no Organizations accounts found!')
-        elif exclude and (account['Name'] in exclude or account['Id'] in exclude or account['Arn'] in exclude or account[
+        elif exclude and (
+                account['Name'] in exclude or account['Id'] in exclude or account['Arn'] in exclude or account[
             'Email'] in exclude):
             logger.info('skipping account {0:s} ({1:s})...'.format(account['Id'], account['Name']))
         elif account['Id'] == org_master_id:
