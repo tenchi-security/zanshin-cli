@@ -39,11 +39,18 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-      - name: Create fake tenchi config
+      - name: Create fake tenchi config on Linux and Mac
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
         run: |
-          mkdir -p /home/runner/.tenchi
-          touch /home/runner/.tenchi/config
-          echo $'[default]\napi_key = apikey\n' > /home/runner/.tenchi/config
+          mkdir -p $HOME/.tenchi
+          touch $HOME/.tenchi/config
+          echo $'[default]\napi_key = apikey\n' > $HOME/.tenchi/config
+
+      - name: Create fake tenchi config on Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          md %HOMEPATH%\\.tenchi
+          echo $'[default]\napi_key = apikey\n' > %HOMEPATH%\\.tenchi\\config
 
       - name: Unit test
         run: |
