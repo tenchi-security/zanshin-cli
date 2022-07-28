@@ -21,7 +21,7 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: |
-          sed -i 's/__PACKAGE_VERSION__/${{ github.event.release.tag_name }}/g' zanshinsdk/version.py setup.py 
+          sed -i 's/__PACKAGE_VERSION__/${{ github.event.release.tag_name }}/g' zanshincli/version.py setup.py 
           cat version.py
           cat setup.py
 #          make pypi
