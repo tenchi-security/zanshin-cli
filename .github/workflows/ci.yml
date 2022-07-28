@@ -55,8 +55,9 @@ jobs:
       - name: Unit test
         run: |
           pip install -r requirements.txt
+          rm README.md CLI.md
+          make README.md
           make test
-          make README.rst
 
       - name: Test coverage
         if: matrix.os == 'ubuntu-latest'
