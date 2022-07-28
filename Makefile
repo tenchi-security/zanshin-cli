@@ -3,7 +3,14 @@ sdist:
 	python setup.py sdist
 
 CLI.md: zanshincli/*.py
+	# Workaround for lack of typer-cli support on new versions
+	pip install typer==0.3.2 typer-cli
+
 	typer --app main_app zanshincli.main utils docs --output CLI.md --name zanshin
+
+	# Workaround for lack of typer-cli support on new versions
+	pip uninstall -y typer-cli
+	pip install typer==0.6.1
 
 README.md: BASE_README.md CLI.md
 	cat BASE_README.md CLI.md > README.md
