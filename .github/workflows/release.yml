@@ -23,5 +23,5 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: |
           sed -i 's/__PACKAGE_VERSION__/${{ github.event.release.tag_name }}/g' zanshincli/version.py setup.py
-          rm README.md
+          rm README.md CLI.md
           make pypi
