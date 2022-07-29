@@ -62,7 +62,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get install -y pandoc
-          rm README.md CLI.md README.rst
+          rm -f README.md CLI.md README.rst
           make README.rst
 
       - name: Test coverage
