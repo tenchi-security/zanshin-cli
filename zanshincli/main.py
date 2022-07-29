@@ -916,7 +916,7 @@ def _get_aws_accounts_from_organization(boto3_organizations_client: Boto3Organiz
 organization_scan_target_scan_app = typer.Typer()
 organization_scan_target_app.add_typer(organization_scan_target_scan_app, name="scan",
                                        help="Operations on scan targets from organizations the API key owner has direct"
-                                            "access to")
+                                            " access to")
 
 
 @organization_scan_target_scan_app.command(name='start')
