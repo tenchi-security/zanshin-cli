@@ -48,5 +48,6 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: |
+          sudo apt-get install -y twine
           make pypitest
           make pypi
