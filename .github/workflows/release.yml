@@ -43,11 +43,19 @@ jobs:
           rm -f README.md CLI.md README.rst
           make README.rst
 
-      - name: Build and publish
+      - name: Build and publish to PyPI Test
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+          TWINE_REPOSITORY_URL: "https://test.pypi.org/legacy/"
         run: |
           sudo apt-get install -y twine
-          make pypitest
+          make pypi
+
+      - name: Build and publish to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+          TWINE_REPOSITORY_URL: "https://upload.pypi.org/legacy/"
+        run: |
           make pypi
