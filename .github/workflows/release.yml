@@ -6,6 +6,8 @@ on:
 
 jobs:
   deploy:
+    name: Test and Deploy to PyPI
+
     runs-on: ubuntu-latest
     
     timeout-minutes: 10
@@ -13,23 +15,38 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-python@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
         with:
           python-version: "3.10"
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install --upgrade setuptools wheel
-          pip install twine pandoc
-          pip install -r requirements.txt
+          python -m pip install --upgrade pip setuptools wheel
+          sed -i 's/__PACKAGE_VERSION__/${{ github.event.release.tag_name }}/g' zanshincli/version.py setup.py
           python setup.py install
+
+      - name: Create fake tenchi config on Linux and Mac
+        run: |
+          mkdir -p $HOME/.tenchi
+          touch $HOME/.tenchi/config
+          echo $'[default]\napi_key = apikey\n' > $HOME/.tenchi/config
+
+      - name: Unit tests
+        run: |
+          pip install -r requirements.txt
+          make test
+
+      - name: Generate updated documentation
+        run: |
+          pip install pandoc
+          rm README.md CLI.md
+          make README.md
 
       - name: Build and publish
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: |
-          sed -i 's/__PACKAGE_VERSION__/${{ github.event.release.tag_name }}/g' zanshincli/version.py setup.py
-          rm README.md CLI.md
+          make pypitest
           make pypi
