@@ -39,8 +39,7 @@ jobs:
 
       - name: Generate updated documentation
         run: |
-          apt update
-          apt install pandoc
+          sudo apt-get install -y pandoc
           rm README.md CLI.md README.s=rst
           make README.rst
 
