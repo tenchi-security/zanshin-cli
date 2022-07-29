@@ -61,9 +61,9 @@ jobs:
       - name: Generate updated documentation
         if: matrix.os == 'ubuntu-latest'
         run: |
-          pip install pandoc
-          rm README.md CLI.md
-          make README.md
+          sudo apt-get install -y pandoc
+          rm README.md CLI.md README.rst
+          make README.rst
 
       - name: Test coverage
         if: matrix.os == 'ubuntu-latest'

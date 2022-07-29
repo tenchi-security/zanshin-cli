@@ -39,9 +39,9 @@ jobs:
 
       - name: Generate updated documentation
         run: |
-          pip install pandoc
-          rm README.md CLI.md
-          make README.md
+          sudo apt-get install -y pandoc
+          rm README.md CLI.md README.s=rst
+          make README.rst
 
       - name: Build and publish
         env:
