@@ -21,8 +21,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install --upgrade setuptools wheel
-          pip install twine pandoc
+          pip install twine
           pip install -r requirements.txt
+          apt update
+          apt install pandoc
+          sed -i 's/__PACKAGE_VERSION__/${{ github.event.release.tag_name }}/g' zanshincli/version.py setup.py
           python setup.py install
 
       - name: Build and publish
@@ -30,6 +33,5 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: |
-          sed -i 's/__PACKAGE_VERSION__/${{ github.event.release.tag_name }}/g' zanshincli/version.py setup.py
           rm README.md CLI.md
           make pypi
