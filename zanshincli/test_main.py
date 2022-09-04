@@ -418,4 +418,3 @@ class TestStringMethods(unittest.TestCase):
     #     for acc_id in mock_aws_accounts_ids:
     #         organizations.remove_account_from_organization(AccountId=acc_id)
     #     organizations.delete_organization()
-
