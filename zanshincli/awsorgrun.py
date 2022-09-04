@@ -33,12 +33,12 @@ def awsorgrun(session: boto3.Session, role: str, target: AWSOrgRunTarget, exclud
               **kwargs: Any) -> None:
     """
     Method that runs a given funcion in all AWS accounts from organization.
-    
+
     :param session: boto3 session used to assume role in other accounts
     :param role: role name to assume in other accounts
     :param target: specify the target accounts, that can be MASTER, MEMBERS or ALL
     :param exclude: accounts not to be onboarded from selection
-    :param func: the function to run for all accounts in organization    
+    :param func: the function to run for all accounts in organization
     """
 
     org_client = session.client('organizations')
