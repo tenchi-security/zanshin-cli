@@ -9,7 +9,7 @@ from typing import Iterable, Iterator, Dict, Any, Optional, List
 from uuid import UUID
 import boto3
 from boto3_type_annotations.organizations import Client as Boto3OrganizationsClient
-from .awsorgrun import AWSOrgRunTarget, awsorgrun
+from awsorgrun import AWSOrgRunTarget, awsorgrun
 
 import typer
 import click
@@ -26,6 +26,14 @@ from zanshinsdk.alerts_history import FilePersistentAlertsIterator
 from zanshinsdk.following_alerts_history import FilePersistentFollowingAlertsIterator
 
 from zanshincli.version import __version__ as cli_version
+
+# Alert states that the user can set.
+class AlertStateSetable(str, Enum):
+    OPEN = "OPEN"
+    IN_PROGRESS = "IN_PROGRESS"
+    RISK_ACCEPTED = "RISK_ACCEPTED"
+    MITIGATING_CONTROL = "MITIGATING_CONTROL"
+    FALSE_POSITIVE = "FALSE_POSITIVE"
 
 
 class OrderedCommands(click.Group):
@@ -1137,6 +1145,22 @@ def alert_get(alert_id: UUID = typer.Argument(..., help="UUID of the alert to lo
     else:
         client = Client(profile=global_options['profile'])
         typer.echo(dumps(client.get_alert(alert_id), indent=4))
+
+@alert_app.command(name='update')
+def alert_update(organization_id: UUID = typer.Argument(..., help="UUID of the organization that owns the alert"),
+                 scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target associated with the alert"),
+                 alert_id: UUID = typer.Argument(..., help="UUID of the alert"),
+                 state: Optional[AlertStateSetable] = typer.Option(None, help="New alert state"),
+                 labels: Optional[List[str]] = typer.Option(None, help="Custom label(s) for the alert"),
+                 comment: Optional[str] = typer.Option(None, help="A comment when closing the alert with RISK_ACCEPTED, FALSE_POSITIVE, MITIGATING_CONTROL")):
+
+    """
+    Updates the alert.
+    """
+
+    client = Client(profile=global_options['profile'])
+    typer.echo(client.update_alert(organization_id, scan_target_id, alert_id, state, labels, comment))
+
 
 
 ###################################################
