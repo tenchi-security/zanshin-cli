@@ -9,7 +9,7 @@ from typing import Iterable, Iterator, Dict, Any, Optional, List
 from uuid import UUID
 import boto3
 from boto3_type_annotations.organizations import Client as Boto3OrganizationsClient
-from awsorgrun import AWSOrgRunTarget, awsorgrun
+from .awsorgrun import AWSOrgRunTarget, awsorgrun
 
 import typer
 import click
