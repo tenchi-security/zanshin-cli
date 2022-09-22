@@ -227,6 +227,7 @@ $ zanshin alert [OPTIONS] COMMAND [ARGS]...
 * `list_grouped_following`: List grouped following alerts from a given...
 * `list_history`: List alerts from a given organization, with...
 * `list_history_following`: List alerts from a given organization, with...
+* `update`: Updates the alert.
 
 ### `zanshin alert get`
 
@@ -265,7 +266,7 @@ $ zanshin alert list [OPTIONS] ORGANIZATION_ID
 **Options**:
 
 * `--scan-target-id UUID`: Only list alerts from the specifiedscan targets.
-* `--states [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED]
+* `--states [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
 * `--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with the specifiedseverities  [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
 * `--help`: Show this message and exit.
 
@@ -286,7 +287,7 @@ $ zanshin alert list_following [OPTIONS] ORGANIZATION_ID
 **Options**:
 
 * `--following-ids UUID`: Only list alerts from the specifiedscan targets.
-* `--states [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED]
+* `--states [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
 * `--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with thespecified severities  [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
 * `--help`: Show this message and exit.
 
@@ -307,7 +308,7 @@ $ zanshin alert list_grouped [OPTIONS] ORGANIZATION_ID
 **Options**:
 
 * `--scan-target-id UUID`: Only list alerts from the specifiedscan targets.
-* `--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED]
+* `--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
 * `--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with the specifiedseverities  [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
 * `--help`: Show this message and exit.
 
@@ -328,7 +329,7 @@ $ zanshin alert list_grouped_following [OPTIONS] ORGANIZATION_ID
 **Options**:
 
 * `--following-ids UUID`: Only list alerts from thespecified scan targets.
-* `--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED]
+* `--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
 * `--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with the specified severities  [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
 * `--help`: Show this message and exit.
 
@@ -372,6 +373,29 @@ $ zanshin alert list_history_following [OPTIONS] ORGANIZATION_ID
 * `--following-ids UUID`: Only list alerts from the specifiedscan targets.
 * `--cursor TEXT`: Cursor.
 * `--persist / --no-persist`: Persist.  [default: False]
+* `--help`: Show this message and exit.
+
+### `zanshin alert update`
+
+Updates the alert.
+
+**Usage**:
+
+```console
+$ zanshin alert update [OPTIONS] ORGANIZATION_ID SCAN_TARGET_ID ALERT_ID
+```
+
+**Arguments**:
+
+* `ORGANIZATION_ID`: UUID of the organization that owns the alert  [required]
+* `SCAN_TARGET_ID`: UUID of the scan target associated with the alert  [required]
+* `ALERT_ID`: UUID of the alert  [required]
+
+**Options**:
+
+* `--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
+* `Custom label(s) for the alert TEXT`
+* `A comment when closing the alert with RISK_ACCEPTED, FALSE_POSITIVE, MITIGATING_CONTROL TEXT`
 * `--help`: Show this message and exit.
 
 ## `zanshin init`
@@ -1017,13 +1041,13 @@ Create a new scan target in organization.
 **Usage**:
 
 ```console
-$ zanshin organization scan_target create [OPTIONS] ORGANIZATION_ID KIND:[AWS|GCP|AZURE|HUAWEI|DOMAIN] NAME CREDENTIAL [SCHEDULE]
+$ zanshin organization scan_target create [OPTIONS] ORGANIZATION_ID KIND:[AWS|GCP|AZURE|HUAWEI|DOMAIN|ORACLE] NAME CREDENTIAL [SCHEDULE]
 ```
 
 **Arguments**:
 
 * `ORGANIZATION_ID`: UUID of the organization  [required]
-* `KIND:[AWS|GCP|AZURE|HUAWEI|DOMAIN]`: kind of the scan target  [required]
+* `KIND:[AWS|GCP|AZURE|HUAWEI|DOMAIN|ORACLE]`: kind of the scan target  [required]
 * `NAME`: name of the scan target  [required]
 * `CREDENTIAL`: credential of the scan target  [required]
 * `[SCHEDULE]`: schedule of the scan target  [default: 0 0 * * *]
@@ -1141,7 +1165,7 @@ $ zanshin organization scan_target onboard_aws_organization [OPTIONS] REGION ORG
 
 #### `zanshin organization scan_target scan`
 
-Operations on scan targets from organizations the API key owner has directaccess to
+Operations on scan targets from organizations the API key owner has direct access to
 
 **Usage**:
 
