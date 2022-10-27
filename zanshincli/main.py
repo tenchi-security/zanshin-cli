@@ -930,13 +930,14 @@ organization_scan_target_app.add_typer(organization_scan_target_scan_app, name="
 @organization_scan_target_scan_app.command(name='start')
 def organization_scan_target_scan_start(
         organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
-        scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target")
+        scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target"),
+        force: bool = typer.Option(False, help="Whether to force running a scan target that has state INVALID_CREDENTIAL or NEW")
 ):
     """
     Starts a scan on the specified scan target.
     """
     client = Client(profile=global_options['profile'])
-    dump_json(client.start_organization_scan_target_scan(organization_id, scan_target_id))
+    dump_json(client.start_organization_scan_target_scan(organization_id, scan_target_id, force))
 
 
 @organization_scan_target_scan_app.command(name='stop')
