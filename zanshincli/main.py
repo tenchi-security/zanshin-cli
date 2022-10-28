@@ -19,13 +19,13 @@ from sys import version as python_version
 from time import perf_counter
 from typer import Typer
 from zanshinsdk import Client, AlertState, AlertSeverity, __version__ as sdk_version
-from zanshinsdk.client import ScanTargetKind, ScanTargetAWS, ScanTargetAZURE, \
-    ScanTargetDOMAIN, ScanTargetGCP, ScanTargetHUAWEI, \
-    Roles, CONFIG_DIR, CONFIG_FILE
+from zanshinsdk.client import ScanTargetKind, ScanTargetSchedule, ScanTargetAWS, ScanTargetAZURE, \
+    ScanTargetDOMAIN, ScanTargetGCP, ScanTargetHUAWEI, Roles, CONFIG_DIR, CONFIG_FILE
 from zanshinsdk.alerts_history import FilePersistentAlertsIterator
 from zanshinsdk.following_alerts_history import FilePersistentFollowingAlertsIterator
 
 from zanshincli.version import __version__ as cli_version
+
 
 # Alert states that the user can set.
 class AlertStateSetable(str, Enum):
@@ -668,7 +668,7 @@ def organization_scan_target_create(
         kind: ScanTargetKind = typer.Argument(..., help="kind of the scan target"),
         name: str = typer.Argument(..., help="name of the scan target"),
         credential: str = typer.Argument(..., help="credential of the scan target"),
-        schedule: str = typer.Argument("0 0 * * *", help="schedule of the scan target")
+        schedule: ScanTargetSchedule = typer.Argument(ScanTargetSchedule.TWENTY_FOUR_HOURS, help="schedule of the scan target")
 ):
     """
     Create a new scan target in organization.
@@ -704,7 +704,7 @@ def organization_scan_target_update(
         organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
         scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target"),
         name: Optional[str] = typer.Argument(None, help="name of the scan target"),
-        schedule: Optional[str] = typer.Argument(None, help="schedule of the scan target")
+        schedule: Optional[ScanTargetSchedule] = typer.Argument(None, help="schedule of the scan target")
 ):
     """
     Update scan target of organization.
@@ -744,7 +744,7 @@ def onboard_organization_aws_scan_target(
         organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
         name: str = typer.Argument(..., help="name of the scan target"),
         credential: str = typer.Argument(..., help="credential of the scan target"),
-        schedule: str = typer.Argument("0 0 * * *", help="schedule of the scan target")
+        schedule: ScanTargetSchedule = typer.Argument(ScanTargetSchedule.TWENTY_FOUR_HOURS, help="schedule of the scan target")
 ):
     """
     Create a new scan target in organization and perform onboard. Requires boto3 and correct AWS IAM Privileges.
@@ -781,8 +781,8 @@ def onboard_organization_aws_organization_scan_target(
                                      help="AWS Region to deploy CloudFormation"),
         organization_id: UUID = typer.Argument(...,
                                                help="UUID of the organization"),
-        schedule: str = typer.Argument(
-            "0 0 * * *", help="schedule of the scan target")
+        schedule: ScanTargetSchedule = typer.Argument(
+            ScanTargetSchedule.TWENTY_FOUR_HOURS, help="schedule of the scan target")
 ):
     """
     For each of selected accounts in AWS Organization, creates a new Scan Target in informed zanshin organization
@@ -1147,21 +1147,21 @@ def alert_get(alert_id: UUID = typer.Argument(..., help="UUID of the alert to lo
         client = Client(profile=global_options['profile'])
         typer.echo(dumps(client.get_alert(alert_id), indent=4))
 
+
 @alert_app.command(name='update')
 def alert_update(organization_id: UUID = typer.Argument(..., help="UUID of the organization that owns the alert"),
                  scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target associated with the alert"),
                  alert_id: UUID = typer.Argument(..., help="UUID of the alert"),
                  state: Optional[AlertStateSetable] = typer.Option(None, help="New alert state"),
                  labels: Optional[List[str]] = typer.Option(None, help="Custom label(s) for the alert"),
-                 comment: Optional[str] = typer.Option(None, help="A comment when closing the alert with RISK_ACCEPTED, FALSE_POSITIVE, MITIGATING_CONTROL")):
-
+                 comment: Optional[str] = typer.Option(None,
+                                                       help="A comment when closing the alert with RISK_ACCEPTED, FALSE_POSITIVE, MITIGATING_CONTROL")):
     """
     Updates the alert.
     """
 
     client = Client(profile=global_options['profile'])
     typer.echo(client.update_alert(organization_id, scan_target_id, alert_id, state, labels, comment))
-
 
 
 ###################################################
