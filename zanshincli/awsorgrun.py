@@ -54,6 +54,8 @@ def awsorgrun(session: boto3.Session, role: str, target: AWSOrgRunTarget, exclud
                 account['Name'] in exclude or account['Id'] in exclude or account['Arn'] in exclude or account[
             'Email'] in exclude):
             logger.info('skipping account {0:s} ({1:s})...'.format(account['Id'], account['Name']))
+        elif account['Status'] == 'SUSPENDED':
+            logger.info('skipping account {0:s} ({1:s}) because it is in SUSPENDED state'.format(account['Id'], account['Name']))
         elif account['Id'] == org_master_id:
             if target is AWSOrgRunTarget.ALL or target is AWSOrgRunTarget.MASTER:
                 logger.info('found master account {0:s} ({1:s})'.format(account['Id'], account['Name']))
