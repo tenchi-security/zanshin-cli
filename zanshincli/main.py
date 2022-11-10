@@ -18,7 +18,7 @@ from prettytable import PrettyTable
 from sys import version as python_version
 from time import perf_counter
 from typer import Typer
-from zanshinsdk import Client, AlertState, AlertSeverity, __version__ as sdk_version
+from zanshinsdk import Client, AlertState, AlertSeverity, Languages, AlertsOrderOpts, SortOpts, __version__ as sdk_version
 from zanshinsdk.client import ScanTargetKind, ScanTargetSchedule, ScanTargetAWS, ScanTargetAZURE, \
     ScanTargetDOMAIN, ScanTargetGCP, ScanTargetHUAWEI, Roles, CONFIG_DIR, CONFIG_FILE
 from zanshinsdk.alerts_history import FilePersistentAlertsIterator
@@ -988,16 +988,26 @@ main_app.add_typer(alert_app, name="alert",
 
 @alert_app.command(name='list')
 def alert_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
-               scan_target_id: Optional[List[UUID]] = typer.Option(None,
+                scan_target_id: Optional[List[UUID]] = typer.Option(None,
                                                                    help="Only list alerts from the specified"
                                                                         "scan targets."),
-               states: Optional[List[AlertState]] = typer.Option(
+                states: Optional[List[AlertState]] = typer.Option(
                    [x.value for x in AlertState if x != AlertState.CLOSED],
                    help="Only list alerts in the specified states.", case_sensitive=False),
-               severity: Optional[List[AlertSeverity]] = typer.Option([x.value for x in AlertSeverity],
+                severity: Optional[List[AlertSeverity]] = typer.Option([x.value for x in AlertSeverity],
                                                                       help="Only list alerts with the specified"
                                                                            "severities",
                                                                       case_sensitive=False),
+                language: Optional[Languages] = typer.Option(Languages.EN_US.value,
+                                                            help="Show alert titles in the specified language",
+                                                            case_sensitive=False),
+                created_at_start: Optional[str] = typer.Option(None, help="Date created starts at (format YYYY-MM-DDTHH:MM:SS)"),
+                created_at_end: Optional[str] = typer.Option(None, help="Date created ends at (format YYYY-MM-DDTHH:MM:SS)"),
+                updated_at_start: Optional[str] = typer.Option(None, help="Date updated starts at (format YYYY-MM-DDTHH:MM:SS)"),
+                updated_at_end: Optional[str] = typer.Option(None, help="Date updated ends at (format YYYY-MM-DDTHH:MM:SS)"),
+                search: Optional[str] = typer.Option("", help="Text to search for in the alerts"),
+                sort: Optional[SortOpts] = typer.Option("desc", help="Sort order"),
+                order: Optional[AlertsOrderOpts] = typer.Option([x.value for x in AlertsOrderOpts], help="")
                ):
     """
     List alerts from a given organization, with optional filters by scan target, state or severity.
@@ -1005,7 +1015,12 @@ def alert_list(organization_id: UUID = typer.Argument(..., help="UUID of the org
     client = Client(profile=global_options['profile'])
     output_iterable(
         client.iter_alerts(organization_id=organization_id, scan_target_ids=scan_target_id, states=states,
-                           severities=severity)
+                           severities=severity, language=language,
+                           created_at_start=created_at_start,
+                           created_at_end=created_at_end,
+                           updated_at_start=updated_at_start,
+                           updated_at_end=updated_at_end,
+                           search=search, sort=sort, order=order)
     )
 
 
