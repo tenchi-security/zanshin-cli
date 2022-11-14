@@ -268,6 +268,14 @@ $ zanshin alert list [OPTIONS] ORGANIZATION_ID
 * `--scan-target-id UUID`: Only list alerts from the specifiedscan targets.
 * `--states [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
 * `--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with the specifiedseverities  [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
+* `--language [pt-BR|en-US]`: Show alert titles in the specified language  [default: en-US]
+* `--created-at-start TEXT`: Date created starts at (format YYYY-MM-DDTHH:MM:SS)
+* `--created-at-end TEXT`: Date created ends at (format YYYY-MM-DDTHH:MM:SS)
+* `--updated-at-start TEXT`: Date updated starts at (format YYYY-MM-DDTHH:MM:SS)
+* `--updated-at-end TEXT`: Date updated ends at (format YYYY-MM-DDTHH:MM:SS)
+* `--search TEXT`: Text to search for in the alerts  [default: ]
+* `--sort [asc|desc]`: Sort order  [default: desc]
+* `--order [scanTargetId|resource|rule|severity|state|createdAt|updatedAt]`: [default: scanTargetId, resource, rule, severity, state, createdAt, updatedAt]
 * `--help`: Show this message and exit.
 
 ### `zanshin alert list_following`
@@ -393,9 +401,9 @@ $ zanshin alert update [OPTIONS] ORGANIZATION_ID SCAN_TARGET_ID ALERT_ID
 
 **Options**:
 
-* `--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
-* `Custom label(s) for the alert TEXT`
-* `A comment when closing the alert with RISK_ACCEPTED, FALSE_POSITIVE, MITIGATING_CONTROL TEXT`
+* `--state [OPEN|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE]`: New alert state
+* `--labels TEXT`: Custom label(s) for the alert
+* `--comment TEXT`: A comment when closing the alert with RISK_ACCEPTED, FALSE_POSITIVE, MITIGATING_CONTROL
 * `--help`: Show this message and exit.
 
 ## `zanshin init`
@@ -1041,7 +1049,7 @@ Create a new scan target in organization.
 **Usage**:
 
 ```console
-$ zanshin organization scan_target create [OPTIONS] ORGANIZATION_ID KIND:[AWS|GCP|AZURE|HUAWEI|DOMAIN|ORACLE] NAME CREDENTIAL [SCHEDULE]
+$ zanshin organization scan_target create [OPTIONS] ORGANIZATION_ID KIND:[AWS|GCP|AZURE|HUAWEI|DOMAIN|ORACLE] NAME CREDENTIAL [SCHEDULE]:[1h|6h|12h|24h|7d]
 ```
 
 **Arguments**:
@@ -1050,7 +1058,7 @@ $ zanshin organization scan_target create [OPTIONS] ORGANIZATION_ID KIND:[AWS|GC
 * `KIND:[AWS|GCP|AZURE|HUAWEI|DOMAIN|ORACLE]`: kind of the scan target  [required]
 * `NAME`: name of the scan target  [required]
 * `CREDENTIAL`: credential of the scan target  [required]
-* `[SCHEDULE]`: schedule of the scan target  [default: 0 0 * * *]
+* `[SCHEDULE]:[1h|6h|12h|24h|7d]`: schedule of the scan target  [default: 24h]
 
 **Options**:
 
@@ -1120,7 +1128,7 @@ Checkout the required AWS IAM privileges here https://github.com/tenchi-security
 **Usage**:
 
 ```console
-$ zanshin organization scan_target onboard_aws [OPTIONS] REGION ORGANIZATION_ID NAME CREDENTIAL [SCHEDULE]
+$ zanshin organization scan_target onboard_aws [OPTIONS] REGION ORGANIZATION_ID NAME CREDENTIAL [SCHEDULE]:[1h|6h|12h|24h|7d]
 ```
 
 **Arguments**:
@@ -1129,7 +1137,7 @@ $ zanshin organization scan_target onboard_aws [OPTIONS] REGION ORGANIZATION_ID 
 * `ORGANIZATION_ID`: UUID of the organization  [required]
 * `NAME`: name of the scan target  [required]
 * `CREDENTIAL`: credential of the scan target  [required]
-* `[SCHEDULE]`: schedule of the scan target  [default: 0 0 * * *]
+* `[SCHEDULE]:[1h|6h|12h|24h|7d]`: schedule of the scan target  [default: 24h]
 
 **Options**:
 
@@ -1146,14 +1154,14 @@ https://github.com/tenchi-security/zanshin-cli/blob/main/zanshincli/docs/README.
 **Usage**:
 
 ```console
-$ zanshin organization scan_target onboard_aws_organization [OPTIONS] REGION ORGANIZATION_ID [SCHEDULE]
+$ zanshin organization scan_target onboard_aws_organization [OPTIONS] REGION ORGANIZATION_ID [SCHEDULE]:[1h|6h|12h|24h|7d]
 ```
 
 **Arguments**:
 
 * `REGION`: AWS Region to deploy CloudFormation  [required]
 * `ORGANIZATION_ID`: UUID of the organization  [required]
-* `[SCHEDULE]`: schedule of the scan target  [default: 0 0 * * *]
+* `[SCHEDULE]:[1h|6h|12h|24h|7d]`: schedule of the scan target  [default: 24h]
 
 **Options**:
 
@@ -1240,6 +1248,7 @@ $ zanshin organization scan_target scan start [OPTIONS] ORGANIZATION_ID SCAN_TAR
 
 **Options**:
 
+* `--force / --no-force`: Whether to force running a scan target that has state INVALID_CREDENTIAL or NEW  [default: False]
 * `--help`: Show this message and exit.
 
 ##### `zanshin organization scan_target scan stop`
@@ -1268,7 +1277,7 @@ Update scan target of organization.
 **Usage**:
 
 ```console
-$ zanshin organization scan_target update [OPTIONS] ORGANIZATION_ID SCAN_TARGET_ID [NAME] [SCHEDULE]
+$ zanshin organization scan_target update [OPTIONS] ORGANIZATION_ID SCAN_TARGET_ID [NAME] [SCHEDULE]:[1h|6h|12h|24h|7d]
 ```
 
 **Arguments**:
@@ -1276,7 +1285,7 @@ $ zanshin organization scan_target update [OPTIONS] ORGANIZATION_ID SCAN_TARGET_
 * `ORGANIZATION_ID`: UUID of the organization  [required]
 * `SCAN_TARGET_ID`: UUID of the scan target  [required]
 * `[NAME]`: name of the scan target
-* `[SCHEDULE]`: schedule of the scan target
+* `[SCHEDULE]:[1h|6h|12h|24h|7d]`: schedule of the scan target
 
 **Options**:
 

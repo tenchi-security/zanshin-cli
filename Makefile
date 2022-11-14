@@ -10,7 +10,7 @@ CLI.md: zanshincli/*.py
 
 	# Workaround for lack of typer-cli support on new versions
 	pip uninstall -y typer-cli
-	pip install typer==0.6.1
+	pip install typer==0.7.0
 
 README.md: BASE_README.md CLI.md
 	cat BASE_README.md CLI.md > README.md
