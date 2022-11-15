@@ -146,7 +146,7 @@ def dump_json(out: [Dict, any]) -> None:
 ###################################################
 
 global_options: dict = {'entries': 1}
-main_app: Typer = typer.Typer()
+main_app: Typer = typer.Typer(name="zanshin", no_args_is_help=True)
 
 
 @main_app.callback()
