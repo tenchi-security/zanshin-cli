@@ -1006,8 +1006,8 @@ def alert_list(organization_id: UUID = typer.Argument(..., help="UUID of the org
                 updated_at_start: Optional[str] = typer.Option(None, help="Date updated starts at (format YYYY-MM-DDTHH:MM:SS)"),
                 updated_at_end: Optional[str] = typer.Option(None, help="Date updated ends at (format YYYY-MM-DDTHH:MM:SS)"),
                 search: Optional[str] = typer.Option("", help="Text to search for in the alerts"),
-                sort: Optional[SortOpts] = typer.Option("desc", help="Sort order"),
-                order: Optional[AlertsOrderOpts] = typer.Option([x.value for x in AlertsOrderOpts], help="")
+                sort: Optional[SortOpts] = typer.Option(SortOpts.DESC, help="Sort order"),
+                order: Optional[AlertsOrderOpts] = typer.Option(AlertsOrderOpts.SEVERITY, help="Field to sort results on")
                ):
     """
     List alerts from a given organization, with optional filters by scan target, state or severity.
@@ -1028,14 +1028,22 @@ def alert_list(organization_id: UUID = typer.Argument(..., help="UUID of the org
 def alert_following_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
                          following_ids: Optional[List[UUID]] = typer.Option(None,
                                                                             help="Only list alerts from the specified"
-                                                                                 "scan targets."),
+                                                                                 " scan targets."),
                          states: Optional[List[AlertState]] = typer.Option(
                              [x.value for x in AlertState if x != AlertState.CLOSED],
                              help="Only list alerts in the specified states.", case_sensitive=False),
                          severity: Optional[List[AlertSeverity]] = typer.Option([x.value for x in AlertSeverity],
                                                                                 help="Only list alerts with the"
-                                                                                     "specified severities",
-                                                                                case_sensitive=False)
+                                                                                     " specified severities",
+                                                                                case_sensitive=False),
+                         created_at_start: Optional[str] = typer.Option(None, help="Date created starts at (format YYYY-MM-DDTHH:MM:SS)"),
+                         created_at_end: Optional[str] = typer.Option(None, help="Date created ends at (format YYYY-MM-DDTHH:MM:SS)"),
+                         updated_at_start: Optional[str] = typer.Option(None, help="Date updated starts at (format YYYY-MM-DDTHH:MM:SS)"),
+                         updated_at_end: Optional[str] = typer.Option(None, help="Date updated ends at (format YYYY-MM-DDTHH:MM:SS)"),
+                         search: Optional[str] = typer.Option("", help="Text to search for in the alerts"),
+                         sort: Optional[SortOpts] = typer.Option(SortOpts.DESC, help="Sort order"),
+                         order: Optional[AlertsOrderOpts] = typer.Option(AlertsOrderOpts.SEVERITY, 
+                                                                         help="Field to sort results on")
                          ):
     """
     List following alerts from a given organization, with optional filters by following ids, state or severity.
@@ -1043,7 +1051,9 @@ def alert_following_list(organization_id: UUID = typer.Argument(..., help="UUID 
     client = Client(profile=global_options['profile'])
     output_iterable(
         client.iter_following_alerts(organization_id=organization_id, following_ids=following_ids, states=states,
-                                     severities=severity)
+                                     created_at_start=created_at_start, created_at_end=created_at_end,
+                                     updated_at_start=updated_at_start, updated_at_end=updated_at_end,
+                                     severities=severity, search=search, sort=sort, order=order)
     )
 
 
