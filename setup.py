@@ -11,7 +11,7 @@ setup(
     version='__PACKAGE_VERSION__',
     url='https://github.com/tenchi-security/zanshin-cli',
     license='Apache Software License',
-    install_requires=['zanshinsdk==1.3.6', 'typer[all]==0.7.0', 'prettytable==3.5.0', 'boto3~=1.26.8', 'boto3_type_annotations~=0.3.1'],
+    install_requires=['zanshinsdk==1.5.0', 'typer[all]==0.7.0', 'prettytable==3.5.0', 'boto3~=1.26.8', 'boto3_type_annotations~=0.3.1'],
     tests_require=['pytest==7.2.0', 'moto[organizations,sts,s3]==4.0.8'],
     setup_requires=['pytest-runner==6.0.0'],
     packages=['zanshincli'],
