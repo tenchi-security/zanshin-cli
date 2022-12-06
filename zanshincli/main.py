@@ -1006,7 +1006,7 @@ def alert_list(organization_id: UUID = typer.Argument(..., help="UUID of the org
                                                                    help="Only list alerts from the specified"
                                                                         "scan targets."),
                 states: Optional[List[AlertState]] = typer.Option(
-                   [x.value for x in AlertState if x != AlertState.CLOSED],
+                   [x.value for x in AlertState if x != AlertState.CLOSED and x != AlertState.ACTIVE],
                    help="Only list alerts in the specified states.", case_sensitive=False),
                 severity: Optional[List[AlertSeverity]] = typer.Option([x.value for x in AlertSeverity],
                                                                       help="Only list alerts with the specified"
@@ -1044,7 +1044,7 @@ def alert_following_list(organization_id: UUID = typer.Argument(..., help="UUID 
                                                                             help="Only list alerts from the specified"
                                                                                  " scan targets."),
                          states: Optional[List[AlertState]] = typer.Option(
-                             [x.value for x in AlertState if x != AlertState.CLOSED],
+                             [x.value for x in AlertState if x != AlertState.CLOSED and x != AlertState.ACTIVE],
                              help="Only list alerts in the specified states.", case_sensitive=False),
                          severity: Optional[List[AlertSeverity]] = typer.Option([x.value for x in AlertSeverity],
                                                                                 help="Only list alerts with the"
@@ -1133,7 +1133,7 @@ def grouped_alert_list(organization_id: UUID = typer.Argument(..., help="UUID of
                                                                            help="Only list alerts from the specified"
                                                                                 "scan targets."),
                        state: Optional[List[AlertState]] = typer.Option(
-                           [x.value for x in AlertState if x != AlertState.CLOSED],
+                           [x.value for x in AlertState if x != AlertState.CLOSED and x != AlertState.ACTIVE],
                            help="Only list alerts in the specified states.", case_sensitive=False),
                        severity: Optional[List[AlertSeverity]] = typer.Option([x.value for x in AlertSeverity],
                                                                               help="Only list alerts with the specified"
@@ -1154,7 +1154,7 @@ def grouped_alert_following_list(organization_id: UUID = typer.Argument(..., hel
                                                                                     help="Only list alerts from the"
                                                                                          "specified scan targets."),
                                  state: Optional[List[AlertState]] = typer.Option(
-                                     [x.value for x in AlertState if x != AlertState.CLOSED],
+                                     [x.value for x in AlertState if x != AlertState.CLOSED and x != AlertState.ACTIVE],
                                      help="Only list alerts in the specified states.", case_sensitive=False),
                                  severity: Optional[List[AlertSeverity]] = typer.Option(
                                      [x.value for x in AlertSeverity],
