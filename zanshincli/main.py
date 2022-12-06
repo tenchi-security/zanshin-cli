@@ -7,23 +7,25 @@ from json import dumps
 from stat import S_IRUSR, S_IWUSR
 from typing import Iterable, Iterator, Dict, Any, Optional, List
 from uuid import UUID
+from sys import version as python_version, stderr
+from time import perf_counter
+import logging
+
 import boto3
 from boto3_type_annotations.organizations import Client as Boto3OrganizationsClient
-from .awsorgrun import AWSOrgRunTarget, awsorgrun
-
 import typer
 import click
 from click import Context
 from prettytable import PrettyTable
-from sys import version as python_version
-from time import perf_counter
 from typer import Typer
+
 from zanshinsdk import Client, AlertState, AlertSeverity, Languages, AlertsOrderOpts, SortOpts, __version__ as sdk_version
 from zanshinsdk.client import ScanTargetKind, ScanTargetSchedule, ScanTargetAWS, ScanTargetAZURE, \
     ScanTargetDOMAIN, ScanTargetGCP, ScanTargetHUAWEI, Roles, CONFIG_DIR, CONFIG_FILE
 from zanshinsdk.alerts_history import FilePersistentAlertsIterator
 from zanshinsdk.following_alerts_history import FilePersistentFollowingAlertsIterator
 
+from .awsorgrun import AWSOrgRunTarget, awsorgrun
 from zanshincli.version import __version__ as cli_version
 
 
@@ -157,7 +159,8 @@ def global_options_callback(ctx: typer.Context,
                             output_format: OutputFormat = typer.Option(OutputFormat.JSON, '--format',
                                                                        help="Output format to use for list operations",
                                                                        case_sensitive=False),
-                            verbose: bool = typer.Option(True, help="Print more information to stderr")):
+                            verbose: bool = typer.Option(True, help="Print more information to stderr"),
+                            debug: bool = typer.Option(False, help="Enable debug logging in the SDK")):
     """
     Command-line utility to interact with the Zanshin SaaS service offered by Tenchi Security
     (https://tenchisecurity.com), go to https://github.com/tenchi-security/zanshin-cli for license, source code and
@@ -175,6 +178,17 @@ def global_options_callback(ctx: typer.Context,
 
         ctx.call_on_close(print_elapsed_time)
 
+    if debug:
+        logger = logging.getLogger("zanshinsdk")
+        logger.setLevel(logging.DEBUG)
+
+        handler = logging.StreamHandler(stderr)
+        handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(name)s %(levelname)s %(message)s')
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+
+    global_options['debug'] = debug
     global_options['verbose'] = verbose
     global_options['profile'] = profile
     global_options['format'] = output_format
