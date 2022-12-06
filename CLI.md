@@ -15,6 +15,7 @@ $ zanshin [OPTIONS] COMMAND [ARGS]...
 * `--profile TEXT`: Configuration file section to read API keyand configuration from  [default: default]
 * `--format [json|table|csv|html]`: Output format to use for list operations  [default: json]
 * `--verbose / --no-verbose`: Print more information to stderr  [default: True]
+* `--debug / --no-debug`: Enable debug logging in the SDK  [default: False]
 * `--install-completion`: Install completion for the current shell.
 * `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
 * `--help`: Show this message and exit.
@@ -266,7 +267,7 @@ $ zanshin alert list [OPTIONS] ORGANIZATION_ID
 **Options**:
 
 * `--scan-target-id UUID`: Only list alerts from the specifiedscan targets.
-* `--states [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
+* `--states [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
 * `--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with the specifiedseverities  [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
 * `--language [pt-BR|en-US]`: Show alert titles in the specified language  [default: en-US]
 * `--created-at-start TEXT`: Date created starts at (format YYYY-MM-DDTHH:MM:SS)
@@ -275,7 +276,7 @@ $ zanshin alert list [OPTIONS] ORGANIZATION_ID
 * `--updated-at-end TEXT`: Date updated ends at (format YYYY-MM-DDTHH:MM:SS)
 * `--search TEXT`: Text to search for in the alerts  [default: ]
 * `--sort [asc|desc]`: Sort order  [default: desc]
-* `--order [scanTargetId|resource|rule|severity|state|createdAt|updatedAt]`: [default: scanTargetId, resource, rule, severity, state, createdAt, updatedAt]
+* `--order [scanTargetId|resource|rule|severity|state|createdAt|updatedAt]`: Field to sort results on  [default: severity]
 * `--help`: Show this message and exit.
 
 ### `zanshin alert list_following`
@@ -294,9 +295,16 @@ $ zanshin alert list_following [OPTIONS] ORGANIZATION_ID
 
 **Options**:
 
-* `--following-ids UUID`: Only list alerts from the specifiedscan targets.
-* `--states [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
-* `--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with thespecified severities  [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
+* `--following-ids UUID`: Only list alerts from the specified scan targets.
+* `--states [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
+* `--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with the specified severities  [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
+* `--created-at-start TEXT`: Date created starts at (format YYYY-MM-DDTHH:MM:SS)
+* `--created-at-end TEXT`: Date created ends at (format YYYY-MM-DDTHH:MM:SS)
+* `--updated-at-start TEXT`: Date updated starts at (format YYYY-MM-DDTHH:MM:SS)
+* `--updated-at-end TEXT`: Date updated ends at (format YYYY-MM-DDTHH:MM:SS)
+* `--search TEXT`: Text to search for in the alerts  [default: ]
+* `--sort [asc|desc]`: Sort order  [default: desc]
+* `--order [scanTargetId|resource|rule|severity|state|createdAt|updatedAt]`: Field to sort results on  [default: severity]
 * `--help`: Show this message and exit.
 
 ### `zanshin alert list_grouped`
@@ -316,7 +324,7 @@ $ zanshin alert list_grouped [OPTIONS] ORGANIZATION_ID
 **Options**:
 
 * `--scan-target-id UUID`: Only list alerts from the specifiedscan targets.
-* `--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
+* `--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
 * `--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with the specifiedseverities  [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
 * `--help`: Show this message and exit.
 
@@ -337,7 +345,7 @@ $ zanshin alert list_grouped_following [OPTIONS] ORGANIZATION_ID
 **Options**:
 
 * `--following-ids UUID`: Only list alerts from thespecified scan targets.
-* `--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
+* `--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
 * `--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with the specified severities  [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
 * `--help`: Show this message and exit.
 
