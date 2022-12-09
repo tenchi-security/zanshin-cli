@@ -69,6 +69,7 @@ $ zanshin [OPTIONS] COMMAND [ARGS]...
 * `--profile TEXT`: Configuration file section to read API keyand configuration from  [default: default]
 * `--format [json|table|csv|html]`: Output format to use for list operations  [default: json]
 * `--verbose / --no-verbose`: Print more information to stderr  [default: True]
+* `--debug / --no-debug`: Enable debug logging in the SDK  [default: False]
 * `--install-completion`: Install completion for the current shell.
 * `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
 * `--help`: Show this message and exit.
@@ -281,6 +282,7 @@ $ zanshin alert [OPTIONS] COMMAND [ARGS]...
 * `list_grouped_following`: List grouped following alerts from a given...
 * `list_history`: List alerts from a given organization, with...
 * `list_history_following`: List alerts from a given organization, with...
+* `update`: Updates the alert.
 
 ### `zanshin alert get`
 
@@ -319,8 +321,16 @@ $ zanshin alert list [OPTIONS] ORGANIZATION_ID
 **Options**:
 
 * `--scan-target-id UUID`: Only list alerts from the specifiedscan targets.
-* `--states [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED]
+* `--states [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
 * `--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with the specifiedseverities  [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
+* `--language [pt-BR|en-US]`: Show alert titles in the specified language  [default: en-US]
+* `--created-at-start TEXT`: Date created starts at (format YYYY-MM-DDTHH:MM:SS)
+* `--created-at-end TEXT`: Date created ends at (format YYYY-MM-DDTHH:MM:SS)
+* `--updated-at-start TEXT`: Date updated starts at (format YYYY-MM-DDTHH:MM:SS)
+* `--updated-at-end TEXT`: Date updated ends at (format YYYY-MM-DDTHH:MM:SS)
+* `--search TEXT`: Text to search for in the alerts  [default: ]
+* `--sort [asc|desc]`: Sort order  [default: desc]
+* `--order [scanTargetId|resource|rule|severity|state|createdAt|updatedAt]`: Field to sort results on  [default: severity]
 * `--help`: Show this message and exit.
 
 ### `zanshin alert list_following`
@@ -339,9 +349,16 @@ $ zanshin alert list_following [OPTIONS] ORGANIZATION_ID
 
 **Options**:
 
-* `--following-ids UUID`: Only list alerts from the specifiedscan targets.
-* `--states [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED]
-* `--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with thespecified severities  [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
+* `--following-ids UUID`: Only list alerts from the specified scan targets.
+* `--states [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
+* `--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with the specified severities  [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
+* `--created-at-start TEXT`: Date created starts at (format YYYY-MM-DDTHH:MM:SS)
+* `--created-at-end TEXT`: Date created ends at (format YYYY-MM-DDTHH:MM:SS)
+* `--updated-at-start TEXT`: Date updated starts at (format YYYY-MM-DDTHH:MM:SS)
+* `--updated-at-end TEXT`: Date updated ends at (format YYYY-MM-DDTHH:MM:SS)
+* `--search TEXT`: Text to search for in the alerts  [default: ]
+* `--sort [asc|desc]`: Sort order  [default: desc]
+* `--order [scanTargetId|resource|rule|severity|state|createdAt|updatedAt]`: Field to sort results on  [default: severity]
 * `--help`: Show this message and exit.
 
 ### `zanshin alert list_grouped`
@@ -361,7 +378,7 @@ $ zanshin alert list_grouped [OPTIONS] ORGANIZATION_ID
 **Options**:
 
 * `--scan-target-id UUID`: Only list alerts from the specifiedscan targets.
-* `--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED]
+* `--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
 * `--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with the specifiedseverities  [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
 * `--help`: Show this message and exit.
 
@@ -382,7 +399,7 @@ $ zanshin alert list_grouped_following [OPTIONS] ORGANIZATION_ID
 **Options**:
 
 * `--following-ids UUID`: Only list alerts from thespecified scan targets.
-* `--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, ACTIVE, IN_PROGRESS, RISK_ACCEPTED]
+* `--state [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: Only list alerts in the specified states.  [default: OPEN, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
 * `--severity [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with the specified severities  [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
 * `--help`: Show this message and exit.
 
@@ -426,6 +443,29 @@ $ zanshin alert list_history_following [OPTIONS] ORGANIZATION_ID
 * `--following-ids UUID`: Only list alerts from the specifiedscan targets.
 * `--cursor TEXT`: Cursor.
 * `--persist / --no-persist`: Persist.  [default: False]
+* `--help`: Show this message and exit.
+
+### `zanshin alert update`
+
+Updates the alert.
+
+**Usage**:
+
+```console
+$ zanshin alert update [OPTIONS] ORGANIZATION_ID SCAN_TARGET_ID ALERT_ID
+```
+
+**Arguments**:
+
+* `ORGANIZATION_ID`: UUID of the organization that owns the alert  [required]
+* `SCAN_TARGET_ID`: UUID of the scan target associated with the alert  [required]
+* `ALERT_ID`: UUID of the alert  [required]
+
+**Options**:
+
+* `--state [OPEN|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE]`: New alert state
+* `--labels TEXT`: Custom label(s) for the alert
+* `--comment TEXT`: A comment when closing the alert with RISK_ACCEPTED, FALSE_POSITIVE, MITIGATING_CONTROL
 * `--help`: Show this message and exit.
 
 ## `zanshin init`
@@ -1071,16 +1111,16 @@ Create a new scan target in organization.
 **Usage**:
 
 ```console
-$ zanshin organization scan_target create [OPTIONS] ORGANIZATION_ID KIND:[AWS|GCP|AZURE|HUAWEI|DOMAIN] NAME CREDENTIAL [SCHEDULE]
+$ zanshin organization scan_target create [OPTIONS] ORGANIZATION_ID KIND:[AWS|GCP|AZURE|HUAWEI|DOMAIN|ORACLE] NAME CREDENTIAL [SCHEDULE]:[1h|6h|12h|24h|7d]
 ```
 
 **Arguments**:
 
 * `ORGANIZATION_ID`: UUID of the organization  [required]
-* `KIND:[AWS|GCP|AZURE|HUAWEI|DOMAIN]`: kind of the scan target  [required]
+* `KIND:[AWS|GCP|AZURE|HUAWEI|DOMAIN|ORACLE]`: kind of the scan target  [required]
 * `NAME`: name of the scan target  [required]
 * `CREDENTIAL`: credential of the scan target  [required]
-* `[SCHEDULE]`: schedule of the scan target  [default: 0 0 * * *]
+* `[SCHEDULE]:[1h|6h|12h|24h|7d]`: schedule of the scan target  [default: 24h]
 
 **Options**:
 
@@ -1150,7 +1190,7 @@ Checkout the required AWS IAM privileges here https://github.com/tenchi-security
 **Usage**:
 
 ```console
-$ zanshin organization scan_target onboard_aws [OPTIONS] REGION ORGANIZATION_ID NAME CREDENTIAL [SCHEDULE]
+$ zanshin organization scan_target onboard_aws [OPTIONS] REGION ORGANIZATION_ID NAME CREDENTIAL [SCHEDULE]:[1h|6h|12h|24h|7d]
 ```
 
 **Arguments**:
@@ -1159,7 +1199,7 @@ $ zanshin organization scan_target onboard_aws [OPTIONS] REGION ORGANIZATION_ID 
 * `ORGANIZATION_ID`: UUID of the organization  [required]
 * `NAME`: name of the scan target  [required]
 * `CREDENTIAL`: credential of the scan target  [required]
-* `[SCHEDULE]`: schedule of the scan target  [default: 0 0 * * *]
+* `[SCHEDULE]:[1h|6h|12h|24h|7d]`: schedule of the scan target  [default: 24h]
 
 **Options**:
 
@@ -1176,14 +1216,14 @@ https://github.com/tenchi-security/zanshin-cli/blob/main/zanshincli/docs/README.
 **Usage**:
 
 ```console
-$ zanshin organization scan_target onboard_aws_organization [OPTIONS] REGION ORGANIZATION_ID [SCHEDULE]
+$ zanshin organization scan_target onboard_aws_organization [OPTIONS] REGION ORGANIZATION_ID [SCHEDULE]:[1h|6h|12h|24h|7d]
 ```
 
 **Arguments**:
 
 * `REGION`: AWS Region to deploy CloudFormation  [required]
 * `ORGANIZATION_ID`: UUID of the organization  [required]
-* `[SCHEDULE]`: schedule of the scan target  [default: 0 0 * * *]
+* `[SCHEDULE]:[1h|6h|12h|24h|7d]`: schedule of the scan target  [default: 24h]
 
 **Options**:
 
@@ -1195,7 +1235,7 @@ $ zanshin organization scan_target onboard_aws_organization [OPTIONS] REGION ORG
 
 #### `zanshin organization scan_target scan`
 
-Operations on scan targets from organizations the API key owner has directaccess to
+Operations on scan targets from organizations the API key owner has direct access to
 
 **Usage**:
 
@@ -1270,6 +1310,7 @@ $ zanshin organization scan_target scan start [OPTIONS] ORGANIZATION_ID SCAN_TAR
 
 **Options**:
 
+* `--force / --no-force`: Whether to force running a scan target that has state INVALID_CREDENTIAL or NEW  [default: False]
 * `--help`: Show this message and exit.
 
 ##### `zanshin organization scan_target scan stop`
@@ -1298,7 +1339,7 @@ Update scan target of organization.
 **Usage**:
 
 ```console
-$ zanshin organization scan_target update [OPTIONS] ORGANIZATION_ID SCAN_TARGET_ID [NAME] [SCHEDULE]
+$ zanshin organization scan_target update [OPTIONS] ORGANIZATION_ID SCAN_TARGET_ID [NAME] [SCHEDULE]:[1h|6h|12h|24h|7d]
 ```
 
 **Arguments**:
@@ -1306,7 +1347,7 @@ $ zanshin organization scan_target update [OPTIONS] ORGANIZATION_ID SCAN_TARGET_
 * `ORGANIZATION_ID`: UUID of the organization  [required]
 * `SCAN_TARGET_ID`: UUID of the scan target  [required]
 * `[NAME]`: name of the scan target
-* `[SCHEDULE]`: schedule of the scan target
+* `[SCHEDULE]:[1h|6h|12h|24h|7d]`: schedule of the scan target
 
 **Options**:
 
