@@ -990,6 +990,25 @@ def organization_scan_target_scan_get(
     client = Client(profile=global_options['profile'])
     dump_json(client.get_organization_scan_target_scan(organization_id, scan_target_id, scan_id))
 
+###################################################
+# Scan Target Groups App
+###################################################
+
+scan_target_group_app = typer.Typer()
+main_app.add_typer(scan_target_group_app, name="scan target groups",
+                   help="Operations on organizations scan target groups the API key owner has direct access to")
+
+
+@scan_target_group_app.command(name='get')
+def scan_target_groups_get(
+        organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+        scan_target_group_id: UUID = typer.Argument(..., help="UUID of the scan target")
+):
+    """
+    Gets the scan target groups of the organization user.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client. get_organization_scan_target_group(organization_id, scan_target_group_id))
 
 ###################################################
 # Alert
