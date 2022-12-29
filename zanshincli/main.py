@@ -359,6 +359,17 @@ def organization_update(
     client = Client(profile=global_options['profile'])
     dump_json(client.update_organization(organization_id, name, picture, email))
 
+@organization_app.command(name='create')
+def organization_create(
+        name: Optional[str] = typer.Argument(None, help="Name of the organization"),
+        picture: Optional[str] = typer.Argument(None, help="Picture of the organization"),
+        email: Optional[str] = typer.Argument(None, help="Contact e-mail of the organization")
+):
+    """
+    Creates an organization.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.create_organization(name, picture, email))
 
 ###################################################
 # Organization Member App
