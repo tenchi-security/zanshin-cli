@@ -1002,13 +1002,13 @@ main_app.add_typer(scan_target_group_app, name="scan target groups",
 @scan_target_group_app.command(name='get')
 def scan_target_groups_get(
         organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
-        scan_target_group_id: UUID = typer.Argument(..., help="UUID of the scan target")
+        scan_target_group_id: UUID = typer.Argument(..., help="UUID of the scan target group")
 ):
     """
     Gets the scan target groups of the organization user.
     """
     client = Client(profile=global_options['profile'])
-    dump_json(client. get_organization_scan_target_group(organization_id, scan_target_group_id))
+    dump_json(client.get_organization_scan_target_group(organization_id, scan_target_group_id))
 
 ###################################################
 # Alert
