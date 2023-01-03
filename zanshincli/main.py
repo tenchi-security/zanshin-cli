@@ -995,7 +995,7 @@ def organization_scan_target_scan_get(
 ###################################################
 
 scan_target_group_app = typer.Typer()
-main_app.add_typer(scan_target_group_app, name="scan-target-groups",
+organization_app.add_typer(scan_target_group_app, name="scan-target-groups",
                    help="Operations on organizations scan target groups the API key owner has direct access to")
 
 
