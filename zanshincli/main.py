@@ -25,7 +25,7 @@ from zanshinsdk.client import ScanTargetKind, ScanTargetSchedule, ScanTargetAWS,
 from zanshinsdk.alerts_history import FilePersistentAlertsIterator
 from zanshinsdk.following_alerts_history import FilePersistentFollowingAlertsIterator
 
-#from .awsorgrun import AWSOrgRunTarget, awsorgrun
+from .awsorgrun import AWSOrgRunTarget, awsorgrun
 from zanshincli.version import __version__ as cli_version
 
 
