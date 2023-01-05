@@ -359,6 +359,7 @@ def organization_update(
     client = Client(profile=global_options['profile'])
     dump_json(client.update_organization(organization_id, name, picture, email))
 
+
 @organization_app.command(name='create')
 def organization_create(
         name: str = typer.Argument(..., help="Name of the organization")
@@ -368,6 +369,16 @@ def organization_create(
     """
     client = Client(profile=global_options['profile'])
     dump_json(client.create_organization(name))
+
+@organization_app.command(name='delete')
+def organization_delete(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
+    """
+    Deletes an organization given its ID.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.delete_organization(organization_id))
+
+
 
 ###################################################
 # Organization Member App
