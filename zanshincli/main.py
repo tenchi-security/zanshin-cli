@@ -359,6 +359,17 @@ def organization_update(
     client = Client(profile=global_options['profile'])
     dump_json(client.update_organization(organization_id, name, picture, email))
 
+
+@organization_app.command(name='create')
+def organization_create(
+        name: str = typer.Argument(..., help="Name of the organization")
+):
+    """
+    Creates an organization.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.create_organization(name))
+
 @organization_app.command(name='delete')
 def organization_delete(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
     """
@@ -366,6 +377,7 @@ def organization_delete(organization_id: UUID = typer.Argument(..., help="UUID o
     """
     client = Client(profile=global_options['profile'])
     dump_json(client.delete_organization(organization_id))
+
 
 
 ###################################################
@@ -884,7 +896,7 @@ def onboard_organization_aws_organization_scan_target(
             raise typer.Exit()
         awsorgrun(target=AWSOrgRunTarget.NONE, exclude=exclude_account_list, session=boto3_session, role=aws_role_name,
                   accounts=aws_accounts_selected_to_onboard, func=_sdk_onboard_scan_target, region=region,
-                  organization_id=organization_id, schedule=schedule)
+                  organization_id=organization_id, schedule=schedule) 
 
 def _sdk_onboard_scan_target(target, aws_account_id, aws_account_name, boto3_session, region, organization_id,
                              schedule):
@@ -1016,6 +1028,18 @@ def scan_target_groups_script(
     """
     client = Client(profile=global_options['profile'])
     dump_json(client.get_scan_target_group_script(organization_id, scan_target_group_id))
+
+@scan_target_group_app.command(name='create')
+def scan_target_groups_create(
+        organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+        kind: ScanTargetKind = typer.Argument(..., help="kind of the scan target group. Should be 'ORACLE'" ),
+        name: str = typer.Argument(..., help="name of the scan target group")
+):
+    """
+    Create a scan target group of the organization.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.create_scan_target_group(organization_id, kind, name))
 
 ###################################################
 # Alert
