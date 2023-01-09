@@ -1005,7 +1005,7 @@ def scan_target_groups_get(
         scan_target_group_id: UUID = typer.Argument(..., help="UUID of the scan target group")
 ):
     """
-    Gets the scan target groups of the organization user.
+    Gets details of the scan target group given its ID.
     """
     client = Client(profile=global_options['profile'])
     dump_json(client.get_organization_scan_target_group(organization_id, scan_target_group_id))
