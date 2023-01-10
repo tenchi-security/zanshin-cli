@@ -1002,7 +1002,7 @@ organization_app.add_typer(scan_target_group_app, name="scan-target-groups",
 @scan_target_group_app.command(name='list')
 def scan_target_groups_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
     """
-    Lists the scan target groups of the organization user.
+    Lists the scan target groups of the user's organization.
     """
     client = Client(profile=global_options['profile'])
     output_iterable(client.iter_organization_scan_target_groups(organization_id))
