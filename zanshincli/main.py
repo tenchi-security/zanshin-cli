@@ -1011,11 +1011,15 @@ organization_app.add_typer(scan_target_group_app, name="scan-target-groups",
 def scan_target_groups_insert(
         organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
         scan_target_group_id: UUID = typer.Argument(..., help="UUID of the scan target group"),
-        credential: ScanTargetGroupCredentialListORACLE = typer.Argument(..., help="credentials of the scan target group")
+        region: str = typer.Argument(..., help="Oracle cloud region"),
+        tenancy_id: str = typer.Argument(..., help="Oracle tenancyId"),
+        user_id: str = typer.Argument(..., help="Oracle UserId"),
+        key_fingerprint: str = typer.Argument(..., help="Oracle Fingerprint used for authentication")
 ):
     """
     Insert an already created scan target group.
     """
+    credential = ScanTargetGroupCredentialListORACLE(region, tenancy_id, user_id, key_fingerprint)
     client = Client(profile=global_options['profile'])
     dump_json(client.insert_scan_target_group_credential(organization_id, scan_target_group_id,credential))
 
