@@ -1003,10 +1003,10 @@ organization_app.add_typer(scan_target_group_app, name="scan-target-groups",
 def scan_target_groups_update(
         organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
         scan_target_group_id: UUID = typer.Argument(..., help="UUID of the scan target group"),
-        name: str = typer.Argument(..., help="name of the scan target group")
+        name: str = typer.Argument(..., help="new name of the scan target group")
 ):
     """
-    Update a scan target group of the organization.
+    Updates a scan target group.
     """
     client = Client(profile=global_options['profile'])
     dump_json(client.update_scan_target_group(organization_id, scan_target_group_id,name))
