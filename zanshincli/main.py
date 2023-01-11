@@ -770,6 +770,16 @@ def organization_scan_target_check(
     client = Client(profile=global_options['profile'])
     dump_json(client.check_organization_scan_target(organization_id, scan_target_id))
 
+@organization_scan_target_app.command(name='oauth-link')
+def organization_scan_target_oauth_link(
+        organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+        scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target")
+):
+    """
+    Retrieve a link to allow the user to authorize zanshin to read info from their gworkspace environment.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.get_gworkspace_oauth_link(organization_id, scan_target_id))
 
 @organization_scan_target_app.command(name='onboard_aws')
 def onboard_organization_aws_scan_target(
