@@ -359,6 +359,17 @@ def organization_update(
     client = Client(profile=global_options['profile'])
     dump_json(client.update_organization(organization_id, name, picture, email))
 
+
+@organization_app.command(name='create')
+def organization_create(
+        name: str = typer.Argument(..., help="Name of the organization")
+):
+    """
+    Creates an organization.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.create_organization(name))
+
 @organization_app.command(name='delete')
 def organization_delete(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
     """
@@ -366,6 +377,7 @@ def organization_delete(organization_id: UUID = typer.Argument(..., help="UUID o
     """
     client = Client(profile=global_options['profile'])
     dump_json(client.delete_organization(organization_id))
+
 
 
 ###################################################
@@ -805,7 +817,7 @@ def onboard_organization_aws_organization_scan_target(
                                                help="UUID of the organization"),
         schedule: ScanTargetSchedule = typer.Argument(
             ScanTargetSchedule.TWENTY_FOUR_HOURS, help="schedule of the scan target")
-):
+): 
     """
     For each of selected accounts in AWS Organization, creates a new Scan Target in informed zanshin organization
     and performs onboarding. Requires boto3 and correct AWS IAM Privileges.
@@ -1013,6 +1025,18 @@ def scan_target_groups_list(organization_id: UUID = typer.Argument(..., help="UU
     """
     client = Client(profile=global_options['profile'])
     output_iterable(client.iter_organization_scan_target_groups(organization_id))
+
+@scan_target_group_app.command(name='update')
+def scan_target_groups_update(
+        organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+        scan_target_group_id: UUID = typer.Argument(..., help="UUID of the scan target group"),
+        name: str = typer.Argument(..., help="new name of the scan target group")
+):
+    """
+    Updates a scan target group.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.update_scan_target_group(organization_id, scan_target_group_id,name))
 
 @scan_target_group_app.command(name='create')
 def scan_target_groups_create(
