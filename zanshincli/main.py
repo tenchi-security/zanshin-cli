@@ -1018,6 +1018,19 @@ scan_target_group_app = typer.Typer()
 organization_app.add_typer(scan_target_group_app, name="scan-target-groups",
                    help="Operations on organizations scan target groups the API key owner has direct access to")
 
+
+@scan_target_group_app.command(name='update')
+def scan_target_groups_update(
+        organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+        scan_target_group_id: UUID = typer.Argument(..., help="UUID of the scan target group"),
+        name: str = typer.Argument(..., help="new name of the scan target group")
+):
+    """
+    Updates a scan target group.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.update_scan_target_group(organization_id, scan_target_group_id,name))
+
 @scan_target_group_app.command(name='create')
 def scan_target_groups_create(
         organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
@@ -1029,6 +1042,7 @@ def scan_target_groups_create(
     """
     client = Client(profile=global_options['profile'])
     dump_json(client.create_scan_target_group(organization_id, kind, name))
+
 
 ###################################################
 # Alert
