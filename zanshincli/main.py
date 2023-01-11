@@ -21,11 +21,11 @@ from typer import Typer
 
 from zanshinsdk import Client, AlertState, AlertSeverity, Languages, AlertsOrderOpts, SortOpts, __version__ as sdk_version
 from zanshinsdk.client import ScanTargetKind, ScanTargetSchedule, ScanTargetAWS, ScanTargetAZURE, \
-    ScanTargetDOMAIN, ScanTargetGCP, ScanTargetHUAWEI, Roles, CONFIG_DIR, CONFIG_FILE
+    ScanTargetDOMAIN, ScanTargetGCP, ScanTargetHUAWEI,ScanTargetGroupCredentialListORACLE, Roles, CONFIG_DIR, CONFIG_FILE
 from zanshinsdk.alerts_history import FilePersistentAlertsIterator
 from zanshinsdk.following_alerts_history import FilePersistentFollowingAlertsIterator
 
-from .awsorgrun import AWSOrgRunTarget, awsorgrun
+#from .awsorgrun import AWSOrgRunTarget, awsorgrun
 from zanshincli.version import __version__ as cli_version
 
 
@@ -789,7 +789,7 @@ def onboard_organization_aws_scan_target(
                                          schedule=schedule))
 
 
-@organization_scan_target_app.command(name='onboard_aws_organization')
+""" @organization_scan_target_app.command(name='onboard_aws_organization')
 def onboard_organization_aws_organization_scan_target(
         target_accounts: AWSOrgRunTarget = typer.Option(
             None, help="choose which accounts to onboard"),
@@ -805,14 +805,14 @@ def onboard_organization_aws_organization_scan_target(
                                                help="UUID of the organization"),
         schedule: ScanTargetSchedule = typer.Argument(
             ScanTargetSchedule.TWENTY_FOUR_HOURS, help="schedule of the scan target")
-):
-    """
+): """
+"""
     For each of selected accounts in AWS Organization, creates a new Scan Target in informed zanshin organization
     and performs onboarding. Requires boto3 and correct AWS IAM Privileges.
     Checkout the required AWS IAM privileges at
     https://github.com/tenchi-security/zanshin-cli/blob/main/zanshincli/docs/README.md
-    """
-    client = Client(profile=global_options['profile'])
+"""
+"""     client = Client(profile=global_options['profile'])
     if boto3_profile:
         boto3_session = boto3.Session(profile_name=boto3_profile)
     else:
@@ -885,7 +885,7 @@ def onboard_organization_aws_organization_scan_target(
         awsorgrun(target=AWSOrgRunTarget.NONE, exclude=exclude_account_list, session=boto3_session, role=aws_role_name,
                   accounts=aws_accounts_selected_to_onboard, func=_sdk_onboard_scan_target, region=region,
                   organization_id=organization_id, schedule=schedule)
-
+ """
 
 def _sdk_onboard_scan_target(target, aws_account_id, aws_account_name, boto3_session, region, organization_id,
                              schedule):
@@ -998,6 +998,27 @@ def organization_scan_target_scan_get(
     client = Client(profile=global_options['profile'])
     dump_json(client.get_organization_scan_target_scan(organization_id, scan_target_id, scan_id))
 
+###################################################
+# Scan Target Groups App
+###################################################
+
+scan_target_group_app = typer.Typer()
+organization_app.add_typer(scan_target_group_app, name="scan-target-groups",
+                   help="Operations on organizations scan target groups the API key owner has direct access to")
+
+
+@scan_target_group_app.command(name='create-by-compartments')
+def scan_target_groups_insert(
+        organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+        scan_target_group_id: UUID = typer.Argument(..., help="UUID of the scan target group"),
+        name: str = typer.Argument(..., help="Compartment name"),
+        ocid: str = typer.Argument(..., help="Oracle Compartment Id")
+):
+    """
+    Create Scan Targets from previous listed compartments inside the scan target group.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.create_scan_target_by_compartments(organization_id, scan_target_group_id,name, ocid))
 
 ###################################################
 # Alert
