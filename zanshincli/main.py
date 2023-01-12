@@ -1021,7 +1021,7 @@ def scan_target_groups_create(
         name: str = typer.Argument(..., help="name of the scan target group")
 ):
     """
-    Creates an organization scan target group.
+    Creates a scan target group for the organization.
     """
     client = Client(profile=global_options['profile'])
     dump_json(client.create_scan_target_group(organization_id, kind, name))
