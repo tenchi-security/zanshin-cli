@@ -1014,7 +1014,7 @@ def scan_target_groups_create_by_compartments(
         ocid: str = typer.Argument(..., help="Oracle Compartment Id")
 ):
     """
-    Create Scan Targets from previous listed compartments inside the scan target group.
+    Creates Scan Targets from previous listed compartments inside the scan target group.
     """
     client = Client(profile=global_options['profile'])
     dump_json(client.create_scan_target_by_compartments(organization_id, scan_target_group_id,name, ocid))
