@@ -21,7 +21,7 @@ from typer import Typer
 
 from zanshinsdk import Client, AlertState, AlertSeverity, Languages, AlertsOrderOpts, SortOpts, __version__ as sdk_version
 from zanshinsdk.client import ScanTargetKind, ScanTargetSchedule, ScanTargetAWS, ScanTargetAZURE, \
-    ScanTargetDOMAIN, ScanTargetGCP, ScanTargetHUAWEI, Roles, CONFIG_DIR, CONFIG_FILE
+    ScanTargetDOMAIN, ScanTargetGCP, ScanTargetHUAWEI,ScanTargetGroupCredentialListORACLE, Roles, CONFIG_DIR, CONFIG_FILE
 from zanshinsdk.alerts_history import FilePersistentAlertsIterator
 from zanshinsdk.following_alerts_history import FilePersistentFollowingAlertsIterator
 
@@ -908,7 +908,6 @@ def onboard_organization_aws_organization_scan_target(
                   accounts=aws_accounts_selected_to_onboard, func=_sdk_onboard_scan_target, region=region,
                   organization_id=organization_id, schedule=schedule) 
 
-
 def _sdk_onboard_scan_target(target, aws_account_id, aws_account_name, boto3_session, region, organization_id,
                              schedule):
     client = Client(profile=global_options['profile'])
@@ -1028,6 +1027,18 @@ scan_target_group_app = typer.Typer()
 organization_app.add_typer(scan_target_group_app, name="scan-target-groups",
                    help="Operations on organizations scan target groups the API key owner has direct access to")
 
+@scan_target_group_app.command(name='create-by-compartments')
+def scan_target_groups_create_by_compartments(
+        organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+        scan_target_group_id: UUID = typer.Argument(..., help="UUID of the scan target group"),
+        name: str = typer.Argument(..., help="Compartment name"),
+        ocid: str = typer.Argument(..., help="Oracle Compartment Id")
+):
+    """
+    Creates Scan Targets from previous listed compartments inside the scan target group.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.create_scan_target_by_compartments(organization_id, scan_target_group_id,name, ocid))
 
 @scan_target_group_app.command(name='scan-targets')
 def scan_target_groups_scan_targets(
