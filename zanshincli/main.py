@@ -908,7 +908,6 @@ def onboard_organization_aws_organization_scan_target(
                   accounts=aws_accounts_selected_to_onboard, func=_sdk_onboard_scan_target, region=region,
                   organization_id=organization_id, schedule=schedule) 
 
-
 def _sdk_onboard_scan_target(target, aws_account_id, aws_account_name, boto3_session, region, organization_id,
                              schedule):
     client = Client(profile=global_options['profile'])
@@ -1044,6 +1043,52 @@ def scan_target_groups_insert(
     client = Client(profile=global_options['profile'])
     dump_json(client.insert_scan_target_group_credential(organization_id, scan_target_group_id,credential))
 
+@scan_target_group_app.command(name='create-by-compartments')
+def scan_target_groups_create_by_compartments(
+        organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+        scan_target_group_id: UUID = typer.Argument(..., help="UUID of the scan target group"),
+        name: str = typer.Argument(..., help="Compartment name"),
+        ocid: str = typer.Argument(..., help="Oracle Compartment Id")
+):
+    """
+    Creates Scan Targets from previous listed compartments inside the scan target group.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.create_scan_target_by_compartments(organization_id, scan_target_group_id,name, ocid))
+
+@scan_target_group_app.command(name='scan-targets')
+def scan_target_groups_scan_targets(
+        organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+        scan_target_group_id: UUID = typer.Argument(..., help="UUID of the scan target group")    
+):
+    """
+    Get all scan targets from a specific scan target group.
+    """
+    client = Client(profile=global_options['profile'])
+    output_iterable(client.iter_scan_targets_from_group(organization_id, scan_target_group_id))
+                   
+@scan_target_group_app.command(name='get')
+def scan_target_groups_get(
+        organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+        scan_target_group_id: UUID = typer.Argument(..., help="UUID of the scan target group")
+):
+    """
+    Gets details of the scan target group given its ID.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.get_organization_scan_target_group(organization_id, scan_target_group_id))
+
+@scan_target_group_app.command(name='delete')
+def scan_target_groups_delete(
+        organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+        scan_target_group_id: UUID = typer.Argument(..., help="UUID of the scan target group")
+):
+    """
+    Deletes the scan target group of the organization.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.delete_organization_scan_target_group(organization_id, scan_target_group_id))
+
 @scan_target_group_app.command(name='list')
 def scan_target_groups_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
     """
@@ -1051,6 +1096,7 @@ def scan_target_groups_list(organization_id: UUID = typer.Argument(..., help="UU
     """
     client = Client(profile=global_options['profile'])
     output_iterable(client.iter_organization_scan_target_groups(organization_id))
+
 
 @scan_target_group_app.command(name='update')
 def scan_target_groups_update(
@@ -1063,6 +1109,7 @@ def scan_target_groups_update(
     """
     client = Client(profile=global_options['profile'])
     dump_json(client.update_scan_target_group(organization_id, scan_target_group_id,name))
+
 
 @scan_target_group_app.command(name='create')
 def scan_target_groups_create(
