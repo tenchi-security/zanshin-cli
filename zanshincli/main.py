@@ -1039,6 +1039,17 @@ def scan_target_groups_get(
     client = Client(profile=global_options['profile'])
     dump_json(client.get_organization_scan_target_group(organization_id, scan_target_group_id))
 
+@scan_target_group_app.command(name='delete')
+def scan_target_groups_delete(
+        organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+        scan_target_group_id: UUID = typer.Argument(..., help="UUID of the scan target group")
+):
+    """
+    Deletes the scan target group of the organization.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.delete_organization_scan_target_group(organization_id, scan_target_group_id))
+
 @scan_target_group_app.command(name='list')
 def scan_target_groups_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
     """
@@ -1059,6 +1070,7 @@ def scan_target_groups_update(
     """
     client = Client(profile=global_options['profile'])
     dump_json(client.update_scan_target_group(organization_id, scan_target_group_id,name))
+
 
 @scan_target_group_app.command(name='create')
 def scan_target_groups_create(
