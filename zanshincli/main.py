@@ -770,6 +770,16 @@ def organization_scan_target_check(
     client = Client(profile=global_options['profile'])
     dump_json(client.check_organization_scan_target(organization_id, scan_target_id))
 
+@organization_scan_target_app.command(name='oauth-link')
+def organization_scan_target_oauth_link(
+        organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+        scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target")
+):
+    """
+    Retrieve a link to allow the user to authorize zanshin to read info from their gworkspace environment.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.get_gworkspace_oauth_link(organization_id, scan_target_id))
 
 @organization_scan_target_app.command(name='onboard_aws')
 def onboard_organization_aws_scan_target(
@@ -1029,6 +1039,27 @@ def scan_target_groups_script(
     client = Client(profile=global_options['profile'])
     dump_json(client.get_scan_target_group_script(organization_id, scan_target_group_id))
 
+@scan_target_group_app.command(name='list')
+def scan_target_groups_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
+    """
+    Lists the scan target groups of the user's organization.
+    """
+    client = Client(profile=global_options['profile'])
+    output_iterable(client.iter_organization_scan_target_groups(organization_id))
+
+@scan_target_group_app.command(name='update')
+def scan_target_groups_update(
+        organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+        scan_target_group_id: UUID = typer.Argument(..., help="UUID of the scan target group"),
+        name: str = typer.Argument(..., help="new name of the scan target group")
+):
+    """
+    Updates a scan target group.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.update_scan_target_group(organization_id, scan_target_group_id,name))
+
+
 @scan_target_group_app.command(name='create')
 def scan_target_groups_create(
         organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
@@ -1036,10 +1067,11 @@ def scan_target_groups_create(
         name: str = typer.Argument(..., help="name of the scan target group")
 ):
     """
-    Create a scan target group of the organization.
+    Creates a scan target group for the organization.
     """
     client = Client(profile=global_options['profile'])
     dump_json(client.create_scan_target_group(organization_id, kind, name))
+
 
 ###################################################
 # Alert
