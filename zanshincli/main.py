@@ -1029,7 +1029,6 @@ organization_app.add_typer(scan_target_group_app, name="scan-target-groups",
                    help="Operations on organizations scan target groups the API key owner has direct access to")
 
 
-
 @scan_target_group_app.command(name='scan-targets')
 def scan_target_groups_scan_targets(
         organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
@@ -1040,6 +1039,29 @@ def scan_target_groups_scan_targets(
     """
     client = Client(profile=global_options['profile'])
     output_iterable(client.iter_scan_targets_from_group(organization_id, scan_target_group_id))
+                   
+@scan_target_group_app.command(name='get')
+def scan_target_groups_get(
+        organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+        scan_target_group_id: UUID = typer.Argument(..., help="UUID of the scan target group")
+):
+    """
+    Gets details of the scan target group given its ID.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.get_organization_scan_target_group(organization_id, scan_target_group_id))
+
+@scan_target_group_app.command(name='delete')
+def scan_target_groups_delete(
+        organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+        scan_target_group_id: UUID = typer.Argument(..., help="UUID of the scan target group")
+):
+    """
+    Deletes the scan target group of the organization.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.delete_organization_scan_target_group(organization_id, scan_target_group_id))
+
 @scan_target_group_app.command(name='list')
 def scan_target_groups_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
     """
