@@ -359,6 +359,17 @@ def organization_update(
     client = Client(profile=global_options['profile'])
     dump_json(client.update_organization(organization_id, name, picture, email))
 
+
+@organization_app.command(name='create')
+def organization_create(
+        name: str = typer.Argument(..., help="Name of the organization")
+):
+    """
+    Creates an organization.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.create_organization(name))
+
 @organization_app.command(name='delete')
 def organization_delete(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
     """
@@ -366,6 +377,7 @@ def organization_delete(organization_id: UUID = typer.Argument(..., help="UUID o
     """
     client = Client(profile=global_options['profile'])
     dump_json(client.delete_organization(organization_id))
+
 
 
 ###################################################
@@ -758,6 +770,16 @@ def organization_scan_target_check(
     client = Client(profile=global_options['profile'])
     dump_json(client.check_organization_scan_target(organization_id, scan_target_id))
 
+@organization_scan_target_app.command(name='oauth-link')
+def organization_scan_target_oauth_link(
+        organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+        scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target")
+):
+    """
+    Retrieve a link to allow the user to authorize zanshin to read info from their gworkspace environment.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.get_gworkspace_oauth_link(organization_id, scan_target_id))
 
 @organization_scan_target_app.command(name='onboard_aws')
 def onboard_organization_aws_scan_target(
@@ -805,7 +827,7 @@ def onboard_organization_aws_organization_scan_target(
                                                help="UUID of the organization"),
         schedule: ScanTargetSchedule = typer.Argument(
             ScanTargetSchedule.TWENTY_FOUR_HOURS, help="schedule of the scan target")
-):
+): 
     """
     For each of selected accounts in AWS Organization, creates a new Scan Target in informed zanshin organization
     and performs onboarding. Requires boto3 and correct AWS IAM Privileges.
@@ -1006,7 +1028,6 @@ scan_target_group_app = typer.Typer()
 organization_app.add_typer(scan_target_group_app, name="scan-target-groups",
                    help="Operations on organizations scan target groups the API key owner has direct access to")
 
-
 @scan_target_group_app.command(name='delete')
 def scan_target_groups_delete(
         organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
@@ -1018,6 +1039,27 @@ def scan_target_groups_delete(
     client = Client(profile=global_options['profile'])
     dump_json(client.delete_organization_scan_target_group(organization_id, scan_target_group_id))
 
+@scan_target_group_app.command(name='list')
+def scan_target_groups_list(organization_id: UUID = typer.Argument(..., help="UUID of the organization")):
+    """
+    Lists the scan target groups of the user's organization.
+    """
+    client = Client(profile=global_options['profile'])
+    output_iterable(client.iter_organization_scan_target_groups(organization_id))
+
+@scan_target_group_app.command(name='update')
+def scan_target_groups_update(
+        organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+        scan_target_group_id: UUID = typer.Argument(..., help="UUID of the scan target group"),
+        name: str = typer.Argument(..., help="new name of the scan target group")
+):
+    """
+    Updates a scan target group.
+    """
+    client = Client(profile=global_options['profile'])
+    dump_json(client.update_scan_target_group(organization_id, scan_target_group_id,name))
+
+
 @scan_target_group_app.command(name='create')
 def scan_target_groups_create(
         organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
@@ -1025,7 +1067,7 @@ def scan_target_groups_create(
         name: str = typer.Argument(..., help="name of the scan target group")
 ):
     """
-    Create a scan target group of the organization.
+    Creates a scan target group for the organization.
     """
     client = Client(profile=global_options['profile'])
     dump_json(client.create_scan_target_group(organization_id, kind, name))
