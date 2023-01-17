@@ -827,7 +827,7 @@ def onboard_organization_aws_organization_scan_target(
                                                help="UUID of the organization"),
         schedule: ScanTargetSchedule = typer.Argument(
             ScanTargetSchedule.TWENTY_FOUR_HOURS, help="schedule of the scan target")
-): 
+):  
     """
     For each of selected accounts in AWS Organization, creates a new Scan Target in informed zanshin organization
     and performs onboarding. Requires boto3 and correct AWS IAM Privileges.
@@ -906,7 +906,7 @@ def onboard_organization_aws_organization_scan_target(
             raise typer.Exit()
         awsorgrun(target=AWSOrgRunTarget.NONE, exclude=exclude_account_list, session=boto3_session, role=aws_role_name,
                   accounts=aws_accounts_selected_to_onboard, func=_sdk_onboard_scan_target, region=region,
-                  organization_id=organization_id, schedule=schedule) 
+                  organization_id=organization_id, schedule=schedule)  
 
 
 def _sdk_onboard_scan_target(target, aws_account_id, aws_account_name, boto3_session, region, organization_id,
