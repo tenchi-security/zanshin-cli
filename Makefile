@@ -16,7 +16,7 @@ README.md: BASE_README.md CLI.md
 	cat BASE_README.md CLI.md > README.md
 
 README.rst: README.md
-	pandoc --from=gfm --to=rst -o README.rst README.md
+	poetry run pandoc --from=gfm --to=rst -o README.rst README.md
 
 pypi: README.rst sdist
 	python setup.py clean
@@ -32,10 +32,10 @@ test:
 	poetry run python -m unittest discover -s zanshincli -v
 
 coverage:
-	coverage run --source zanshincli -m unittest discover -s zanshincli
-	coverage report
+	poetry run coverage run --source zanshincli -m unittest discover -s zanshincli
+	poetry run coverage report
 
 coverage_missing:
-	coverage run --source zanshincli -m unittest discover -s zanshincli
-	coverage report -m
+	poetry run coverage run --source zanshincli -m unittest discover -s zanshincli
+	poetry run coverage report -m
 
