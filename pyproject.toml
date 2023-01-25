@@ -3,6 +3,7 @@ name = "zanshin-cli"
 version = "1.5.1"
 description = "Python command line utility to the Tenchi Security Zanshin API v1"
 authors = ["Tenchi Security <contact@tenchisecurity.com>"]
+packages = [{include = "zanshincli"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
