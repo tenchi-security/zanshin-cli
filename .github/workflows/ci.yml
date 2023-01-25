@@ -73,7 +73,6 @@ jobs:
       - name: Test coverage
         if: matrix.os == 'ubuntu-latest'
         run: |
-          pip install coverage
           make coverage
 
       - name: Coverage comment
