@@ -29,7 +29,7 @@ lint:
 	flake8 zanshincli --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
 test:
-	python -m unittest discover -s zanshincli -v
+	poetry run python -m unittest discover -s zanshincli -v
 
 coverage:
 	coverage run --source zanshincli -m unittest discover -s zanshincli
