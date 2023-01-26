@@ -66,6 +66,7 @@ jobs:
       - name: Generate updated documentation
         if: matrix.os == 'ubuntu-latest'
         run: |
+          sudo apt-get install -y pandoc twine
           rm -f README.md CLI.md README.rst
           make README.rst
 

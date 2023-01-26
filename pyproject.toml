@@ -17,8 +17,6 @@ boto3-type-annotations = ">=0.3.1"
 moto = {version = "4.0.8", extras = ["organizations", "sts", "s3"]}
 pytest = "7.2.0"
 coverage = {version = "^7.1.0", platform = "linux"}
-pandoc = {version = "^2.3", platform = "linux"}
-twine = {version = "^4.0.2", platform = "linux"}
 
 [build-system]
 requires = ["poetry-core"]
