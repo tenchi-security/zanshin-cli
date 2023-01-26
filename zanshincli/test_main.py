@@ -1,8 +1,13 @@
+import os
 import unittest
 from io import StringIO
-from unittest.mock import patch
-import os
 from pathlib import Path
+from unittest.mock import patch
+
+from typer.testing import CliRunner
+
+# from zanshincli import main
+from zanshincli.main import global_options, zanshin_exchanger
 
 ###### Commenting testes as those pass on dev machine and not on github actions
 
@@ -10,10 +15,6 @@ from pathlib import Path
 # from boto3_type_annotations.organizations import Client as Boto3OrganizationsClient
 # import boto3
 
-# from zanshincli import main
-from zanshincli.main import global_options, zanshin_exchanger
-
-from typer.testing import CliRunner
 
 runner = CliRunner()
 
@@ -24,7 +25,7 @@ class TestStringMethods(unittest.TestCase):
     ###################################################
 
     def setUp(self):
-        global_options['profile'] = 'default'
+        global_options["profile"] = "default"
 
     ###################################################
     # General Functions
@@ -42,10 +43,10 @@ class TestStringMethods(unittest.TestCase):
 
     def mock_aws_credentials(self):
         """Mocked AWS Credentials for moto."""
-        moto_credentials_file_path = Path(
-            __file__).parent.absolute() / 'dummy_aws_credentials'
-        os.environ['AWS_SHARED_CREDENTIALS_FILE'] = str(
-            moto_credentials_file_path)
+        moto_credentials_file_path = (
+            Path(__file__).parent.absolute() / "dummy_aws_credentials"
+        )
+        os.environ["AWS_SHARED_CREDENTIALS_FILE"] = str(moto_credentials_file_path)
 
     def test_format_field(self):
         pass

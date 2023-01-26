@@ -13,13 +13,13 @@ This method automatically creates a new Scan Targets to the Zanshin Organization
 
 Currently using the Zanshin CLI you're only able to onboard **AWS Scan Targets**.
 
-> :warning: This method will deploy a CloudFormation stack in each of your AWS accounts. 
+> :warning: This method will deploy a CloudFormation stack in each of your AWS accounts.
 
 
 **Currently supports only AWS Scan Targets.**
 
 _For AWS Scan Target:_
-	
+
 - To be able to onboard AWS Organizations, you need to run this CLI with privileges on the AWS Organization **Management Account** otherwise it won't work. The reason for this is that only from the Management Account you can list Organizations Accounts and assume roles in Member accounts.
 
 - **How it works**
@@ -35,7 +35,7 @@ _For AWS Scan Target:_
 - **Interactive**
   - If you don't specify the parameter **target-accounts**, Zanshin CLI will ask you which of all AWS Accounts in your AWS Organization you want to onboard.
   - Zanshin CLI won't ask you about AWS Accounts that are already onboarded on your Zanshin Organization.
-  
+
 
 
 **Usage**
@@ -85,12 +85,12 @@ The minimum required privileges that you need in your AWS Management Account to 
             "Sid": "AssumeRoleAccounts",
             "Effect": "Allow",
             "Action": "sts:AssumeRole",
-            "Resource": [                
+            "Resource": [
                 "arn:aws:iam::*:role/(your role name)"
             ],
             "Condition": {
                 "StringEquals": {
-                    "aws:PrincipalOrgID":[                        
+                    "aws:PrincipalOrgID":[
                         "o-xxxxxxxxxx"
                     ]
                 }
@@ -101,7 +101,7 @@ The minimum required privileges that you need in your AWS Management Account to 
 ```
 
 > **Attention**
-> :warning: Make sure to substitute the following placeholders: 
+> :warning: Make sure to substitute the following placeholders:
 > - `your role name` to the correct name of the role you'll access in the member accounts.
 > - `o-xxxxxxxxxx` to the ID of your AWS Organization.
 

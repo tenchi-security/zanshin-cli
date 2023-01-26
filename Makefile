@@ -27,6 +27,7 @@ pypi: README.rst sdist
 
 lint:
 	flake8 zanshincli --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+	poetry run pre-commit run -a
 
 test:
 	poetry run python -m unittest discover -s zanshincli -v
@@ -38,4 +39,3 @@ coverage:
 coverage_missing:
 	poetry run coverage run --source zanshincli -m unittest discover -s zanshincli
 	poetry run coverage report -m
-

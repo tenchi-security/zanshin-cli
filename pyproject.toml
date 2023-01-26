@@ -3,20 +3,22 @@ name = "zanshin-cli"
 version = "1.5.1"
 description = "Python command line utility to the Tenchi Security Zanshin API v1"
 authors = ["Tenchi Security <contact@tenchisecurity.com>"]
-packages = [{include = "zanshincli"}]
+readme = "README.md"
+packages = [{include = "zanshin_cli"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 zanshinsdk = "1.5.1"
 typer = {version = "0.7.0", extras = ["all"]}
 prettytable = "3.5.0"
 boto3 = ">=1.26.8"
 boto3-type-annotations = ">=0.3.1"
+pre-commit = "^3.0.0"
+
 
 [tool.poetry.group.dev.dependencies]
 moto = {version = "4.0.8", extras = ["organizations", "sts", "s3"]}
 pytest = "7.2.0"
-coverage = {version = "^7.1.0", platform = "linux"}
 
 [build-system]
 requires = ["poetry-core"]
