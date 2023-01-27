@@ -53,13 +53,8 @@ jobs:
           make README.rst
 
       - name: Build and publish to PyPI Test
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
-          TWINE_REPOSITORY_URL: "https://test.pypi.org/legacy/"
         run: |
-          sudo apt-get install -y twine
-          make pypi
+          poetry publish --build -r testpypi -u __token__ -p ${{ secrets.TEST_PYPI_TOKEN }}
 
       - name: Build and publish to PyPI
         env:
