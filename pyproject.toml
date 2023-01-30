@@ -3,6 +3,7 @@ name = "zanshincli"
 version = "0.1.0"
 description = "Python command line utility to the Tenchi Security Zanshin API v1"
 license = "Apache Software License"
+readme = "README.md"
 authors = ["Tenchi Security <contact@tenchisecurity.com>"]
 homepage = "https://github.com/tenchi-security/zanshin-cli"
 packages = [{include = "zanshincli"}]
