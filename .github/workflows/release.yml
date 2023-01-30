@@ -1,6 +1,9 @@
 name: Upload Python Package
 
 on:
+  push:
+    branches:
+      - 'main'
   release:
     types: [ published ]
 
@@ -56,10 +59,10 @@ jobs:
         run: |
           poetry publish --build -r testpypi -u __token__ -p ${{ secrets.TEST_PYPI_TOKEN }}
 
-      - name: Build and publish to PyPI
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-          TWINE_REPOSITORY_URL: "https://upload.pypi.org/legacy/"
-        run: |
-          make pypi
+#      - name: Build and publish to PyPI
+#        env:
+#          TWINE_USERNAME: __token__
+#          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+#          TWINE_REPOSITORY_URL: "https://upload.pypi.org/legacy/"
+#        run: |
+#          make pypi
