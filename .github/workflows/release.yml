@@ -26,8 +26,8 @@ jobs:
       
       - name: Prepare Package Version
         run: |
-          sed -i 's/__PACKAGE_VERSION__/${{ github.event.release.tag_name }}/g' zanshincli/version.py
-          sed -i 's/version = "0.1.0"/version = "${{ github.event.release.tag_name }}"/g' pyproject.toml
+          sed -i 's/__PACKAGE_VERSION__/1.5.2/g' zanshincli/version.py
+          sed -i 's/version = "0.1.0"/version = "1.5.2"/g' pyproject.toml
           
       - name: Install poetry
         uses: snok/install-poetry@v1.2.0
