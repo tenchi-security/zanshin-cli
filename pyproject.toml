@@ -43,3 +43,6 @@ zanshin = "zanshincli.main:main_app"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[repositories.testpypi]
+url = "https://test.pypi.org/legacy/"
