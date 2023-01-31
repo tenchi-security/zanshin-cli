@@ -32,4 +32,3 @@ coverage:
 coverage_missing:
 	poetry run coverage run --source zanshincli -m unittest discover -s zanshincli
 	poetry run coverage report -m
-
