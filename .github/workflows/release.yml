@@ -1,10 +1,6 @@
 name: Upload Python Package
 
 on:
-  pull_request:
-  push:
-    branches:
-      - 'main'
   release:
     types: [ published ]
 
@@ -26,11 +22,9 @@ jobs:
       
       - name: Prepare Package Version
         run: |
-          sed -i 's/__PACKAGE_VERSION__/1.34.2/g' zanshincli/version.py
-          sed -i 's/version = "0.1.0"/version = "1.34.2"/g' pyproject.toml
-# sed -i 's/__PACKAGE_VERSION__/${{ github.event.release.tag_name }}/g' zanshincli/version.py
-# sed -i 's/version = "0.1.0"/version = "${{ github.event.release.tag_name }}"/g' pyproject.toml
-
+          sed -i 's/__PACKAGE_VERSION__/${{ github.event.release.tag_name }}/g' zanshincli/version.py
+          sed -i 's/version = "0.1.0"/version = "${{ github.event.release.tag_name }}"/g' pyproject.toml
+          
       - name: Install poetry
         uses: snok/install-poetry@v1.2.0
         with:
@@ -63,7 +57,7 @@ jobs:
           poetry config repositories.testpypi https://test.pypi.org/legacy/
           poetry publish --build -r testpypi -u __token__ -p ${{ secrets.TEST_PYPI_TOKEN }}
 
-      # - name: Build and publish to PyPI
-      #   run: |
-      #     poetry config repositories.pypi https://upload.pypi.org/legacy/
-      #     poetry publish --build -r pypi -u __token__ -p ${{ secrets.PYPI_TOKEN }}
+      - name: Build and publish to PyPI
+        run: |
+          poetry config repositories.pypi https://upload.pypi.org/legacy/
+          poetry publish --build -r pypi -u __token__ -p ${{ secrets.PYPI_TOKEN }}
