@@ -10,6 +10,7 @@ from sys import version as python_version, stderr
 from time import perf_counter
 import logging
 from utils import OutputFormat, output_iterable, dump_json 
+from account import Account
 
 import boto3
 from boto3_type_annotations.organizations import Client as Boto3OrganizationsClient
@@ -40,8 +41,6 @@ class AlertStateSetable(str, Enum):
 class OrderedCommands(click.Group):
     def list_commands(self, ctx: Context) -> Iterable[str]:
         return self.commands.keys()
-
-
 
 class AWSAccount(dict):
     """
@@ -148,22 +147,10 @@ def version():
 ###################################################
 # Account App
 ###################################################
-
-account_app = typer.Typer()
+account_app = Account(global_options).load_commands()
 main_app.add_typer(account_app, name="account",
                    help="Operations on user the API key owner has direct access to")
 
-
-@account_app.command(name='me')
-def account_me():
-    """
-    Returns the details of the user account that owns the API key used by this Connection instance as per
-    """
-    client = Client(profile=global_options['profile'])
-    try:
-        dump_json(client.get_me())
-    except Exception as e:
-        print(e)
 
 
 ###################################################
