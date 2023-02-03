@@ -1,0 +1,1 @@
+global_options: dict = {'entries': 1}

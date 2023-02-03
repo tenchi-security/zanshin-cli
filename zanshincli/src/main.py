@@ -10,6 +10,7 @@ from sys import version as python_version, stderr
 from time import perf_counter
 import logging
 from utils import OutputFormat, output_iterable, dump_json 
+import options
 from account import Account
 
 import boto3
@@ -67,7 +68,6 @@ sys.excepthook = zanshin_exchanger
 # Main App
 ###################################################
 
-global_options: dict = {'entries': 1}
 main_app: Typer = typer.Typer(name="zanshin", no_args_is_help=True)
 
 
@@ -92,7 +92,7 @@ def global_options_callback(ctx: typer.Context,
 
         def print_elapsed_time():
             typer.echo(
-                f"zanshin: {global_options['entries']} object(s) processed in "
+                f"zanshin: {options.global_options['entries']} object(s) processed in "
                 f"{timedelta(seconds=perf_counter() - start_time)}",
                 err=True)
 
@@ -108,10 +108,10 @@ def global_options_callback(ctx: typer.Context,
         handler.setFormatter(formatter)
         logger.addHandler(handler)
 
-    global_options['debug'] = debug
-    global_options['verbose'] = verbose
-    global_options['profile'] = profile
-    global_options['format'] = output_format
+    options.global_options['debug'] = debug
+    options.global_options['verbose'] = verbose
+    options.global_options['profile'] = profile
+    options.global_options['format'] = output_format
 
 
 @main_app.command()
@@ -122,7 +122,7 @@ def init():
     cfg = RawConfigParser()
     cfg.read(CONFIG_FILE)
     typer.echo("This command will allow you to set up profiles in the configuration file.")
-    profile = typer.prompt("Please enter the profile name to use", default=global_options['profile'])
+    profile = typer.prompt("Please enter the profile name to use", default=options.global_options['profile'])
     if cfg.has_section(profile):
         typer.confirm("Profile already exists. Overwrite?", abort=True)
     else:
@@ -147,7 +147,7 @@ def version():
 ###################################################
 # Account App
 ###################################################
-account_app = Account(global_options).load_commands()
+account_app = Account().load_commands()
 main_app.add_typer(account_app, name="account",
                    help="Operations on user the API key owner has direct access to")
 
@@ -167,7 +167,7 @@ def account_invite_list():
     """
     Iterates over the invites of current logged user.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     output_iterable(client.iter_invites())
 
 
@@ -176,7 +176,7 @@ def account_invite_get(invite_id: UUID = typer.Argument(..., help="UUID of the i
     """
     Gets a specific invitation details, it only works if the invitation was made for the current logged user.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.get_invite(invite_id))
 
 
@@ -186,7 +186,7 @@ def account_invite_accept(invite_id: UUID = typer.Argument(..., help="UUID of th
     Accepts an invitation with the informed ID, it only works if the user accepting the invitation is the user that
     received the invitation.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.get_invite(invite_id))
 
 
@@ -204,7 +204,7 @@ def account_api_key_list():
     """
     Iterates over the API keys of current logged user.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     output_iterable(client.iter_api_keys())
 
 
@@ -214,7 +214,7 @@ def account_api_key_create(name: str = typer.Argument(..., help="Name of the new
     Creates a new API key for the current logged user, API Keys can be used to interact with the zanshin api directly
     a behalf of that user.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.create_api_key(name))
 
 
@@ -223,7 +223,7 @@ def account_api_key_delete(api_key_id: UUID = typer.Argument(..., help="UUID of 
     """
     Deletes a given API key by its id, it will only work if the informed ID belongs to the current logged user.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.delete_api_key(api_key_id))
 
 
@@ -241,7 +241,7 @@ def organization_list():
     """
     Lists the organizations this user has direct access to as a member.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     output_iterable(client.iter_organizations())
 
 
@@ -250,7 +250,7 @@ def organization_get(organization_id: UUID = typer.Argument(..., help="UUID of t
     """
     Gets an organization given its ID.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.get_organization(organization_id))
 
 
@@ -264,7 +264,7 @@ def organization_update(
     """
     Gets an organization given its ID.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.update_organization(organization_id, name, picture, email))
 
 
@@ -275,7 +275,7 @@ def organization_create(
     """
     Creates an organization.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.create_organization(name))
 
 @organization_app.command(name='delete')
@@ -283,7 +283,7 @@ def organization_delete(organization_id: UUID = typer.Argument(..., help="UUID o
     """
     Deletes an organization given its ID.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.delete_organization(organization_id))
 
 
@@ -302,7 +302,7 @@ def organization_member_list(organization_id: UUID = typer.Argument(..., help="U
     """
     Lists the members of organization this user has direct access to.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     output_iterable(client.iter_organization_members(organization_id))
 
 
@@ -314,7 +314,7 @@ def organization_member_get(
     """
     Get organization member.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.get_organization_member(organization_id, organization_member_id))
 
 
@@ -329,7 +329,7 @@ def organization_member_update(
     """
     Update organization member.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.update_organization_member(organization_id, organization_member_id, role))
 
 
@@ -341,7 +341,7 @@ def organization_member_delete(
     """
     Delete organization member.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.delete_organization_member(organization_id, organization_member_id))
 
 
@@ -360,7 +360,7 @@ def organization_member_invite_list(organization_id: UUID = typer.Argument(..., 
     """
     Lists the member invites of organization this user has direct access to.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     output_iterable(client.iter_organization_members_invites(organization_id))
 
 
@@ -375,7 +375,7 @@ def organization_member_invite_create(
     """
     Create organization member invite.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.create_organization_members_invite(organization_id, organization_member_invite_email,
                                                         organization_member_invite_role))
 
@@ -388,7 +388,7 @@ def organization_member_invite_get(
     """
     Get organization member invite.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.get_organization_member(organization_id, organization_member_invite_email))
 
 
@@ -400,7 +400,7 @@ def organization_member_invite_delete(
     """
     Delete organization member invite.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.delete_organization_member_invite(organization_id, organization_member_invite_email))
 
 
@@ -412,7 +412,7 @@ def organization_member_invite_resend(
     """
     Resend organization member invitation.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.resend_organization_member_invite(organization_id, organization_member_invite_email))
 
 
@@ -430,7 +430,7 @@ def organization_follower_list(organization_id: UUID = typer.Argument(..., help=
     """
     Lists the followers of organization this user has direct access to.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     output_iterable(client.iter_organization_followers(organization_id))
 
 
@@ -442,7 +442,7 @@ def organization_follower_stop(
     """
     Stops one organization follower of another.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.stop_organization_follower(organization_id, organization_follower_id))
 
 
@@ -461,7 +461,7 @@ def organization_follower_request_list(organization_id: UUID = typer.Argument(..
     """
     Lists the follower requests of organization this user has direct access to.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     output_iterable(client.iter_organization_followers(organization_id))
 
 
@@ -473,7 +473,7 @@ def organization_follower_request_create(
     """
     Create organization follower request.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.create_organization_follower_request(organization_id, token))
 
 
@@ -485,7 +485,7 @@ def organization_follower_request_get(
     """
     Get organization follower request.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.get_organization_follower_request(organization_id, token))
 
 
@@ -497,7 +497,7 @@ def organization_follower_request_delete(
     """
     Delete organization follower request.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.delete_organization_follower_request(organization_id, token))
 
 
@@ -515,7 +515,7 @@ def organization_following_list(organization_id: UUID = typer.Argument(..., help
     """
     Lists the following of organization this user has direct access to.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     output_iterable(client.iter_organization_following(organization_id))
 
 
@@ -527,7 +527,7 @@ def organization_following_stop(
     """
     Stops one organization following of another.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.stop_organization_following(organization_id, organization_following_id))
 
 
@@ -546,7 +546,7 @@ def organization_following_request_list(organization_id: UUID = typer.Argument(.
     """
     Lists the following requests of organization this user has direct access to.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     output_iterable(client.iter_organization_following_requests(organization_id))
 
 
@@ -558,7 +558,7 @@ def organization_following_request_get(
     """
     Returns a request received by an organization to follow another.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.get_organization_following_request(organization_id, following_id))
 
 
@@ -570,7 +570,7 @@ def organization_following_request_accept(
     """
     Accepts a request to follow another organization.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.accept_organization_following_request(organization_id, following_id))
 
 
@@ -582,7 +582,7 @@ def organization_following_request_decline(
     """
     Declines a request to follow another organization.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.decline_organization_following_request(organization_id, following_id))
 
 
@@ -600,7 +600,7 @@ def organization_scan_target_list(organization_id: UUID = typer.Argument(..., he
     """
     Lists the scan targets of organization this user has direct access to.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     output_iterable(client.iter_organization_scan_targets(organization_id))
 
 
@@ -615,7 +615,7 @@ def organization_scan_target_create(
     """
     Create a new scan target in organization.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     if kind == ScanTargetKind.AWS:
         credential = ScanTargetAWS(credential)
     elif kind == ScanTargetKind.GCP:
@@ -637,7 +637,7 @@ def organization_scan_target_get(
     """
     Get scan target of organization.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.get_organization_scan_target(organization_id, scan_target_id))
 
 
@@ -651,7 +651,7 @@ def organization_scan_target_update(
     """
     Update scan target of organization.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.update_organization_scan_target(organization_id, scan_target_id, name, schedule))
 
 
@@ -663,7 +663,7 @@ def organization_scan_target_delete(
     """
     Delete scan target of organization.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.delete_organization_scan_target(organization_id, scan_target_id))
 
 
@@ -675,7 +675,7 @@ def organization_scan_target_check(
     """
     Check scan target.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.check_organization_scan_target(organization_id, scan_target_id))
 
 @organization_scan_target_app.command(name='oauth-link')
@@ -686,7 +686,7 @@ def organization_scan_target_oauth_link(
     """
     Retrieve a link to allow the user to authorize zanshin to read info from their gworkspace environment.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.get_gworkspace_oauth_link(organization_id, scan_target_id))
 
 @organization_scan_target_app.command(name='onboard_aws')
@@ -702,7 +702,7 @@ def onboard_organization_aws_scan_target(
     Create a new scan target in organization and perform onboard. Requires boto3 and correct AWS IAM Privileges.
     Checkout the required AWS IAM privileges here https://github.com/tenchi-security/zanshin-sdk-python/blob/main/zanshinsdk/docs/README.md
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     credential = ScanTargetAWS(credential)
     kind = ScanTargetKind.AWS
 
@@ -742,7 +742,7 @@ def onboard_organization_aws_organization_scan_target(
     Checkout the required AWS IAM privileges at
     https://github.com/tenchi-security/zanshin-cli/blob/main/zanshincli/docs/README.md
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     if boto3_profile:
         boto3_session = boto3.Session(profile_name=boto3_profile)
     else:
@@ -818,7 +818,7 @@ def onboard_organization_aws_organization_scan_target(
 
 def _sdk_onboard_scan_target(target, aws_account_id, aws_account_name, boto3_session, region, organization_id,
                              schedule):
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     account_credential = ScanTargetAWS(aws_account_id)
     client.onboard_scan_target(boto3_session=boto3_session, region=region, kind=ScanTargetKind.AWS,
                                name=aws_account_name,
@@ -887,7 +887,7 @@ def organization_scan_target_scan_start(
     """
     Starts a scan on the specified scan target.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.start_organization_scan_target_scan(organization_id, scan_target_id, force))
 
 
@@ -899,7 +899,7 @@ def organization_scan_target_scan_stop(
     """
     Stop a scan on the specified scan target.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.stop_organization_scan_target_scan(organization_id, scan_target_id))
 
 
@@ -911,7 +911,7 @@ def organization_scan_target_scan_list(
     """
     Lists the scan target scans of organization this user has direct access to.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     output_iterable(client.iter_organization_scan_target_scans(organization_id, scan_target_id))
 
 
@@ -924,7 +924,7 @@ def organization_scan_target_scan_get(
     """
     Get scan of scan target.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.get_organization_scan_target_scan(organization_id, scan_target_id, scan_id))
 
 ###################################################
@@ -943,7 +943,7 @@ def scan_target_groups_script(
     """
     Gets download URL of the scan target group.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.get_scan_target_group_script(organization_id, scan_target_group_id))
 
 @scan_target_group_app.command(name='compartments')
@@ -954,7 +954,7 @@ def scan_target_groups_compartments(
     """
     Iterates over the compartments of a scan target group.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     output_iterable(client.iter_scan_target_group_compartments(organization_id, scan_target_group_id))
 
 @scan_target_group_app.command(name='insert')
@@ -970,7 +970,7 @@ def scan_target_groups_insert(
     Inserts an already created scan target group.
     """
     credential = ScanTargetGroupCredentialListORACLE(region, tenancy_id, user_id, key_fingerprint)
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.insert_scan_target_group_credential(organization_id, scan_target_group_id,credential))
 
 @scan_target_group_app.command(name='create-by-compartments')
@@ -983,7 +983,7 @@ def scan_target_groups_create_by_compartments(
     """
     Creates Scan Targets from previous listed compartments inside the scan target group.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.create_scan_target_by_compartments(organization_id, scan_target_group_id,name, ocid))
 
 @scan_target_group_app.command(name='scan-targets')
@@ -994,7 +994,7 @@ def scan_target_groups_scan_targets(
     """
     Gets all scan targets from a specific scan target group.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     output_iterable(client.iter_scan_targets_from_group(organization_id, scan_target_group_id))
                    
 @scan_target_group_app.command(name='get')
@@ -1005,7 +1005,7 @@ def scan_target_groups_get(
     """
     Gets details of the scan target group given its ID.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.get_organization_scan_target_group(organization_id, scan_target_group_id))
 
 @scan_target_group_app.command(name='delete')
@@ -1016,7 +1016,7 @@ def scan_target_groups_delete(
     """
     Deletes the scan target group of the organization.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.delete_organization_scan_target_group(organization_id, scan_target_group_id))
 
 @scan_target_group_app.command(name='list')
@@ -1024,7 +1024,7 @@ def scan_target_groups_list(organization_id: UUID = typer.Argument(..., help="UU
     """
     Lists the scan target groups of the user's organization.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     output_iterable(client.iter_organization_scan_target_groups(organization_id))
 
 
@@ -1037,7 +1037,7 @@ def scan_target_groups_update(
     """
     Updates a scan target group.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.update_scan_target_group(organization_id, scan_target_group_id,name))
 
 
@@ -1050,7 +1050,7 @@ def scan_target_groups_create(
     """
     Creates a scan target group for the organization.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     dump_json(client.create_scan_target_group(organization_id, kind, name))
 
 
@@ -1089,7 +1089,7 @@ def alert_list(organization_id: UUID = typer.Argument(..., help="UUID of the org
     """
     List alerts from a given organization, with optional filters by scan target, state or severity.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     output_iterable(
         client.iter_alerts(organization_id=organization_id, scan_target_ids=scan_target_id, states=states,
                            severities=severity, language=language,
@@ -1125,7 +1125,7 @@ def alert_following_list(organization_id: UUID = typer.Argument(..., help="UUID 
     """
     List following alerts from a given organization, with optional filters by following ids, state or severity.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     output_iterable(
         client.iter_following_alerts(organization_id=organization_id, following_ids=following_ids, states=states,
                                      created_at_start=created_at_start, created_at_end=created_at_end,
@@ -1145,7 +1145,7 @@ def alert_history_list(organization_id: UUID = typer.Argument(..., help="UUID of
     """
     List alerts from a given organization, with optional filters by scan target, state or severity.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
 
     if persist:
         iter_alerts = FilePersistentAlertsIterator(filename='zanshin', client=client, organization_id=organization_id,
@@ -1172,7 +1172,7 @@ def alert_history_following_list(organization_id: UUID = typer.Argument(..., hel
     """
     List alerts from a given organization, with optional filters by scan target, state or severity.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
 
     if persist:
         iter_alerts = FilePersistentFollowingAlertsIterator(filename='zanshin', client=client,
@@ -1205,7 +1205,7 @@ def grouped_alert_list(organization_id: UUID = typer.Argument(..., help="UUID of
     """
     List grouped alerts from a given organization, with optional filters by scan target, state or severity.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     output_iterable(
         client.iter_grouped_alerts(organization_id=organization_id, scan_target_ids=scan_target_id, states=state,
                                    severities=severity))
@@ -1226,7 +1226,7 @@ def grouped_alert_following_list(organization_id: UUID = typer.Argument(..., hel
     """
     List grouped following alerts from a given organization, with optional filters by scan target, state or severity.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     output_iterable(
         client.iter_grouped_following_alerts(organization_id=organization_id, following_ids=following_ids, states=state,
                                              severities=severity))
@@ -1240,13 +1240,13 @@ def alert_get(alert_id: UUID = typer.Argument(..., help="UUID of the alert to lo
     Returns details about a specified alert
     """
     if list_history:
-        client = Client(profile=global_options['profile'])
+        client = Client(profile=options.global_options['profile'])
         output_iterable(client.iter_alert_history(alert_id))
     elif list_comments:
-        client = Client(profile=global_options['profile'])
+        client = Client(profile=options.global_options['profile'])
         output_iterable(client.iter_alert_comments(alert_id))
     else:
-        client = Client(profile=global_options['profile'])
+        client = Client(profile=options.global_options['profile'])
         typer.echo(dumps(client.get_alert(alert_id), indent=4))
 
 
@@ -1262,7 +1262,7 @@ def alert_update(organization_id: UUID = typer.Argument(..., help="UUID of the o
     Updates the alert.
     """
 
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
     typer.echo(client.update_alert(organization_id, scan_target_id, alert_id, state, labels, comment))
 
 
@@ -1283,7 +1283,7 @@ def summary_alert(organization_id: UUID = typer.Argument(..., help="UUID of the 
     """
     Gets a summary of the current state of alerts for an organization, both in total and broken down by scan target.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
 
     dump_json(client.get_alert_summaries(organization_id, scan_target_id))
 
@@ -1297,7 +1297,7 @@ def summary_alert_following(organization_id: UUID = typer.Argument(..., help="UU
     """
     Gets a summary of the current state of alerts for followed organizations.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
 
     dump_json(client.get_following_alert_summaries(organization_id, following_ids))
 
@@ -1312,7 +1312,7 @@ def summary_scan(organization_id: UUID = typer.Argument(..., help="UUID of the o
     """
     Returns summaries of scan results over a period of time, summarizing number of alerts that changed states.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
 
     dump_json(client.get_scan_summaries(organization_id, scan_target_ids, days))
 
@@ -1330,7 +1330,7 @@ def summary_scan_following(organization_id: UUID = typer.Argument(..., help="UUI
     """
     Returns summaries of scan results over a period of time, summarizing number of alerts that changed states.
     """
-    client = Client(profile=global_options['profile'])
+    client = Client(profile=options.global_options['profile'])
 
     dump_json(client.get_scan_summaries(organization_id, following_ids, days))
 
