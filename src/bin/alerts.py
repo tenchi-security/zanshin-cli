@@ -1,12 +1,12 @@
 import typer
-import config.sdk as sdk_config
+import src.config.sdk as sdk_config
 from zanshinsdk import Client, AlertState, AlertSeverity, Languages, AlertsOrderOpts, SortOpts
-from lib.utils import output_iterable
+from src.lib.utils import output_iterable
 from uuid import UUID
 from typing import Optional, List
 from zanshinsdk.following_alerts_history import FilePersistentFollowingAlertsIterator
 from zanshinsdk.alerts_history import FilePersistentAlertsIterator
-from lib.models import AlertStateSetable
+from src.lib.models import AlertStateSetable
 from json import dumps
 
 app = typer.Typer()

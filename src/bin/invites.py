@@ -1,8 +1,8 @@
 import typer
 from uuid import UUID
 from zanshinsdk import Client
-from lib.utils import dump_json, output_iterable
-import config.sdk as sdk_config
+from src.lib.utils import dump_json, output_iterable
+import src.config.sdk as sdk_config
 
 ###################################################
 # Account Invites App

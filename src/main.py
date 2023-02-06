@@ -4,14 +4,30 @@ from datetime import timedelta
 from stat import S_IRUSR, S_IWUSR
 from sys import version as python_version, stderr
 from time import perf_counter
-from lib.models import OutputFormat
-import config.sdk as sdk_config
+from src.lib.models import OutputFormat
+import src.config.sdk as sdk_config
 import logging
 import typer
 from typer import Typer
 from zanshinsdk import __version__ as sdk_version
 from zanshinsdk.client import CONFIG_DIR, CONFIG_FILE
-from lib.version import __version__ as cli_version
+from src.lib.version import __version__ as cli_version
+
+import src.bin.account as account
+import src.bin.invites as invites
+import src.bin.api_key as api_key
+import src.bin.organization as organization
+import src.bin.member as organization_member
+import src.bin.member_invite as member_invite
+import src.bin.follower as follower
+import src.bin.follower_request as follower_request
+import src.bin.following as following
+import src.bin.following_request as following_request
+import src.bin.scan_target as scan_target
+import src.bin.scan as scan
+import src.bin.scan_target_groups as scan_target_groups
+import src.bin.alerts as alerts
+import src.bin.summary as summary
 
 ###################################################
 # Exchanger
@@ -106,7 +122,6 @@ def version():
 # Account App
 ###################################################
 
-import bin.account as account
 main_app.add_typer(account.app, name="account",
                    help="Operations on user the API key owner has direct access to")
 
@@ -115,7 +130,6 @@ main_app.add_typer(account.app, name="account",
 # Account Invites App
 ###################################################
 
-import bin.invites as invites
 account.app.add_typer(invites.app, name="invites",
                       help="Operations on invites from account the API key owner has direct access to")
 
@@ -124,7 +138,6 @@ account.app.add_typer(invites.app, name="invites",
 # Account API key App
 ###################################################
 
-import bin.api_key as api_key
 account.app.add_typer(api_key.app, name="api_key",
                       help="Operations on API keys from account the API key owner has direct access to")
 
@@ -133,7 +146,6 @@ account.app.add_typer(api_key.app, name="api_key",
 # Organization App
 ###################################################
 
-import bin.organization as organization
 main_app.add_typer(organization.app, name="organization",
                    help="Operations on organizations the API key owner has direct access to")
 
@@ -142,7 +154,6 @@ main_app.add_typer(organization.app, name="organization",
 # Organization Member App
 ###################################################
 
-import bin.member as organization_member
 organization.app.add_typer(organization_member.app, name="member",
                            help="Operations on members of organization the API key owner has direct access to")
 
@@ -151,7 +162,6 @@ organization.app.add_typer(organization_member.app, name="member",
 # Organization Member Invite App
 ###################################################
 
-import bin.member_invite as member_invite
 organization_member.app.add_typer(member_invite.app, name="invite",
                                   help="Operations on member invites of organization the API key owner has direct"
                                        "access to")
@@ -161,7 +171,6 @@ organization_member.app.add_typer(member_invite.app, name="invite",
 # Organization Follower App
 ###################################################
 
-import bin.follower as follower
 organization.app.add_typer(follower.app, name="follower",
                            help="Operations on followers of organization the API key owner has direct access to")
 
@@ -170,7 +179,6 @@ organization.app.add_typer(follower.app, name="follower",
 # Organization Follower Request App
 ###################################################
 
-import bin.follower_request as follower_request
 follower.app.add_typer(follower_request.app, name="request",
                                     help="Operations on follower requests of organization the API key owner has direct"
                                          "access to")
@@ -180,7 +188,6 @@ follower.app.add_typer(follower_request.app, name="request",
 # Organization Following App
 ###################################################
 
-import bin.following as following
 organization.app.add_typer(following.app, name="following",
                            help="Operations on following of organization the API key owner has direct access to")
 
@@ -189,7 +196,6 @@ organization.app.add_typer(following.app, name="following",
 # Organization Following Request App
 ###################################################
 
-import bin.following_request as following_request
 following.app.add_typer(following_request.app, name="request",
                                      help="Operations on following requests of organization the API key owner has"
                                           "direct access to")
@@ -199,7 +205,6 @@ following.app.add_typer(following_request.app, name="request",
 # Organization Scan Target App
 ###################################################
 
-import bin.scan_target as scan_target
 organization.app.add_typer(scan_target.app, name="scan_target",
                            help="Operations on scan targets from organizations the API key owner has direct access to")
 
@@ -208,7 +213,6 @@ organization.app.add_typer(scan_target.app, name="scan_target",
 # Organization Scan Target Scan App
 ###################################################
 
-import bin.scan as scan
 scan_target.app.add_typer(scan.app, name="scan",
                                        help="Operations on scan targets from organizations the API key owner has direct"
                                             " access to")
@@ -218,7 +222,6 @@ scan_target.app.add_typer(scan.app, name="scan",
 # Scan Target Groups App
 ###################################################
 
-import bin.scan_target_groups as scan_target_groups
 organization.app.add_typer(scan_target_groups.app, name="scan-target-groups",
                    help="Operations on organizations scan target groups the API key owner has direct access to")
 
@@ -227,7 +230,6 @@ organization.app.add_typer(scan_target_groups.app, name="scan-target-groups",
 # Alert
 ###################################################
 
-import bin.alerts as alerts
 main_app.add_typer(alerts.app, name="alert",
                    help="Operations on alerts the API key owner has direct access to")
 
@@ -236,7 +238,6 @@ main_app.add_typer(alerts.app, name="alert",
 # Summary
 ###################################################
 
-import bin.summary as summary
 main_app.add_typer(summary.app, name="summary",
                    help="Operations on summaries the API key owner has direct access to")
 

@@ -1,8 +1,8 @@
 import typer
-import config.sdk as sdk_config
+import src.config.sdk as sdk_config
 from zanshinsdk import Client
 from zanshinsdk.client import ScanTargetKind, ScanTargetGroupCredentialListORACLE
-from lib.utils import dump_json, output_iterable
+from src.lib.utils import dump_json, output_iterable
 from uuid import UUID
 
 app = typer.Typer()

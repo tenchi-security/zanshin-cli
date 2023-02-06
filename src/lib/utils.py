@@ -1,10 +1,10 @@
 from typing import Union
 import typer
 from json import dumps
-from lib.models import OutputFormat
+from src.lib.models import OutputFormat
 from prettytable import PrettyTable
 from typing import Iterator, Dict, Any
-import config.sdk as sdk_config
+import src.config.sdk as sdk_config
 from collections.abc import Sequence, Mapping
 
 def format_field(value: Any) -> str:

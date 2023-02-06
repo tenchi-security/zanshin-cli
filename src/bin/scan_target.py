@@ -1,14 +1,14 @@
 import typer
-import config.sdk as sdk_config
-from lib.utils import dump_json, output_iterable
+import src.config.sdk as sdk_config
+from src.lib.utils import dump_json, output_iterable
 from uuid import UUID
 from typing import Iterator, Dict, Optional, List
 from zanshinsdk import Client
 from zanshinsdk.client import ScanTargetKind, ScanTargetSchedule, ScanTargetAWS, ScanTargetAZURE, \
     ScanTargetDOMAIN, ScanTargetGCP, ScanTargetHUAWEI
 import boto3
-from lib.awsorgrun import AWSOrgRunTarget, awsorgrun
-from lib.models import AWSAccount
+from src.lib.awsorgrun import AWSOrgRunTarget, awsorgrun
+from src.lib.models import AWSAccount
 from boto3_type_annotations.organizations import Client as Boto3OrganizationsClient
 
 app = typer.Typer()
