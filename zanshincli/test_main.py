@@ -11,7 +11,7 @@ from pathlib import Path
 # import boto3
 
 # from zanshincli import main
-from main import zanshin_exchanger
+from src.main import zanshin_exchanger
 import config.sdk as sdk_config
 
 from typer.testing import CliRunner
