@@ -40,6 +40,7 @@ jobs:
 
       - name: Run pre-commit command
         run: |
+          poetry run pre-commit autoupdate
           poetry run pre-commit run --all-files
 
       - name: Lint with flake8
