@@ -11,7 +11,8 @@ from pathlib import Path
 # import boto3
 
 # from zanshincli import main
-from main import global_options, zanshin_exchanger
+from main import zanshin_exchanger
+import config.sdk as sdk_config
 
 from typer.testing import CliRunner
 
@@ -24,7 +25,7 @@ class TestStringMethods(unittest.TestCase):
     ###################################################
 
     def setUp(self):
-        global_options['profile'] = 'default'
+        sdk_config.profile = 'default'
 
     ###################################################
     # General Functions
