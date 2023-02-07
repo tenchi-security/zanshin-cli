@@ -158,7 +158,7 @@ def onboard_organization_aws_organization_scan_target(
     For each of selected accounts in AWS Organization, creates a new Scan Target in informed zanshin organization
     and performs onboarding. Requires boto3 and correct AWS IAM Privileges.
     Checkout the required AWS IAM privileges at
-    https://github.com/tenchi-security/zanshin-cli/blob/main/zanshincli/docs/README.md
+    https://github.com/tenchi-security/zanshin-cli/blob/main/src/lib/docs/README.md
     """
     client = Client(profile=sdk_config.profile)
     if boto3_profile:
