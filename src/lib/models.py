@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 # Alert states that the user can set.
 class AlertStateSetable(str, Enum):
     OPEN = "OPEN"
@@ -13,6 +14,7 @@ class OutputFormat(str, Enum):
     """
     Used to specify command-line parameters indicating output format.
     """
+
     JSON = "json"
     TABLE = "table"
     CSV = "csv"
@@ -25,5 +27,4 @@ class AWSAccount(dict):
     """
 
     def __init__(self, Id: str, Name: str, Arn: str, Email: str, Onboard: bool = False):
-        dict.__init__(self, Id=Id, Name=Name, Arn=Arn,
-                      Email=Email, Onboard=Onboard)
+        dict.__init__(self, Id=Id, Name=Name, Arn=Arn, Email=Email, Onboard=Onboard)

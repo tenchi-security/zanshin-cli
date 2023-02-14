@@ -1,7 +1,7 @@
 import unittest
 
-class FollowerTest(unittest.TestCase):
 
+class FollowerTest(unittest.TestCase):
     def test_organization_follower_list(self):
         pass
 

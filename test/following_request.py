@@ -1,7 +1,7 @@
 import unittest
 
-class FollowingRequestTest(unittest.TestCase):
 
+class FollowingRequestTest(unittest.TestCase):
     def test_organization_following_request_list(self):
         pass
 

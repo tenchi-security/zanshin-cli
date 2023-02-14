@@ -1,7 +1,7 @@
 import unittest
 
+
 class MemberTest(unittest.TestCase):
-   
     def test_organization_member_list(self):
         pass
 

@@ -1,13 +1,15 @@
-import typer
-import src.config.sdk as sdk_config
-from zanshinsdk import Client
-from src.lib.utils import dump_json, output_iterable
 from uuid import UUID
+
+import typer
+from zanshinsdk import Client
+
+import src.config.sdk as sdk_config
+from src.lib.utils import dump_json, output_iterable
 
 app = typer.Typer()
 
 
-@app.command(name='list')
+@app.command(name="list")
 def account_api_key_list():
     """
     Iterates over the API keys of current logged user.
@@ -16,8 +18,10 @@ def account_api_key_list():
     output_iterable(client.iter_api_keys())
 
 
-@app.command(name='create')
-def account_api_key_create(name: str = typer.Argument(..., help="Name of the new API key")):
+@app.command(name="create")
+def account_api_key_create(
+    name: str = typer.Argument(..., help="Name of the new API key")
+):
     """
     Creates a new API key for the current logged user, API Keys can be used to interact with the zanshin api directly
     a behalf of that user.
@@ -26,8 +30,10 @@ def account_api_key_create(name: str = typer.Argument(..., help="Name of the new
     dump_json(client.create_api_key(name))
 
 
-@app.command(name='delete')
-def account_api_key_delete(api_key_id: UUID = typer.Argument(..., help="UUID of the invite to delete")):
+@app.command(name="delete")
+def account_api_key_delete(
+    api_key_id: UUID = typer.Argument(..., help="UUID of the invite to delete")
+):
     """
     Deletes a given API key by its id, it will only work if the informed ID belongs to the current logged user.
     """

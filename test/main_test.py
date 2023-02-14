@@ -1,8 +1,18 @@
+import os
 import unittest
 from io import StringIO
-from unittest.mock import patch
-import os
 from pathlib import Path
+from unittest.mock import patch
+
+from typer.testing import CliRunner
+
+import src.config.sdk as sdk_config
+
+# from zanshincli import main
+from src.main import zanshin_exchanger
+
+# from zanshincli import main
+from zanshincli.main import global_options, zanshin_exchanger
 
 ###### Commenting testes as those pass on dev machine and not on github actions
 
@@ -10,11 +20,6 @@ from pathlib import Path
 # from boto3_type_annotations.organizations import Client as Boto3OrganizationsClient
 # import boto3
 
-# from zanshincli import main
-from src.main import zanshin_exchanger
-import src.config.sdk as sdk_config
-
-from typer.testing import CliRunner
 
 runner = CliRunner()
 
@@ -25,7 +30,7 @@ class TestStringMethods(unittest.TestCase):
     ###################################################
 
     def setUp(self):
-        sdk_config.profile = 'default'
+        sdk_config.profile = "default"
 
     ###################################################
     # General Functions
@@ -43,11 +48,10 @@ class TestStringMethods(unittest.TestCase):
 
     def mock_aws_credentials(self):
         """Mocked AWS Credentials for moto."""
-        moto_credentials_file_path = Path(
-            __file__).parent.absolute() / 'dummy_aws_credentials'
-        os.environ['AWS_SHARED_CREDENTIALS_FILE'] = str(
-            moto_credentials_file_path)
-
+        moto_credentials_file_path = (
+            Path(__file__).parent.absolute() / "dummy_aws_credentials"
+        )
+        os.environ["AWS_SHARED_CREDENTIALS_FILE"] = str(moto_credentials_file_path)
 
     def test_global_options_callback(self):
         pass
@@ -61,7 +65,6 @@ class TestStringMethods(unittest.TestCase):
 
     def test_version(self):
         pass
-
 
     """
     Commenting tests as those pass on local machine but fails on github actions

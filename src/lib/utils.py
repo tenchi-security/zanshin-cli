@@ -1,11 +1,13 @@
-from typing import Union
-import typer
+from collections.abc import Mapping, Sequence
 from json import dumps
-from src.lib.models import OutputFormat
+from typing import Any, Dict, Iterator, Union
+
+import typer
 from prettytable import PrettyTable
-from typing import Iterator, Dict, Any
+
 import src.config.sdk as sdk_config
-from collections.abc import Sequence, Mapping
+from src.lib.models import OutputFormat
+
 
 def format_field(value: Any) -> str:
     """
@@ -24,10 +26,14 @@ def format_field(value: Any) -> str:
     else:
         return value
 
+
 def dump_json(out: Union[dict, any]) -> None:
     typer.echo(dumps(out, indent=4))
 
-def output_iterable(iterator: Iterator[Dict], empty: Any = None, _each_iteration_function: Any = None) -> None:
+
+def output_iterable(
+    iterator: Iterator[Dict], empty: Any = None, _each_iteration_function: Any = None
+) -> None:
     """
     Function that iterates over a series of dicts representing JSON objects returned by API list operations, and which
     outputs them using typer.echo in the specified format. Will use streaming processing for JSON, all others need to
@@ -55,7 +61,9 @@ def output_iterable(iterator: Iterator[Dict], empty: Any = None, _each_iteration
                 for k in entry.keys():
                     if k not in table.field_names:
                         table.add_column(k, [empty] * sdk_config.entries)
-            table.add_row([format_field(entry.get(fn, empty)) for fn in table.field_names])
+            table.add_row(
+                [format_field(entry.get(fn, empty)) for fn in table.field_names]
+            )
             sdk_config.entries += 1
             if _each_iteration_function:
                 _each_iteration_function()

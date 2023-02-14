@@ -1,7 +1,7 @@
 import unittest
 
-class ApiKeyTest(unittest.TestCase):
 
+class ApiKeyTest(unittest.TestCase):
     def test_account_api_key_list(self):
         pass
 

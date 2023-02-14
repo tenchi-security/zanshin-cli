@@ -1,7 +1,7 @@
 import unittest
 
-class SummaryTest(unittest.TestCase):
 
+class SummaryTest(unittest.TestCase):
     def test_summary_alert(self):
         pass
 

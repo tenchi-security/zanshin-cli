@@ -1,7 +1,7 @@
 import unittest
 
-class ScanTest(unittest.TestCase):
 
+class ScanTest(unittest.TestCase):
     def test_organization_scan_target_scan_start(self):
         pass
 

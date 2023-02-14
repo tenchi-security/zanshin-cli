@@ -1,7 +1,7 @@
 import unittest
 
-class MemberInviteTest(unittest.TestCase):
 
+class MemberInviteTest(unittest.TestCase):
     def test_organization_member_invite_list(self):
         pass
 

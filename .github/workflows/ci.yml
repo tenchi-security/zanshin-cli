@@ -13,7 +13,6 @@ jobs:
   zanshincli_jobs:
     strategy:
       matrix:
-        # Run in all these versions of Python
         python-version: [ 3.8, 3.9, "3.10", 3.11 ]
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
@@ -38,13 +37,10 @@ jobs:
         run: |
           poetry install
 
-      - name: Lint with flake8
+      - name: Run pre-commit command
         run: |
-          pip install flake8
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          poetry run pre-commit autoupdate
+          poetry run pre-commit run --all-files
 
       - name: Create fake tenchi config on Linux and Mac
         if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'

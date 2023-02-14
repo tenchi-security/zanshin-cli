@@ -1,7 +1,7 @@
 import unittest
 
+
 class AlertsTest(unittest.TestCase):
-    
     def test_alert_list(self):
         pass
 
