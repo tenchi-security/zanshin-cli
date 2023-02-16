@@ -22,11 +22,11 @@ pipx upgrade zanshincli
 
 ## Configuration File
 
-The way the SDK and CLI handles credentials is by using a configuration file in the format created by the Python [RawConfigParser](https://docs.python.org/3/library/configparser.html#configparser.RawConfigParser) class. 
+The way the SDK and CLI handles credentials is by using a configuration file in the format created by the Python [RawConfigParser](https://docs.python.org/3/library/configparser.html#configparser.RawConfigParser) class.
 
 The file is located at `~/.tenchi/config`, where `~` is the [current user's home directory](https://docs.python.org/3/library/pathlib.html#pathlib.Path.home).
 
-Each section is treated as a configuration profile, and the SDK and CLI will look for a section called `default` if another is not explicitly selected. 
+Each section is treated as a configuration profile, and the SDK and CLI will look for a section called `default` if another is not explicitly selected.
 
 These are the supported options:
 
