@@ -15,8 +15,7 @@ def summary_alert(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     scan_target_id: Optional[List[UUID]] = typer.Option(
         None,
-        help="Only summarize alerts from the specified"
-        "scan targets, defaults to all.",
+        help="Only summarize alerts from the specified scan targets, defaults to all",
     ),
 ):
     """
@@ -32,7 +31,7 @@ def summary_alert_following(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     following_ids: Optional[List[UUID]] = typer.Option(
         None,
-        help="Only summarize alerts from the" "specified following, defaults to" "all.",
+        help="Only summarize alerts from the specified following, defaults to all",
     ),
 ):
     """
@@ -48,8 +47,7 @@ def summary_scan(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     scan_target_ids: Optional[List[UUID]] = typer.Option(
         None,
-        help="Only summarize alerts from the specified"
-        "scan targets, defaults to all.",
+        help="Only summarize alerts from the specified scan targets, defaults to all",
     ),
     days: Optional[int] = typer.Option(
         7, help="Number of days to go back in time in historical search"
@@ -68,10 +66,10 @@ def summary_scan_following(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     following_ids: Optional[List[UUID]] = typer.Option(
         None,
-        help="Only summarize alerts from the" "specified following, defaults to" "all.",
+        help="Only summarize alerts from the specified following, defaults to all",
     ),
     days: Optional[int] = typer.Option(
-        7, help="Number of days to go back in time in historical" "search"
+        7, help="Number of days to go back in time in historical search"
     ),
 ):
     """
