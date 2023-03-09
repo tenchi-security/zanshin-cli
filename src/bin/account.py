@@ -14,7 +14,7 @@ app = typer.Typer()
 @app.command(name="me")
 def account_me():
     """
-    Returns the details of the user account that owns the API key used by this Connection instance as per
+    Returns the details of the user account that owns the API key used by this Connection instance
     """
 
     client = Client(profile=sdk_config.profile)

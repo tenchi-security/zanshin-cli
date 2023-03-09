@@ -25,7 +25,7 @@ app = typer.Typer()
 def alert_list(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     scan_target_id: Optional[List[UUID]] = typer.Option(
-        None, help="Only list alerts from the specified" "scan targets."
+        None, help="Only list alerts from the specified scan targets"
     ),
     states: Optional[List[AlertState]] = typer.Option(
         [
@@ -33,12 +33,12 @@ def alert_list(
             for x in AlertState
             if x != AlertState.CLOSED and x != AlertState.ACTIVE
         ],
-        help="Only list alerts in the specified states.",
+        help="Only list alerts in the specified states",
         case_sensitive=False,
     ),
     severity: Optional[List[AlertSeverity]] = typer.Option(
         [x.value for x in AlertSeverity],
-        help="Only list alerts with the specified" "severities",
+        help="Only list alerts with the specified severities",
         case_sensitive=False,
     ),
     language: Optional[Languages] = typer.Option(
@@ -90,7 +90,7 @@ def alert_list(
 def alert_following_list(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     following_ids: Optional[List[UUID]] = typer.Option(
-        None, help="Only list alerts from the specified" " scan targets."
+        None, help="Only list alerts from the specified scan targets"
     ),
     states: Optional[List[AlertState]] = typer.Option(
         [
@@ -98,7 +98,7 @@ def alert_following_list(
             for x in AlertState
             if x != AlertState.CLOSED and x != AlertState.ACTIVE
         ],
-        help="Only list alerts in the specified states.",
+        help="Only list alerts in the specified states",
         case_sensitive=False,
     ),
     severity: Optional[List[AlertSeverity]] = typer.Option(
@@ -149,13 +149,13 @@ def alert_following_list(
 def alert_history_list(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     scan_target_id: Optional[List[UUID]] = typer.Option(
-        None, help="Only list alerts from the specified" "scan targets."
+        None, help="Only list alerts from the specified scan targets"
     ),
-    cursor: Optional[str] = typer.Option(None, help="Cursor."),
-    persist: Optional[bool] = typer.Option(False, help="Persist."),
+    cursor: Optional[str] = typer.Option(None, help="Cursor for pagination"),
+    persist: Optional[bool] = typer.Option(False, help="Persist"),
 ):
     """
-    List alerts from a given organization, with optional filters by scan target, state or severity.
+    List alerts from a given organization, with optional filters by scan target, state or severity
     """
     client = Client(profile=sdk_config.profile)
 
@@ -182,13 +182,13 @@ def alert_history_list(
 def alert_history_following_list(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     following_ids: Optional[List[UUID]] = typer.Option(
-        None, help="Only list alerts from the specified" "scan targets."
+        None, help="Only list alerts from the specified scan targets"
     ),
-    cursor: Optional[str] = typer.Option(None, help="Cursor."),
-    persist: Optional[bool] = typer.Option(False, help="Persist."),
+    cursor: Optional[str] = typer.Option(None, help="Cursor for pagination"),
+    persist: Optional[bool] = typer.Option(False, help="Persist"),
 ):
     """
-    List alerts from a given organization, with optional filters by scan target, state or severity.
+    List alerts from a given organization, with optional filters by scan target, state or severity
     """
     client = Client(profile=sdk_config.profile)
 
@@ -215,7 +215,7 @@ def alert_history_following_list(
 def grouped_alert_list(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     scan_target_id: Optional[List[UUID]] = typer.Option(
-        None, help="Only list alerts from the specified" "scan targets."
+        None, help="Only list alerts from the specified scan targets"
     ),
     state: Optional[List[AlertState]] = typer.Option(
         [
@@ -223,12 +223,12 @@ def grouped_alert_list(
             for x in AlertState
             if x != AlertState.CLOSED and x != AlertState.ACTIVE
         ],
-        help="Only list alerts in the specified states.",
+        help="Only list alerts in the specified states",
         case_sensitive=False,
     ),
     severity: Optional[List[AlertSeverity]] = typer.Option(
         [x.value for x in AlertSeverity],
-        help="Only list alerts with the specified" "severities",
+        help="Only list alerts with the specified severities",
         case_sensitive=False,
     ),
 ):
@@ -250,7 +250,7 @@ def grouped_alert_list(
 def grouped_alert_following_list(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     following_ids: Optional[List[UUID]] = typer.Option(
-        None, help="Only list alerts from the" "specified scan targets."
+        None, help="Only list alerts from the specified scan targets"
     ),
     state: Optional[List[AlertState]] = typer.Option(
         [
@@ -258,7 +258,7 @@ def grouped_alert_following_list(
             for x in AlertState
             if x != AlertState.CLOSED and x != AlertState.ACTIVE
         ],
-        help="Only list alerts in the specified states.",
+        help="Only list alerts in the specified states",
         case_sensitive=False,
     ),
     severity: Optional[List[AlertSeverity]] = typer.Option(
@@ -284,8 +284,8 @@ def grouped_alert_following_list(
 @app.command(name="get")
 def alert_get(
     alert_id: UUID = typer.Argument(..., help="UUID of the alert to look up"),
-    list_history: Optional[bool] = typer.Option(False, help="History of this alert."),
-    list_comments: Optional[bool] = typer.Option(False, help="Comments of this alert."),
+    list_history: Optional[bool] = typer.Option(False, help="History of this alert"),
+    list_comments: Optional[bool] = typer.Option(False, help="Comments of this alert"),
 ):
     """
     Returns details about a specified alert
@@ -316,7 +316,7 @@ def alert_update(
     ),
     comment: Optional[str] = typer.Option(
         None,
-        help="A comment when closing the alert with RISK_ACCEPTED, FALSE_POSITIVE, MITIGATING_CONTROL",
+        help="A comment when setting the alert state to RISK_ACCEPTED, FALSE_POSITIVE, MITIGATING_CONTROL",
     ),
 ):
     """

@@ -129,7 +129,7 @@ def scan_target_groups_insert(
     ),
     region: str = typer.Argument(..., help="Oracle cloud region"),
     tenancy_id: str = typer.Argument(..., help="Oracle tenancyId"),
-    user_id: str = typer.Argument(..., help="Oracle UserId"),
+    user_id: str = typer.Argument(..., help="Oracle userId"),
     key_fingerprint: str = typer.Argument(
         ..., help="Oracle Fingerprint used for authentication"
     ),
