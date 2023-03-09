@@ -4,7 +4,7 @@ sdist:
 
 CLI.md: src/*.py
 	# Workaround for lack of typer-cli support on new versions
-	poetry add typer==0.3.2 typer-cli
+	poetry add typer==0.3.2 typer-cli==0.0.12
 	poetry run typer --version
 	poetry run typer --app main_app src.main utils docs --output CLI.md --name zanshin
 
