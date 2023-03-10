@@ -41,7 +41,6 @@ repos:
           [
             "--allow-missing-credentials"
           ]
-      - id: no-commit-to-branch
   - repo: local
     hooks:
       - id: export-requirements
