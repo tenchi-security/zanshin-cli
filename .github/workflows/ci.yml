@@ -35,10 +35,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          rm -rf ~/.cache/pypoetry/
           poetry install
 
       - name: Run pre-commit command
+        if: matrix.os != 'macos-latest'
         run: |
           poetry run pre-commit autoupdate
           poetry run pre-commit run --all-files
