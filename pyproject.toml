@@ -6,7 +6,7 @@ license = "Apache Software License"
 readme = "README.md"
 authors = ["Tenchi Security <contact@tenchisecurity.com>"]
 homepage = "https://github.com/tenchi-security/zanshin-cli"
-packages = [{include = "zanshincli"}]
+packages = [{include = "src"}]
 
 classifiers=[
         "Programming Language :: Python",

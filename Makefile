@@ -2,11 +2,11 @@ sdist:
 	rm -f dist/*
 	python setup.py sdist
 
-CLI.md: zanshincli/*.py
+CLI.md: src/*.py
 	# Workaround for lack of typer-cli support on new versions
-	poetry add typer==0.3.2 typer-cli
+	poetry add typer==0.3.2 typer-cli==0.0.12
 	poetry run typer --version
-	poetry run typer --app main_app zanshincli.main utils docs --output CLI.md --name zanshin
+	poetry run typer --app main_app src.main utils docs --output CLI.md --name zanshin
 
 	# Workaround for lack of typer-cli support on new versions
 	poetry remove typer-cli
@@ -22,12 +22,12 @@ lint:
 	poetry run pre-commit run -a
 
 test:
-	poetry run python -m unittest discover -s zanshincli -v
+	python -m unittest discover test -p "*_test.py"
 
 coverage:
-	poetry run coverage run --source zanshincli -m unittest discover -s zanshincli
+	poetry run coverage run --source src -m unittest discover -s src
 	poetry run coverage report
 
 coverage_missing:
-	poetry run coverage run --source zanshincli -m unittest discover -s zanshincli
+	poetry run coverage run --source src -m unittest discover -s src
 	poetry run coverage report -m
