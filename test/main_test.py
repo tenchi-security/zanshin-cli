@@ -9,10 +9,7 @@ from typer.testing import CliRunner
 import src.config.sdk as sdk_config
 
 # from zanshincli import main
-from src.main import zanshin_exchanger
-
-# from zanshincli import main
-from zanshincli.main import global_options, zanshin_exchanger
+from zanshincli.main import zanshin_exchanger
 
 ###### Commenting testes as those pass on dev machine and not on github actions
 
