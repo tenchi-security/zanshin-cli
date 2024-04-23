@@ -5,6 +5,9 @@ import boto3
 import typer
 from boto3_type_annotations.organizations import Client as Boto3OrganizationsClient
 from zanshinsdk import Client
+from zanshinsdk.client import DAILY as DAILY_SCHEDULE
+from zanshinsdk.client import HOURLY as HOURLY_SCHEDULE
+from zanshinsdk.client import WEEKLY as WEEKLY_SCHEDULE
 from zanshinsdk.client import (
     ScanTargetAWS,
     ScanTargetAZURE,
@@ -41,7 +44,7 @@ def organization_scan_target_create(
     name: str = typer.Argument(..., help="name of the scan target"),
     credential: str = typer.Argument(..., help="credential of the scan target"),
     schedule: ScanTargetSchedule = typer.Argument(
-        ScanTargetSchedule.TWENTY_FOUR_HOURS, help="schedule of the scan target"
+        DAILY_SCHEDULE, help="schedule of the scan target"
     ),
 ):
     """
@@ -143,7 +146,7 @@ def onboard_organization_aws_scan_target(
     name: str = typer.Argument(..., help="name of the scan target"),
     credential: str = typer.Argument(..., help="credential of the scan target"),
     schedule: ScanTargetSchedule = typer.Argument(
-        ScanTargetSchedule.TWENTY_FOUR_HOURS, help="schedule of the scan target"
+        DAILY_SCHEDULE, help="schedule of the scan target"
     ),
 ):
     """
@@ -193,7 +196,7 @@ def onboard_organization_aws_organization_scan_target(
     region: str = typer.Argument(..., help="AWS Region to deploy CloudFormation"),
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     schedule: ScanTargetSchedule = typer.Argument(
-        ScanTargetSchedule.TWENTY_FOUR_HOURS, help="schedule of the scan target"
+        DAILY_SCHEDULE, help="schedule of the scan target"
     ),
 ):
     """
