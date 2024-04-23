@@ -1,3 +1,4 @@
+import json
 from typing import Dict, Iterator, List, Optional
 from uuid import UUID
 
@@ -5,7 +6,10 @@ import boto3
 import typer
 from boto3_type_annotations.organizations import Client as Boto3OrganizationsClient
 from zanshinsdk import Client
+from zanshinsdk.client import DAILY as DAILY_SCHEDULE
 from zanshinsdk.client import (
+    Day,
+    Frequency,
     ScanTargetAWS,
     ScanTargetAZURE,
     ScanTargetDOMAIN,
@@ -13,6 +17,7 @@ from zanshinsdk.client import (
     ScanTargetHUAWEI,
     ScanTargetKind,
     ScanTargetSchedule,
+    TimeOfDay,
 )
 
 import src.config.sdk as sdk_config
@@ -40,8 +45,8 @@ def organization_scan_target_create(
     kind: ScanTargetKind = typer.Argument(..., help="kind of the scan target"),
     name: str = typer.Argument(..., help="name of the scan target"),
     credential: str = typer.Argument(..., help="credential of the scan target"),
-    schedule: ScanTargetSchedule = typer.Argument(
-        ScanTargetSchedule.TWENTY_FOUR_HOURS, help="schedule of the scan target"
+    schedule: str = typer.Argument(
+        DAILY_SCHEDULE.json(), help="schedule of the scan target"
     ),
 ):
     """
@@ -60,7 +65,11 @@ def organization_scan_target_create(
         credential = ScanTargetDOMAIN(credential)
     dump_json(
         client.create_organization_scan_target(
-            organization_id, kind, name, credential, schedule
+            organization_id,
+            kind,
+            name,
+            credential,
+            ScanTargetSchedule.model_validate_json(schedule),
         )
     )
 
@@ -82,9 +91,7 @@ def organization_scan_target_update(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target"),
     name: Optional[str] = typer.Argument(None, help="name of the scan target"),
-    schedule: Optional[ScanTargetSchedule] = typer.Argument(
-        None, help="schedule of the scan target"
-    ),
+    schedule: Optional[str] = typer.Argument(None, help="schedule of the scan target"),
 ):
     """
     Update scan target of organization.
@@ -92,7 +99,10 @@ def organization_scan_target_update(
     client = Client(profile=sdk_config.profile)
     dump_json(
         client.update_organization_scan_target(
-            organization_id, scan_target_id, name, schedule
+            organization_id,
+            scan_target_id,
+            name,
+            ScanTargetSchedule.model_validate_json(schedule),
         )
     )
 
@@ -142,8 +152,8 @@ def onboard_organization_aws_scan_target(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     name: str = typer.Argument(..., help="name of the scan target"),
     credential: str = typer.Argument(..., help="credential of the scan target"),
-    schedule: ScanTargetSchedule = typer.Argument(
-        ScanTargetSchedule.TWENTY_FOUR_HOURS, help="schedule of the scan target"
+    schedule: str = typer.Argument(
+        DAILY_SCHEDULE.json(), help="schedule of the scan target"
     ),
 ):
     """
@@ -170,7 +180,7 @@ def onboard_organization_aws_scan_target(
             kind=kind,
             name=name,
             credential=credential,
-            schedule=schedule,
+            schedule=ScanTargetSchedule.model_validate_json(schedule),
         )
     )
 
@@ -192,8 +202,8 @@ def onboard_organization_aws_organization_scan_target(
     ),
     region: str = typer.Argument(..., help="AWS Region to deploy CloudFormation"),
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
-    schedule: ScanTargetSchedule = typer.Argument(
-        ScanTargetSchedule.TWENTY_FOUR_HOURS, help="schedule of the scan target"
+    schedule: str = typer.Argument(
+        DAILY_SCHEDULE.json(), help="schedule of the scan target"
     ),
 ):
     """
@@ -219,9 +229,9 @@ def onboard_organization_aws_organization_scan_target(
     # Fetching organization's existing Scan Targets of kind AWS
     # in order to see if AWS Accounts are already in Zanshin
     typer.echo("Looking for Zanshin AWS Scan Targets")
-    organization_current_scan_targets: Iterator[
-        Dict
-    ] = client.iter_organization_scan_targets(organization_id=organization_id)
+    organization_current_scan_targets: Iterator[Dict] = (
+        client.iter_organization_scan_targets(organization_id=organization_id)
+    )
     organization_aws_scan_targets: List[ScanTargetAWS] = [
         sc
         for sc in organization_current_scan_targets
@@ -246,7 +256,7 @@ def onboard_organization_aws_organization_scan_target(
             func=_sdk_onboard_scan_target,
             region=region,
             organization_id=organization_id,
-            schedule=schedule,
+            schedule=ScanTargetSchedule.model_validate_json(schedule),
         )
     else:
         aws_organizations_client: Boto3OrganizationsClient = boto3_session.client(
@@ -306,7 +316,7 @@ def onboard_organization_aws_organization_scan_target(
             func=_sdk_onboard_scan_target,
             region=region,
             organization_id=organization_id,
-            schedule=schedule,
+            schedule=ScanTargetSchedule.model_validate_json(schedule),
         )
 
 
