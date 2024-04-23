@@ -219,9 +219,9 @@ def onboard_organization_aws_organization_scan_target(
     # Fetching organization's existing Scan Targets of kind AWS
     # in order to see if AWS Accounts are already in Zanshin
     typer.echo("Looking for Zanshin AWS Scan Targets")
-    organization_current_scan_targets: Iterator[
-        Dict
-    ] = client.iter_organization_scan_targets(organization_id=organization_id)
+    organization_current_scan_targets: Iterator[Dict] = (
+        client.iter_organization_scan_targets(organization_id=organization_id)
+    )
     organization_aws_scan_targets: List[ScanTargetAWS] = [
         sc
         for sc in organization_current_scan_targets
