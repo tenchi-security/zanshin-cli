@@ -1,3 +1,5 @@
+.PHONY: test
+
 sdist:
 	rm -f dist/*
 	python setup.py sdist
@@ -22,12 +24,12 @@ lint:
 	poetry run pre-commit run -a
 
 test:
-	python -m unittest discover test -p "*_test.py"
+	poetry run python -m unittest discover test -p "*_test.py"
 
 coverage:
-	poetry run coverage run --source src -m unittest discover -s src
+	poetry run coverage run --source src -m unittest discover test -p "*_test.py"
 	poetry run coverage report
 
 coverage_missing:
-	poetry run coverage run --source src -m unittest discover -s src
+	poetry run coverage run --source src -m unittest discover test -p "*_test.py"
 	poetry run coverage report -m
