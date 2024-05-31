@@ -1,4 +1,3 @@
-import json
 from typing import Dict, Iterator, List, Optional
 from uuid import UUID
 
@@ -8,8 +7,7 @@ from boto3_type_annotations.organizations import Client as Boto3OrganizationsCli
 from zanshinsdk import Client
 from zanshinsdk.client import DAILY as DAILY_SCHEDULE
 from zanshinsdk.client import (
-    Day,
-    Frequency,
+    OAuthTargetKind,
     ScanTargetAWS,
     ScanTargetAZURE,
     ScanTargetDOMAIN,
@@ -17,7 +15,16 @@ from zanshinsdk.client import (
     ScanTargetHUAWEI,
     ScanTargetKind,
     ScanTargetSchedule,
-    TimeOfDay,
+    ScanTargetORACLE,
+    ScanTargetZENDESK,
+    ScanTargetGWORKSPACE,
+    ScanTargetSLACK,
+    ScanTargetBITBUCKET,
+    ScanTargetJIRA,
+    ScanTargetGITLAB,
+    ScanTargetSALESFORCE,
+    ScanTargetMS365,
+    ScanTargetGITHUB,
 )
 
 import src.config.sdk as sdk_config
@@ -53,25 +60,39 @@ def organization_scan_target_create(
     Create a new scan target in organization.
     """
     client = Client(profile=sdk_config.profile)
-    if kind == ScanTargetKind.AWS:
-        credential = ScanTargetAWS(credential)
-    elif kind == ScanTargetKind.GCP:
-        credential = ScanTargetGCP(credential)
-    elif kind == ScanTargetKind.AZURE:
-        credential = ScanTargetAZURE(credential)
-    elif kind == ScanTargetKind.HUAWEI:
-        credential = ScanTargetHUAWEI(credential)
-    elif kind == ScanTargetKind.DOMAIN:
-        credential = ScanTargetDOMAIN(credential)
-    dump_json(
-        client.create_organization_scan_target(
-            organization_id,
-            kind,
-            name,
-            credential,
-            ScanTargetSchedule.model_validate_json(schedule),
-        )
+
+    credential_map = {
+        ScanTargetKind.AWS: ScanTargetAWS,
+        ScanTargetKind.AZURE: ScanTargetAZURE,
+        ScanTargetKind.GCP: ScanTargetGCP,
+        ScanTargetKind.HUAWEI: ScanTargetHUAWEI,
+        ScanTargetKind.DOMAIN: ScanTargetDOMAIN,
+        ScanTargetKind.ORACLE: ScanTargetORACLE,
+        ScanTargetKind.ZENDESK: ScanTargetZENDESK,
+        ScanTargetKind.GWORKSPACE: ScanTargetGWORKSPACE,
+        ScanTargetKind.SLACK: ScanTargetSLACK,
+        ScanTargetKind.BITBUCKET: ScanTargetBITBUCKET,
+        ScanTargetKind.JIRA: ScanTargetJIRA,
+        ScanTargetKind.GITLAB: ScanTargetGITLAB,
+        ScanTargetKind.SALESFORCE: ScanTargetSALESFORCE,
+        ScanTargetKind.MS365: ScanTargetMS365,
+        ScanTargetKind.GITHUB: ScanTargetGITHUB,
+    }
+
+    if kind not in credential_map:
+        raise ValueError(f"Unsupported kind: {kind}")
+
+    credential = credential_map[kind](credential)
+
+    scan_target = client.create_organization_scan_target(
+        organization_id,
+        kind,
+        name,
+        credential,
+        ScanTargetSchedule.model_validate_json(schedule),
     )
+
+    dump_json(scan_target)
 
 
 @app.command(name="get")
@@ -135,12 +156,13 @@ def organization_scan_target_check(
 def organization_scan_target_oauth_link(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target"),
+    kind: ScanTargetKind = typer.Argument(..., help="kind of the scan target"),
 ):
     """
     Retrieve a link to allow the user to authorize zanshin to read info from their gworkspace environment.
     """
     client = Client(profile=sdk_config.profile)
-    dump_json(client.get_gworkspace_oauth_link(organization_id, scan_target_id))
+    dump_json(client.get_kind_oauth_link(organization_id, scan_target_id, kind))
 
 
 @app.command(name="onboard_aws")
