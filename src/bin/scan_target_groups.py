@@ -2,7 +2,11 @@ from uuid import UUID
 
 import typer
 from zanshinsdk import Client
-from zanshinsdk.client import ScanTargetGroupCredentialListORACLE, ScanTargetKind
+from zanshinsdk.client import (
+    OAuthTargetKind,
+    ScanTargetGroupCredentialListORACLE,
+    ScanTargetKind,
+)
 
 import src.config.sdk as sdk_config
 from src.lib.utils import dump_json, output_iterable
@@ -76,7 +80,8 @@ def scan_target_groups_update(
 def scan_target_groups_create(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     kind: ScanTargetKind = typer.Argument(
-        ..., help="kind of the scan target group. Should be 'ORACLE'"
+        ...,
+        help="kind of the scan target group. Should be 'ORACLE', 'BITBUCKET' or 'GITLAB'",
     ),
     name: str = typer.Argument(..., help="name of the scan target group"),
 ):
@@ -84,7 +89,23 @@ def scan_target_groups_create(
     Creates a scan target group for the organization.
     """
     client = Client(profile=sdk_config.profile)
-    dump_json(client.create_scan_target_group(organization_id, kind, name))
+    scan_target_group = client.create_scan_target_group(organization_id, kind, name)
+
+    if kind not in [member.value for member in OAuthTargetKind]:
+        return dump_json(scan_target_group)
+
+    should_return_oauth_link = typer.prompt(
+        "Do you want to receive the oauth link from this scan target group? (y/n)",
+        default="n",
+        type=str,
+    )
+
+    if should_return_oauth_link.lower() != "y":
+        return dump_json(scan_target_group)
+
+    dump_json(
+        client.get_kind_oauth_link(organization_id, scan_target_group["id"], kind)
+    )
 
 
 @app.command(name="script")
