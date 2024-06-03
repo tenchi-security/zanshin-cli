@@ -10,21 +10,21 @@ from zanshinsdk.client import (
     OAuthTargetKind,
     ScanTargetAWS,
     ScanTargetAZURE,
+    ScanTargetBITBUCKET,
     ScanTargetDOMAIN,
     ScanTargetGCP,
-    ScanTargetHUAWEI,
-    ScanTargetKind,
-    ScanTargetSchedule,
-    ScanTargetORACLE,
-    ScanTargetZENDESK,
-    ScanTargetGWORKSPACE,
-    ScanTargetSLACK,
-    ScanTargetBITBUCKET,
-    ScanTargetJIRA,
-    ScanTargetGITLAB,
-    ScanTargetSALESFORCE,
-    ScanTargetMS365,
     ScanTargetGITHUB,
+    ScanTargetGITLAB,
+    ScanTargetGWORKSPACE,
+    ScanTargetHUAWEI,
+    ScanTargetJIRA,
+    ScanTargetKind,
+    ScanTargetMS365,
+    ScanTargetORACLE,
+    ScanTargetSALESFORCE,
+    ScanTargetSchedule,
+    ScanTargetSLACK,
+    ScanTargetZENDESK,
 )
 
 import src.config.sdk as sdk_config
@@ -92,9 +92,7 @@ def organization_scan_target_create(
         ScanTargetSchedule.model_validate_json(schedule),
     )
 
-    if kind not in [
-        member.value for member in OAuthTargetKind
-    ]:
+    if kind not in [member.value for member in OAuthTargetKind]:
         return dump_json(scan_target)
 
     should_return_oauth_link = typer.prompt(
