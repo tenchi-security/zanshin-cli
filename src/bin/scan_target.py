@@ -92,7 +92,21 @@ def organization_scan_target_create(
         ScanTargetSchedule.model_validate_json(schedule),
     )
 
-    dump_json(scan_target)
+    if kind not in [
+        member.value for member in OAuthTargetKind
+    ]:
+        return dump_json(scan_target)
+
+    should_return_oauth_link = typer.prompt(
+        "Do you want to receive the oauth link from this scan target? (y/n)",
+        default="n",
+        type=str,
+    )
+
+    if should_return_oauth_link.lower() != "y":
+        return dump_json(scan_target)
+
+    dump_json(client.get_kind_oauth_link(organization_id, scan_target["id"], kind))
 
 
 @app.command(name="get")
@@ -152,14 +166,14 @@ def organization_scan_target_check(
     dump_json(client.check_organization_scan_target(organization_id, scan_target_id))
 
 
-@app.command(name="oauth-link")
+@app.command(name="oauth_link")
 def organization_scan_target_oauth_link(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target"),
     kind: ScanTargetKind = typer.Argument(..., help="kind of the scan target"),
 ):
     """
-    Retrieve a link to allow the user to authorize zanshin to read info from their gworkspace environment.
+    Retrieve a link to allow the user to authorize zanshin to read info from their scan target environment.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(client.get_kind_oauth_link(organization_id, scan_target_id, kind))
