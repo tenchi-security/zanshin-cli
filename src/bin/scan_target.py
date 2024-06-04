@@ -168,13 +168,12 @@ def organization_scan_target_check(
 def organization_scan_target_oauth_link(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target"),
-    kind: ScanTargetKind = typer.Argument(..., help="kind of the scan target"),
 ):
     """
     Retrieve a link to allow the user to authorize zanshin to read info from their scan target environment.
     """
     client = Client(profile=sdk_config.profile)
-    dump_json(client.get_kind_oauth_link(organization_id, scan_target_id, kind))
+    dump_json(client.get_scan_target_oauth_link(organization_id, scan_target_id))
 
 
 @app.command(name="onboard_aws")

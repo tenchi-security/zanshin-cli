@@ -104,7 +104,25 @@ def scan_target_groups_create(
         return dump_json(scan_target_group)
 
     dump_json(
-        client.get_kind_oauth_link(organization_id, scan_target_group["id"], kind)
+        client.get_scan_target_group_oauth_link(
+            organization_id, scan_target_group["id"]
+        )
+    )
+
+
+@app.command(name="oauth_link")
+def organization_scan_target_group_oauth_link(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    scan_target_group_id: UUID = typer.Argument(
+        ..., help="UUID of the scan target group"
+    ),
+):
+    """
+    Retrieve a link to allow the user to authorize zanshin to read info from their scan target group environment.
+    """
+    client = Client(profile=sdk_config.profile)
+    dump_json(
+        client.get_scan_target_group_oauth_link(organization_id, scan_target_group_id)
     )
 
 
