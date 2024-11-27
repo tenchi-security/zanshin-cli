@@ -5,33 +5,29 @@ name: CI
 
 on:
   pull_request:
-  push:
-    branches:
-      - 'main'
+    types: [ opened, synchronize, reopened ]
 
 jobs:
   zanshincli_jobs:
     strategy:
       matrix:
-        python-version: [ 3.8, 3.9, "3.10", 3.11, 3.12 ]
+        python-version: [ "3.9", "3.10", "3.11", "3.12", "3.13" ]
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
     name: Test and Coverage
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Install poetry
-        uses: snok/install-poetry@v1.2.0
-        with:
-          version: 1.8.2
-          virtualenvs-create: false
-          virtualenvs-in-project: false
+        run: |
+          pip install --upgrade pip
+          pip install poetry
 
       - name: Install dependencies
         run: |
@@ -41,7 +37,7 @@ jobs:
         if: matrix.os != 'macos-latest'
         run: |
           poetry run pre-commit autoupdate
-          poetry run pre-commit run --all-files
+          poetry run pre-commit run --all-files -v
 
       - name: Create fake tenchi config on Linux and Mac
         if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
@@ -74,7 +70,7 @@ jobs:
 
       - name: Coverage comment
         id: coverage_comment
-        uses: ewjoachim/python-coverage-comment-action@v2
+        uses: py-cov-action/python-coverage-comment-action@v3
         if: steps.coverage_comment.outputs.COMMENT_FILE_WRITTEN == 'true' && matrix.os == 'ubuntu-latest'
         with:
           GITHUB_TOKEN: ${{ github.token }}
@@ -83,7 +79,7 @@ jobs:
           MINIMUM_ORANGE: 60
 
       - name: Store Pull Request comment to be posted
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: steps.coverage_comment.outputs.COMMENT_FILE_WRITTEN == 'true' && matrix.os == 'ubuntu-latest'
         with:
           # If you use a different name, update COMMENT_ARTIFACT_NAME accordingly
