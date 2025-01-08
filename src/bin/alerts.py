@@ -24,42 +24,16 @@ app = typer.Typer()
 @app.command(name="list")
 def alert_list(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
-    scan_target_id: Optional[List[UUID]] = typer.Option(
+    scan_target_ids: Optional[List[UUID]] = typer.Option(
         None, help="Only list alerts from the specified scan targets"
     ),
-    states: Optional[List[AlertState]] = typer.Option(
-        [
-            x.value
-            for x in AlertState
-            if x != AlertState.CLOSED and x != AlertState.ACTIVE
-        ],
-        help="Only list alerts in the specified states",
-        case_sensitive=False,
+    scan_target_tags: Optional[List[str]] = typer.Option(
+        None, help="Only lists alerts from the specified tags"
     ),
-    severity: Optional[List[AlertSeverity]] = typer.Option(
-        [x.value for x in AlertSeverity],
-        help="Only list alerts with the specified severities",
-        case_sensitive=False,
+    include_empty_scan_target_tags: Optional[bool] = typer.Option(
+        None, help="Include alerts without tags on the list"
     ),
-    language: Optional[Languages] = typer.Option(
-        Languages.EN_US.value,
-        help="Show alert titles in the specified language",
-        case_sensitive=False,
-    ),
-    created_at_start: Optional[str] = typer.Option(
-        None, help="Date created starts at (format YYYY-MM-DDTHH:MM:SS)"
-    ),
-    created_at_end: Optional[str] = typer.Option(
-        None, help="Date created ends at (format YYYY-MM-DDTHH:MM:SS)"
-    ),
-    updated_at_start: Optional[str] = typer.Option(
-        None, help="Date updated starts at (format YYYY-MM-DDTHH:MM:SS)"
-    ),
-    updated_at_end: Optional[str] = typer.Option(
-        None, help="Date updated ends at (format YYYY-MM-DDTHH:MM:SS)"
-    ),
-    search: Optional[str] = typer.Option("", help="Text to search for in the alerts"),
-    sort: Optional[SortOpts] = typer.Option(SortOpts.DESC, help="Sort order"),
+    cursor: Optional[str] = typer.Option(None, help="Cursor for pagination"),
     order: Optional[AlertsOrderOpts] = typer.Option(
         AlertsOrderOpts.SEVERITY, help="Field to sort results on"
     ),
@@ -71,16 +45,10 @@ def alert_list(
     output_iterable(
         client.iter_alerts(
             organization_id=organization_id,
-            scan_target_ids=scan_target_id,
-            states=states,
-            severities=severity,
-            language=language,
-            created_at_start=created_at_start,
-            created_at_end=created_at_end,
-            updated_at_start=updated_at_start,
-            updated_at_end=updated_at_end,
-            search=search,
-            sort=sort,
+            scan_target_ids=scan_target_ids,
+            scan_target_tags=scan_target_tags,
+            include_empty_scan_target_tags=include_empty_scan_target_tags,
+            cursor=cursor,
             order=order,
         )
     )
@@ -92,34 +60,13 @@ def alert_following_list(
     following_ids: Optional[List[UUID]] = typer.Option(
         None, help="Only list alerts from the specified scan targets"
     ),
-    states: Optional[List[AlertState]] = typer.Option(
-        [
-            x.value
-            for x in AlertState
-            if x != AlertState.CLOSED and x != AlertState.ACTIVE
-        ],
-        help="Only list alerts in the specified states",
-        case_sensitive=False,
+    following_tags: Optional[List[UUID]] = typer.Option(
+        None, help="Only lists alerts from the specified tags"
     ),
-    severity: Optional[List[AlertSeverity]] = typer.Option(
-        [x.value for x in AlertSeverity],
-        help="Only list alerts with the" " specified severities",
-        case_sensitive=False,
+    include_empty_following_tags: Optional[bool] = typer.Option(
+        None, help="Include alerts without tags on the list"
     ),
-    created_at_start: Optional[str] = typer.Option(
-        None, help="Date created starts at (format YYYY-MM-DDTHH:MM:SS)"
-    ),
-    created_at_end: Optional[str] = typer.Option(
-        None, help="Date created ends at (format YYYY-MM-DDTHH:MM:SS)"
-    ),
-    updated_at_start: Optional[str] = typer.Option(
-        None, help="Date updated starts at (format YYYY-MM-DDTHH:MM:SS)"
-    ),
-    updated_at_end: Optional[str] = typer.Option(
-        None, help="Date updated ends at (format YYYY-MM-DDTHH:MM:SS)"
-    ),
-    search: Optional[str] = typer.Option("", help="Text to search for in the alerts"),
-    sort: Optional[SortOpts] = typer.Option(SortOpts.DESC, help="Sort order"),
+    cursor: Optional[str] = typer.Option(None, help="Cursor for pagination"),
     order: Optional[AlertsOrderOpts] = typer.Option(
         AlertsOrderOpts.SEVERITY, help="Field to sort results on"
     ),
@@ -132,14 +79,9 @@ def alert_following_list(
         client.iter_following_alerts(
             organization_id=organization_id,
             following_ids=following_ids,
-            states=states,
-            created_at_start=created_at_start,
-            created_at_end=created_at_end,
-            updated_at_start=updated_at_start,
-            updated_at_end=updated_at_end,
-            severities=severity,
-            search=search,
-            sort=sort,
+            following_tags=following_tags,
+            include_empty_following_tags=include_empty_following_tags,
+            cursor=cursor,
             order=order,
         )
     )
@@ -252,19 +194,15 @@ def grouped_alert_following_list(
     following_ids: Optional[List[UUID]] = typer.Option(
         None, help="Only list alerts from the specified scan targets"
     ),
-    state: Optional[List[AlertState]] = typer.Option(
-        [
-            x.value
-            for x in AlertState
-            if x != AlertState.CLOSED and x != AlertState.ACTIVE
-        ],
-        help="Only list alerts in the specified states",
-        case_sensitive=False,
+    following_tags: Optional[List[UUID]] = typer.Option(
+        None, help="Only lists alerts from the specified tags"
     ),
-    severity: Optional[List[AlertSeverity]] = typer.Option(
-        [x.value for x in AlertSeverity],
-        help="Only list alerts with the specified severities",
-        case_sensitive=False,
+    include_empty_following_tags: Optional[bool] = typer.Option(
+        None, help="Include alerts without tags on the list"
+    ),
+    cursor: Optional[str] = typer.Option(None, help="Cursor for pagination"),
+    order: Optional[AlertsOrderOpts] = typer.Option(
+        AlertsOrderOpts.SEVERITY, help="Field to sort results on"
     ),
 ):
     """
@@ -275,8 +213,10 @@ def grouped_alert_following_list(
         client.iter_grouped_following_alerts(
             organization_id=organization_id,
             following_ids=following_ids,
-            states=state,
-            severities=severity,
+            following_tags=following_tags,
+            include_empty_following_tags=include_empty_following_tags,
+            cursor=cursor,
+            order=order,
         )
     )
 

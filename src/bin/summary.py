@@ -2,11 +2,7 @@ from typing import List, Optional
 from uuid import UUID
 
 import typer
-from zanshinsdk import (
-    Client,
-    AlertSeverity,
-    ScanTargetKind
-)
+from zanshinsdk import AlertSeverity, Client, ScanTargetKind
 
 import src.config.sdk as sdk_config
 from src.lib.utils import dump_json
@@ -28,16 +24,20 @@ def summary_scan_targets_following(
     ),
     alert_severities: Optional[List[AlertSeverity]] = typer.Option(
         None, help="Only summarize scan targets from the specified severities"
-    )
+    ),
+    include_empty_following_tags: Optional[bool] = typer.Option(
+        None, help="Include alerts without tags on the list"
+    ),
 ):
     client = Client(profile=sdk_config.profile)
     dump_json(
         client.get_scan_targets_following_summary(
-            organization_id,
-            following_ids,
-            following_tags,
-            scan_target_kinds,
-            alert_severities
+            organization_id=organization_id,
+            following_ids=following_ids,
+            following_tags=following_tags,
+            scan_target_kinds=scan_target_kinds,
+            alert_severities=alert_severities,
+            include_empty_following_tags=include_empty_following_tags,
         )
     )
 
@@ -56,15 +56,15 @@ def summary_scan_targets_detail(
     ),
     alert_severities: Optional[List[AlertSeverity]] = typer.Option(
         None, help="Only summarize scan targets from the specified severities"
-    )
+    ),
 ):
     client = Client(profile=sdk_config.profile)
     dump_json(
         client.get_scan_target_detail_summary(
-            organization_id,
-            scan_target_ids,
-            scan_target_tags,
-            scan_target_kinds,
-            alert_severities
+            organization_id=organization_id,
+            scan_target_ids=scan_target_ids,
+            scan_target_tags=scan_target_tags,
+            scan_target_kinds=scan_target_kinds,
+            alert_severities=alert_severities,
         )
     )
