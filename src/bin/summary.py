@@ -23,10 +23,10 @@ def summary_scan_targets_following(
         None, help="Only summarize scan targets from the specified kinds"
     ),
     alert_severities: Optional[List[AlertSeverity]] = typer.Option(
-        None, help="Only summarize scan targets from the specified severities"
+        None, help="Only summarize alerts with the specified severities"
     ),
     include_empty_following_tags: Optional[bool] = typer.Option(
-        None, help="Include alerts without tags on the list"
+        None, help="Include alerts from scan targets without tags"
     ),
 ):
     client = Client(profile=sdk_config.profile)
@@ -55,7 +55,7 @@ def summary_scan_targets_detail(
         None, help="Only summarize scan targets from the specified kinds"
     ),
     alert_severities: Optional[List[AlertSeverity]] = typer.Option(
-        None, help="Only summarize scan targets from the specified severities"
+        None, help="Only summarize alerts with the specified severities"
     ),
 ):
     client = Client(profile=sdk_config.profile)

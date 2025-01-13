@@ -31,7 +31,7 @@ def alert_list(
         None, help="Only lists alerts from the specified tags"
     ),
     include_empty_scan_target_tags: Optional[bool] = typer.Option(
-        None, help="Include alerts without tags on the list"
+        None, help="Include alerts from scan targets without tags"
     ),
     cursor: Optional[str] = typer.Option(None, help="Cursor for pagination"),
     order: Optional[AlertsOrderOpts] = typer.Option(
@@ -64,7 +64,7 @@ def alert_following_list(
         None, help="Only lists alerts from the specified tags"
     ),
     include_empty_following_tags: Optional[bool] = typer.Option(
-        None, help="Include alerts without tags on the list"
+        None, help="Include alerts from scan targets without tags"
     ),
     cursor: Optional[str] = typer.Option(None, help="Cursor for pagination"),
     order: Optional[AlertsOrderOpts] = typer.Option(
@@ -198,7 +198,7 @@ def grouped_alert_following_list(
         None, help="Only lists alerts from the specified tags"
     ),
     include_empty_following_tags: Optional[bool] = typer.Option(
-        None, help="Include alerts without tags on the list"
+        None, help="Include alerts from scan targets without tags"
     ),
     cursor: Optional[str] = typer.Option(None, help="Cursor for pagination"),
     order: Optional[AlertsOrderOpts] = typer.Option(
