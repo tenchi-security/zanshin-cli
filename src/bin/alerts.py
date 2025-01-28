@@ -269,3 +269,55 @@ def alert_update(
             organization_id, scan_target_id, alert_id, state, labels, comment
         )
     )
+
+
+@app.command(name="batch_update_state")
+def batch_update_state(
+    organization_id: UUID = typer.Argument(
+        ..., help="UUID of the organization that owns the alerts"
+    ),
+    state: AlertState = typer.Argument(..., help="New state to set for the alerts"),
+    comment: str = typer.Argument(..., help="Comment explaining this batch update"),
+    dry_run: bool = typer.Argument(
+        ..., help="If true, performs a simulation without making actual changes"
+    ),
+    scan_target_ids: Optional[List[UUID]] = typer.Option(
+        None,
+        "--scan-target-ids",
+        help="List of UUIDs representing the scan targets to filter by",
+    ),
+    alert_ids: Optional[List[str]] = typer.Option(
+        None, "--alert-ids", help="List of alert IDs to update"
+    ),
+    states: Optional[List[AlertState]] = typer.Option(
+        None, "--states", help="List of existing alert states to filter alerts by"
+    ),
+    rules: Optional[List[str]] = typer.Option(
+        None, "--rules", help="List of rules to filter alerts by"
+    ),
+    severities: Optional[List[str]] = typer.Option(
+        None,
+        "--severities",
+        help="List of severities to filter alerts by (e.g., 'low', 'medium', 'high')",
+    ),
+    include_empty_scan_target_tags: Optional[bool] = typer.Option(
+        None,
+        "--include-empty-scan-target-tags",
+        help="Whether to include alerts with scan targets that have no associated tags",
+    ),
+):
+    client = Client(profile=sdk_config.profile)
+    typer.echo(
+        client.batch_update_alerts_state(
+            organization_id=organization_id,
+            state=state,
+            dry_run=dry_run,
+            comment=comment,
+            scan_target_ids=scan_target_ids,
+            alert_ids=alert_ids,
+            states=states,
+            rules=rules,
+            severities=severities,
+            include_empty_scan_target_tags=include_empty_scan_target_tags,
+        )
+    )
