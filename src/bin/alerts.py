@@ -33,6 +33,54 @@ def alert_list(
     include_empty_scan_target_tags: Optional[bool] = typer.Option(
         None, help="Include alerts from scan targets without tags"
     ),
+    states: Optional[List[AlertState]] = typer.Option(
+        [
+            x.value
+            for x in AlertState
+            if x != AlertState.CLOSED and x != AlertState.ACTIVE
+        ],
+        help="Only list alerts in the specified states",
+        case_sensitive=False,
+    ),
+    severities: Optional[List[AlertSeverity]] = typer.Option(
+        [x.value for x in AlertSeverity],
+        help="Only list alerts with the specified severities",
+        case_sensitive=False,
+    ),
+    lang: Optional[Languages] = typer.Option(
+        Languages.EN_US.value,
+        help="Show alert titles in the specified language",
+        case_sensitive=False,
+    ),
+    created_at_start: Optional[str] = typer.Option(
+        None, help="Date created starts at (format YYYY-MM-DDTHH:MM:SS)"
+    ),
+    created_at_end: Optional[str] = typer.Option(
+        None, help="Date created ends at (format YYYY-MM-DDTHH:MM:SS)"
+    ),
+    updated_at_start: Optional[str] = typer.Option(
+        None, help="Date updated starts at (format YYYY-MM-DDTHH:MM:SS)"
+    ),
+    updated_at_end: Optional[str] = typer.Option(
+        None, help="Date updated ends at (format YYYY-MM-DDTHH:MM:SS)"
+    ),
+    search: Optional[str] = typer.Option("", help="Text to search for in the alerts"),
+    sort: Optional[SortOpts] = typer.Option(None, help="Sort order"),
+    rules: Optional[List[str]] = typer.Option(
+        None, help="Only list alerts in the specified rules"
+    ),
+    opened_at_start: Optional[str] = typer.Option(
+        None, help="Date opened starts at (format YYYY-MM-DDTHH:MM:SS)"
+    ),
+    opened_at_end: Optional[str] = typer.Option(
+        None, help="Date opened ends at (format YYYY-MM-DDTHH:MM:SS)"
+    ),
+    resolved_at_start: Optional[str] = typer.Option(
+        None, help="Date resolved starts at (format YYYY-MM-DDTHH:MM:SS)"
+    ),
+    resolved_at_end: Optional[str] = typer.Option(
+        None, help="Date resolved ends at (format YYYY-MM-DDTHH:MM:SS)"
+    ),
     cursor: Optional[str] = typer.Option(None, help="Cursor for pagination"),
     order: Optional[AlertsOrderOpts] = typer.Option(
         AlertsOrderOpts.SEVERITY, help="Field to sort results on"
@@ -50,6 +98,20 @@ def alert_list(
             include_empty_scan_target_tags=include_empty_scan_target_tags,
             cursor=cursor,
             order=order,
+            rules=rules,
+            states=states,
+            severities=severities,
+            lang=lang,
+            opened_at_start=opened_at_start,
+            opened_at_end=opened_at_end,
+            resolved_at_start=resolved_at_start,
+            resolved_at_end=resolved_at_end,
+            created_at_start=created_at_start,
+            created_at_end=created_at_end,
+            updated_at_start=updated_at_start,
+            updated_at_end=updated_at_end,
+            search=search,
+            sort=sort,
         )
     )
 
@@ -65,6 +127,54 @@ def alert_following_list(
     ),
     include_empty_following_tags: Optional[bool] = typer.Option(
         None, help="Include alerts from scan targets without tags"
+    ),
+    states: Optional[List[AlertState]] = typer.Option(
+        [
+            x.value
+            for x in AlertState
+            if x != AlertState.CLOSED and x != AlertState.ACTIVE
+        ],
+        help="Only list alerts in the specified states",
+        case_sensitive=False,
+    ),
+    severities: Optional[List[AlertSeverity]] = typer.Option(
+        [x.value for x in AlertSeverity],
+        help="Only list alerts with the specified severities",
+        case_sensitive=False,
+    ),
+    lang: Optional[Languages] = typer.Option(
+        Languages.EN_US.value,
+        help="Show alert titles in the specified language",
+        case_sensitive=False,
+    ),
+    created_at_start: Optional[str] = typer.Option(
+        None, help="Date created starts at (format YYYY-MM-DDTHH:MM:SS)"
+    ),
+    created_at_end: Optional[str] = typer.Option(
+        None, help="Date created ends at (format YYYY-MM-DDTHH:MM:SS)"
+    ),
+    updated_at_start: Optional[str] = typer.Option(
+        None, help="Date updated starts at (format YYYY-MM-DDTHH:MM:SS)"
+    ),
+    updated_at_end: Optional[str] = typer.Option(
+        None, help="Date updated ends at (format YYYY-MM-DDTHH:MM:SS)"
+    ),
+    search: Optional[str] = typer.Option("", help="Text to search for in the alerts"),
+    sort: Optional[SortOpts] = typer.Option(None, help="Sort order"),
+    rules: Optional[List[str]] = typer.Option(
+        None, help="Only list alerts in the specified rules"
+    ),
+    opened_at_start: Optional[str] = typer.Option(
+        None, help="Date opened starts at (format YYYY-MM-DDTHH:MM:SS)"
+    ),
+    opened_at_end: Optional[str] = typer.Option(
+        None, help="Date opened ends at (format YYYY-MM-DDTHH:MM:SS)"
+    ),
+    resolved_at_start: Optional[str] = typer.Option(
+        None, help="Date resolved starts at (format YYYY-MM-DDTHH:MM:SS)"
+    ),
+    resolved_at_end: Optional[str] = typer.Option(
+        None, help="Date resolved ends at (format YYYY-MM-DDTHH:MM:SS)"
     ),
     cursor: Optional[str] = typer.Option(None, help="Cursor for pagination"),
     order: Optional[AlertsOrderOpts] = typer.Option(
@@ -83,6 +193,20 @@ def alert_following_list(
             include_empty_following_tags=include_empty_following_tags,
             cursor=cursor,
             order=order,
+            rules=rules,
+            states=states,
+            severities=severities,
+            lang=lang,
+            opened_at_start=opened_at_start,
+            opened_at_end=opened_at_end,
+            resolved_at_start=resolved_at_start,
+            resolved_at_end=resolved_at_end,
+            created_at_start=created_at_start,
+            created_at_end=created_at_end,
+            updated_at_start=updated_at_start,
+            updated_at_end=updated_at_end,
+            search=search,
+            sort=sort,
         )
     )
 
