@@ -119,10 +119,14 @@ def alert_list(
 
     def alerts_with_comments():
         for alert in alerts:
-            alert["comments"] = [comment['comment'] for comment in client.iter_alert_comments(alert["id"])]
+            alert["comments"] = [
+                comment["comment"]
+                for comment in client.iter_alert_comments(alert["id"])
+            ]
             yield alert
 
     output_iterable(alerts_with_comments() if comments else alerts)
+
 
 @app.command(name="list_following")
 def alert_following_list(
@@ -221,7 +225,10 @@ def alert_following_list(
 
     def alerts_with_comments():
         for alert in alerts:
-            alert["comments"] = [comment['comment'] for comment in client.iter_alert_comments(alert["id"])]
+            alert["comments"] = [
+                comment["comment"]
+                for comment in client.iter_alert_comments(alert["id"])
+            ]
             yield alert
 
     output_iterable(alerts_with_comments() if comments else alerts)
