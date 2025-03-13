@@ -86,35 +86,47 @@ def alert_list(
     order: Optional[AlertsOrderOpts] = typer.Option(
         AlertsOrderOpts.SEVERITY, help="Field to sort results on"
     ),
+    comments: bool = typer.Option(
+        False, "--comments", help="Retrieve alerts with their comments"
+    ),
 ):
     """
     List alerts from a given organization, with optional filters by scan target, state or severity.
     """
     client = Client(profile=sdk_config.profile)
-    output_iterable(
-        client.iter_alerts(
-            organization_id=organization_id,
-            scan_target_ids=scan_target_ids,
-            scan_target_tags=scan_target_tags,
-            include_empty_scan_target_tags=include_empty_scan_target_tags,
-            cursor=cursor,
-            order=order,
-            rules=rules,
-            states=states,
-            severities=severities,
-            lang=lang,
-            opened_at_start=opened_at_start,
-            opened_at_end=opened_at_end,
-            resolved_at_start=resolved_at_start,
-            resolved_at_end=resolved_at_end,
-            created_at_start=created_at_start,
-            created_at_end=created_at_end,
-            updated_at_start=updated_at_start,
-            updated_at_end=updated_at_end,
-            search=search,
-            sort=sort,
-        )
+
+    alerts = client.iter_alerts(
+        organization_id=organization_id,
+        scan_target_ids=scan_target_ids,
+        scan_target_tags=scan_target_tags,
+        include_empty_scan_target_tags=include_empty_scan_target_tags,
+        cursor=cursor,
+        order=order,
+        rules=rules,
+        states=states,
+        severities=severities,
+        lang=lang,
+        opened_at_start=opened_at_start,
+        opened_at_end=opened_at_end,
+        resolved_at_start=resolved_at_start,
+        resolved_at_end=resolved_at_end,
+        created_at_start=created_at_start,
+        created_at_end=created_at_end,
+        updated_at_start=updated_at_start,
+        updated_at_end=updated_at_end,
+        search=search,
+        sort=sort,
     )
+
+    def alerts_with_comments():
+        for alert in alerts:
+            alert["comments"] = [
+                comment["comment"]
+                for comment in client.iter_alert_comments(alert["id"])
+            ]
+            yield alert
+
+    output_iterable(alerts_with_comments() if comments else alerts)
 
 
 @app.command(name="list_following")
@@ -181,35 +193,46 @@ def alert_following_list(
     order: Optional[AlertsOrderOpts] = typer.Option(
         AlertsOrderOpts.SEVERITY, help="Field to sort results on"
     ),
+    comments: bool = typer.Option(
+        False, "--comments", help="Retrieve alerts with their comments"
+    ),
 ):
     """
     List following alerts from a given organization, with optional filters by following ids, state or severity.
     """
     client = Client(profile=sdk_config.profile)
-    output_iterable(
-        client.iter_following_alerts(
-            organization_id=organization_id,
-            following_ids=following_ids,
-            following_tags=following_tags,
-            include_empty_following_tags=include_empty_following_tags,
-            cursor=cursor,
-            order=order,
-            rules=rules,
-            states=states,
-            severities=severities,
-            lang=lang,
-            opened_at_start=opened_at_start,
-            opened_at_end=opened_at_end,
-            resolved_at_start=resolved_at_start,
-            resolved_at_end=resolved_at_end,
-            created_at_start=created_at_start,
-            created_at_end=created_at_end,
-            updated_at_start=updated_at_start,
-            updated_at_end=updated_at_end,
-            search=search,
-            sort=sort,
-        )
+    alerts = client.iter_following_alerts(
+        organization_id=organization_id,
+        following_ids=following_ids,
+        following_tags=following_tags,
+        include_empty_following_tags=include_empty_following_tags,
+        cursor=cursor,
+        order=order,
+        rules=rules,
+        states=states,
+        severities=severities,
+        lang=lang,
+        opened_at_start=opened_at_start,
+        opened_at_end=opened_at_end,
+        resolved_at_start=resolved_at_start,
+        resolved_at_end=resolved_at_end,
+        created_at_start=created_at_start,
+        created_at_end=created_at_end,
+        updated_at_start=updated_at_start,
+        updated_at_end=updated_at_end,
+        search=search,
+        sort=sort,
     )
+
+    def alerts_with_comments():
+        for alert in alerts:
+            alert["comments"] = [
+                comment["comment"]
+                for comment in client.iter_alert_comments(alert["id"])
+            ]
+            yield alert
+
+    output_iterable(alerts_with_comments() if comments else alerts)
 
 
 @app.command(name="list_history")
