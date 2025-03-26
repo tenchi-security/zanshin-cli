@@ -1,5 +1,6 @@
+from collections import defaultdict
 from json import dumps
-from typing import List, Optional
+from typing import Dict, Iterator, List, Optional
 from uuid import UUID
 
 import typer
@@ -591,3 +592,119 @@ def batch_update_state(
             include_empty_scan_target_tags=include_empty_scan_target_tags,
         )
     )
+
+
+def get_rule_badge(rule):
+    rule_title = {
+        # ! itentionally Empty
+    }
+    title_badges = {
+        # ! Itentionally Empty
+    }
+    title = rule_title.get(rule, None)
+    if title is None:
+        return None
+    badge = title_badges.get(title, None)
+    if badge is None:
+        return None
+    return badge
+
+
+def get_following_badges(
+    open_rules: Iterator[Dict], resolved_rules: Iterator[Dict]
+) -> Dict:
+    badges = defaultdict(lambda: {"open": 0, "resolved": 0})
+    for open_rule in open_rules:
+        badge = get_rule_badge(open_rule["rule"])
+        if not badge:
+            continue
+        badges[badge]["open"] = open_rule["total"]
+    for resolved_rule in resolved_rules:
+        badge = get_rule_badge(resolved_rule["rule"])
+        if not badge:
+            continue
+        badges[badge]["resolved"] = resolved_rule["total"]
+    for badge, stats in badges.items():
+        if stats["resolved"] == 0 and stats["open"] == 0:
+            badges[badge]["percentage"] = 100
+        else:
+            badges[badge]["percentage"] = round(
+                (stats["resolved"] / (stats["resolved"] + stats["open"])) * 100, 2
+            )
+    return badges
+
+
+def calculate_global_badges(following_badges: Iterator[Dict]) -> Dict:
+    global_scores = {
+        "UNCATEGORIZED": 0,
+        # ! Will add others scores later
+    }
+    num_items = len(following_badges)
+    for item in following_badges:
+        for key in global_scores.keys():
+            global_scores[key] += item[key]
+    for key in global_scores.keys():
+        global_scores[key] = round(global_scores[key] / num_items, 1)
+    global_entry = {"ID": "GLOBAL", "NAME": "Global Avarage"}
+    global_entry.update(global_scores)
+
+    return global_entry
+
+
+@app.command(name="generate_following_badges")
+def generate_following_badges(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    following_ids: Optional[List[UUID]] = typer.Option(
+        None, help="Only list alerts from the specified scan targets"
+    ),
+    severities: Optional[List[AlertSeverity]] = typer.Option(
+        [AlertSeverity.CRITICAL, AlertSeverity.HIGH],
+        help="Only list alerts with the specified severities",
+        case_sensitive=False,
+    ),
+):
+    client = Client(profile=sdk_config.profile)
+    followings = [
+        following
+        for following in client.iter_organization_following(organization_id)
+        if not following_ids or following["id"] in following_ids
+    ]
+    following_badges = []
+    for following in followings:
+        open_rules = [
+            rules
+            for rules in client.iter_grouped_following_alerts(
+                organization_id=organization_id,
+                following_ids=[following["id"]],
+                severities=severities,
+                states=[AlertState.OPEN, AlertState.IN_PROGRESS],
+                page_size=1000,
+            )
+        ]
+        resolved_rules = [
+            rules
+            for rules in client.iter_grouped_following_alerts(
+                organization_id=organization_id,
+                following_ids=[following["id"]],
+                severities=severities,
+                states=[
+                    AlertState.RISK_ACCEPTED,
+                    AlertState.MITIGATING_CONTROL,
+                    AlertState.FALSE_POSITIVE,
+                    AlertState.CLOSED,
+                ],
+                page_size=1000,
+            )
+        ]
+        badges = get_following_badges(open_rules, resolved_rules)
+        following_badges.append(
+            {
+                "ID": following["id"],
+                "NAME": following["name"],
+                "UNCATEGORIZED": badges.get("UNCATEGORIZED", {}).get("percentage", 100),
+                # ! Will add others scores later
+            }
+        )
+    if following_badges:
+        following_badges.insert(0, calculate_global_badges(following_badges))
+    output_iterable(following_badges)
