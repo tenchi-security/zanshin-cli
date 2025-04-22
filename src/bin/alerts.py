@@ -594,65 +594,54 @@ def batch_update_state(
     )
 
 
-def get_rule_badge(rule):
-    rule_title = {
-        # ! itentionally Empty
-    }
-    title_badges = {
-        # ! Itentionally Empty
-    }
-    title = rule_title.get(rule, None)
-    if title is None:
-        return None
-    badge = title_badges.get(title, None)
-    if badge is None:
-        return None
-    return badge
-
-
-def get_following_badges(
-    open_rules: Iterator[Dict], resolved_rules: Iterator[Dict]
-) -> Dict:
-    badges = defaultdict(lambda: {"open": 0, "resolved": 0})
-    for open_rule in open_rules:
-        badge = get_rule_badge(open_rule["rule"])
-        if not badge:
-            continue
-        badges[badge]["open"] = open_rule["total"]
-    for resolved_rule in resolved_rules:
-        badge = get_rule_badge(resolved_rule["rule"])
-        if not badge:
-            continue
-        badges[badge]["resolved"] = resolved_rule["total"]
-    for badge, stats in badges.items():
-        if stats["resolved"] == 0 and stats["open"] == 0:
-            badges[badge]["percentage"] = 100
+def get_following_categories(alerts: Iterator[Dict], global_categories: Dict):
+    categories = defaultdict(lambda: {"open": 0, "resolved": 0})
+    for alert in alerts:
+        if not alert.get("tags", []):
+            alert["tags"] = ["UNCATEGORIZED"]
+        resolved, opened = 0, 0
+        if alert["state"] in [AlertState.OPEN, AlertState.IN_PROGRESS]:
+            opened += 1
         else:
-            badges[badge]["percentage"] = round(
+            resolved += 1
+        for tag in alert["tags"]:
+            tag = tag.upper()
+            categories[tag]["open"] += opened
+            categories[tag]["resolved"] += resolved
+        if global_categories.get("tag", -1) < 0:
+            global_categories[tag] = 0
+    final_categories = {
+        category: {
+            "percentage": round(
                 (stats["resolved"] / (stats["resolved"] + stats["open"])) * 100, 2
             )
-    return badges
-
-
-def calculate_global_badges(following_badges: Iterator[Dict]) -> Dict:
-    global_scores = {
-        "UNCATEGORIZED": 0,
-        # ! Will add others scores later
+        }
+        for category, stats in categories.items()
     }
-    num_items = len(following_badges)
-    for item in following_badges:
-        for key in global_scores.keys():
-            global_scores[key] += item[key]
-    for key in global_scores.keys():
-        global_scores[key] = round(global_scores[key] / num_items, 1)
-    global_entry = {"ID": "GLOBAL", "NAME": "Global Avarage"}
-    global_entry.update(global_scores)
+    return final_categories
 
+
+def calculate_global_categories(
+    global_categories: Dict, following_categories: Iterator[Dict]
+) -> Dict:
+    num_items = len(following_categories)
+    for following_category in following_categories:
+        for global_category in global_categories.keys():
+            following_category[global_category] = following_category.get(
+                global_category, {}
+            ).get("percentage", 100)
+            global_categories[global_category] += following_category[global_category]
+    for global_category in global_categories.keys():
+        global_categories[global_category] = round(
+            global_categories[global_category] / num_items, 1
+        )
+    global_entry = {"ID": "GLOBAL", "NAME": "Global Avarage"}
+    global_entry.update(global_categories)
     return global_entry
 
 
-@app.command(name="generate_following_badges")
-def generate_following_badges(
+@app.command(name="generate_alert_category_report")
+def generate_alert_category_report(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     following_ids: Optional[List[UUID]] = typer.Option(
         None, help="Only list alerts from the specified scan targets"
@@ -669,42 +658,33 @@ def generate_following_badges(
         for following in client.iter_organization_following(organization_id)
         if not following_ids or following["id"] in following_ids
     ]
-    following_badges = []
+    global_categories = {}
+    followings_categories = []
     for following in followings:
-        open_rules = [
-            rules
-            for rules in client.iter_grouped_following_alerts(
+        following_alerts = [
+            alerts
+            for alerts in client.iter_following_alerts(
                 organization_id=organization_id,
                 following_ids=[following["id"]],
-                severities=severities,
-                states=[AlertState.OPEN, AlertState.IN_PROGRESS],
-                page_size=1000,
-            )
-        ]
-        resolved_rules = [
-            rules
-            for rules in client.iter_grouped_following_alerts(
-                organization_id=organization_id,
-                following_ids=[following["id"]],
-                severities=severities,
                 states=[
+                    AlertState.OPEN,
+                    AlertState.IN_PROGRESS,
                     AlertState.RISK_ACCEPTED,
                     AlertState.MITIGATING_CONTROL,
                     AlertState.FALSE_POSITIVE,
                     AlertState.CLOSED,
                 ],
                 page_size=1000,
+                severities=severities,
             )
         ]
-        badges = get_following_badges(open_rules, resolved_rules)
-        following_badges.append(
-            {
-                "ID": following["id"],
-                "NAME": following["name"],
-                "UNCATEGORIZED": badges.get("UNCATEGORIZED", {}).get("percentage", 100),
-                # ! Will add others scores later
-            }
+        following_categories = get_following_categories(
+            following_alerts, global_categories
         )
-    if following_badges:
-        following_badges.insert(0, calculate_global_badges(following_badges))
-    output_iterable(following_badges)
+        following_categories.update({"ID": following["id"], "NAME": following["name"]})
+        followings_categories.append(following_categories)
+    if followings_categories:
+        followings_categories.insert(
+            0, calculate_global_categories(global_categories, followings_categories)
+        )
+    output_iterable(followings_categories)
