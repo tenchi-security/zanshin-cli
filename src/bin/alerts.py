@@ -1,5 +1,6 @@
+from collections import defaultdict
 from json import dumps
-from typing import List, Optional
+from typing import Dict, Iterator, List, Optional
 from uuid import UUID
 
 import typer
@@ -591,3 +592,99 @@ def batch_update_state(
             include_empty_scan_target_tags=include_empty_scan_target_tags,
         )
     )
+
+
+def get_following_categories(alerts: Iterator[Dict], global_categories: Dict):
+    categories = defaultdict(lambda: {"open": 0, "resolved": 0})
+    for alert in alerts:
+        if not alert.get("tags", []):
+            alert["tags"] = ["UNCATEGORIZED"]
+        resolved, opened = 0, 0
+        if alert["state"] in [AlertState.OPEN, AlertState.IN_PROGRESS]:
+            opened += 1
+        else:
+            resolved += 1
+        for tag in alert["tags"]:
+            tag = tag.upper()
+            categories[tag]["open"] += opened
+            categories[tag]["resolved"] += resolved
+        if global_categories.get("tag", -1) < 0:
+            global_categories[tag] = 0
+    final_categories = {
+        category: {
+            "percentage": round(
+                (stats["resolved"] / (stats["resolved"] + stats["open"])) * 100, 2
+            )
+        }
+        for category, stats in categories.items()
+    }
+    return final_categories
+
+
+def calculate_global_categories(
+    global_categories: Dict, following_categories: Iterator[Dict]
+) -> Dict:
+    num_items = len(following_categories)
+    for following_category in following_categories:
+        for global_category in global_categories.keys():
+            following_category[global_category] = following_category.get(
+                global_category, {}
+            ).get("percentage", 100)
+            global_categories[global_category] += following_category[global_category]
+    for global_category in global_categories.keys():
+        global_categories[global_category] = round(
+            global_categories[global_category] / num_items, 1
+        )
+    global_entry = {"ID": "GLOBAL", "NAME": "Global Avarage"}
+    global_entry.update(global_categories)
+    return global_entry
+
+
+@app.command(name="generate_alert_category_report")
+def generate_alert_category_report(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    following_ids: Optional[List[UUID]] = typer.Option(
+        None, help="Only list alerts from the specified scan targets"
+    ),
+    severities: Optional[List[AlertSeverity]] = typer.Option(
+        [AlertSeverity.CRITICAL, AlertSeverity.HIGH],
+        help="Only list alerts with the specified severities",
+        case_sensitive=False,
+    ),
+):
+    client = Client(profile=sdk_config.profile)
+    followings = [
+        following
+        for following in client.iter_organization_following(organization_id)
+        if not following_ids or following["id"] in following_ids
+    ]
+    global_categories = {}
+    followings_categories = []
+    for following in followings:
+        following_alerts = [
+            alerts
+            for alerts in client.iter_following_alerts(
+                organization_id=organization_id,
+                following_ids=[following["id"]],
+                states=[
+                    AlertState.OPEN,
+                    AlertState.IN_PROGRESS,
+                    AlertState.RISK_ACCEPTED,
+                    AlertState.MITIGATING_CONTROL,
+                    AlertState.FALSE_POSITIVE,
+                    AlertState.CLOSED,
+                ],
+                page_size=1000,
+                severities=severities,
+            )
+        ]
+        following_categories = get_following_categories(
+            following_alerts, global_categories
+        )
+        following_categories.update({"ID": following["id"], "NAME": following["name"]})
+        followings_categories.append(following_categories)
+    if followings_categories:
+        followings_categories.insert(
+            0, calculate_global_categories(global_categories, followings_categories)
+        )
+    output_iterable(followings_categories)
