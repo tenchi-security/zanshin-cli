@@ -73,7 +73,7 @@ def awsorgrun(
                     account["Id"], account["Name"]
                 )
             )
-        if "Status" in account:
+        elif "Status" in account:
             if (
                 account["Status"] == "SUSPENDED"
                 or account["Status"] == "PENDING_CLOSURE"
