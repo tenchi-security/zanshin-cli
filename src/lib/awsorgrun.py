@@ -73,12 +73,13 @@ def awsorgrun(
                     account["Id"], account["Name"]
                 )
             )
-        elif account["Status"] == "SUSPENDED" or account["Status"] == "PENDING_CLOSURE":
-            logger.info(
-                "skipping account {0:s} ({1:s}) because it is in {2:s} state".format(
-                    account["Id"], account["Name"], account["Status"]
+        if "Status" in account:
+            if account["Status"] == "SUSPENDED" or account["Status"] == "PENDING_CLOSURE":
+                logger.info(
+                    "skipping account {0:s} ({1:s}) because it is in {2:s} state".format(
+                        account["Id"], account["Name"], account["Status"]
+                    )
                 )
-            )
         elif account["Id"] == org_master_id:
             if target is AWSOrgRunTarget.ALL or target is AWSOrgRunTarget.MASTER:
                 logger.info(
@@ -116,6 +117,7 @@ def awsorgrun(
 
 def list_member_accounts(org_client: "botocore.client.Organizations") -> Iterable[Dict]:
     response = org_client.list_accounts()
+    print(response)
     while True:
         yield from response.get("Accounts", [])
         if response.get("NextToken", None):
