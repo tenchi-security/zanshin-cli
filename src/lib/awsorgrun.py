@@ -120,7 +120,6 @@ def awsorgrun(
 
 def list_member_accounts(org_client: "botocore.client.Organizations") -> Iterable[Dict]:
     response = org_client.list_accounts()
-    print(response)
     while True:
         yield from response.get("Accounts", [])
         if response.get("NextToken", None):
