@@ -74,7 +74,10 @@ def awsorgrun(
                 )
             )
         if "Status" in account:
-            if account["Status"] == "SUSPENDED" or account["Status"] == "PENDING_CLOSURE":
+            if (
+                account["Status"] == "SUSPENDED"
+                or account["Status"] == "PENDING_CLOSURE"
+            ):
                 logger.info(
                     "skipping account {0:s} ({1:s}) because it is in {2:s} state".format(
                         account["Id"], account["Name"], account["Status"]
