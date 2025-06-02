@@ -378,6 +378,8 @@ Updates the state of multiple alerts in a batch.
 - ``--rules TEXT``: List of rules to filter alerts by
 - ``--severities TEXT``: List of severities to filter alerts by (e.g.,
   'low', 'medium', 'high')
+- ``--include-empty-scan-target-tags``: Whether to include alerts with
+  scan targets that have no associated tags
 - ``--help``: Show this message and exit.
 
 ``zanshin alert generate_alert_category_report``
