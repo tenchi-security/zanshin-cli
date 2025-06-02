@@ -406,7 +406,7 @@ def _get_aws_accounts_from_organization(
     for acc in req_aws_accounts["Accounts"]:
         aws_accounts_response.append(
             AWSAccount(
-                Id=acc["Id"], Name=acc["Name"], Arn=acc["Arn"], Email=acc["Email"]
+                Id=acc["Id"], Name=acc["Name"], Arn=acc["Arn"], Email=acc["Email"], Status=acc["Status"]
             )
         )
 
@@ -420,7 +420,7 @@ def _get_aws_accounts_from_organization(
         for acc in req_aws_accounts["Accounts"]:
             aws_accounts_response.append(
                 AWSAccount(
-                    Id=acc["Id"], Name=acc["Name"], Arn=acc["Arn"], Email=acc["Email"]
+                    Id=acc["Id"], Name=acc["Name"], Arn=acc["Arn"], Email=acc["Email"], Status=acc["Status"]
                 )
             )
         if "NextToken" not in req_aws_accounts:

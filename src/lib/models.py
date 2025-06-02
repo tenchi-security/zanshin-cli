@@ -26,5 +26,5 @@ class AWSAccount(dict):
     Class representing a AWS Account as returned by boto3
     """
 
-    def __init__(self, Id: str, Name: str, Arn: str, Email: str, Onboard: bool = False):
-        dict.__init__(self, Id=Id, Name=Name, Arn=Arn, Email=Email, Onboard=Onboard)
+    def __init__(self, Id: str, Name: str, Arn: str, Email: str, Status: str, Onboard: bool = False):
+        dict.__init__(self, Id=Id, Name=Name, Arn=Arn, Email=Email, Status=Status, Onboard=Onboard)
