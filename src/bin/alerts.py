@@ -571,12 +571,10 @@ def batch_update_state(
         "--severities",
         help="List of severities to filter alerts by (e.g., 'low', 'medium', 'high')",
     ),
-    include_empty_scan_target_tags: Optional[bool] = typer.Option(
-        None,
-        "--include-empty-scan-target-tags",
-        help="Whether to include alerts with scan targets that have no associated tags",
-    ),
 ):
+    """
+    Updates the state of multiple alerts in a batch.
+    """
     client = Client(profile=sdk_config.profile)
     typer.echo(
         client.batch_update_alerts_state(
@@ -589,7 +587,6 @@ def batch_update_state(
             states=states,
             rules=rules,
             severities=severities,
-            include_empty_scan_target_tags=include_empty_scan_target_tags,
         )
     )
 
