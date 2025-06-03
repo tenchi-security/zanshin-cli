@@ -2411,14 +2411,14 @@ files = [
 
 [[package]]
 name = "zanshinsdk"
-version = "2.1.5"
+version = "2.1.6"
 description = "Python SDK to access the Tenchi Security Zanshin API v1"
 optional = false
 python-versions = "<4.0,>=3.9"
 groups = ["main"]
 files = [
-    {file = "zanshinsdk-2.1.5-py3-none-any.whl", hash = "sha256:729dc1965b9b1012f96e5decc31256c2cf29432cf349a340bf264fc94196fe0d"},
-    {file = "zanshinsdk-2.1.5.tar.gz", hash = "sha256:a04d04bb26954a4ba3a79cab797da770d585bd84e0d5826227f7cccf93947b60"},
+    {file = "zanshinsdk-2.1.6-py3-none-any.whl", hash = "sha256:4803234e01cc9f1f351f8cc12cc169c7ead0676ac7902821e3556a652ea023d5"},
+    {file = "zanshinsdk-2.1.6.tar.gz", hash = "sha256:e0cb3354a057f74b734d2fc878f01bc289f7e5b6db05ba045c9fcd368480f939"},
 ]
 
 [package.dependencies]
@@ -2565,4 +2565,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9"
-content-hash = "d6d07e9ee803e5152b702f0320830e963b2fb0af31f3f8b78d78d4c96f1f34a1"
+content-hash = "ec57bb525631221792cab4a7197a423a4d13b3df02d4a14c53dfb161af3cd934"
