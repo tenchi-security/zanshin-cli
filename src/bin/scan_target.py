@@ -25,9 +25,8 @@ from zanshinsdk.client import (
     ScanTargetSLACK,
     ScanTargetZENDESK,
 )
-from zanshinsdk.common.enums import (
-    OAuthTargetKind
-)
+from zanshinsdk.common.enums import OAuthTargetKind
+
 import src.config.sdk as sdk_config
 from src.lib.awsorgrun import AWSOrgRunTarget, awsorgrun
 from src.lib.models import AWSAccount

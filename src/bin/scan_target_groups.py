@@ -2,13 +2,8 @@ from uuid import UUID
 
 import typer
 from zanshinsdk import Client
-from zanshinsdk.client import (
-    ScanTargetGroupCredentialListORACLE,
-    ScanTargetKind,
-)
-from zanshinsdk.common.enums import (
-    OAuthTargetKind
-)
+from zanshinsdk.client import ScanTargetGroupCredentialListORACLE, ScanTargetKind
+from zanshinsdk.common.enums import OAuthTargetKind
 
 import src.config.sdk as sdk_config
 from src.lib.utils import dump_json, output_iterable
