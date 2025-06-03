@@ -29,6 +29,10 @@ jobs:
           pip install --upgrade pip
           pip install poetry
 
+      - name: Update poetry lock file
+        run: |
+          poetry lock
+
       - name: Install dependencies
         run: |
           poetry install

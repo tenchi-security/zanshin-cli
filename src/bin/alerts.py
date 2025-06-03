@@ -577,6 +577,9 @@ def batch_update_state(
         help="Whether to include alerts with scan targets that have no associated tags",
     ),
 ):
+    """
+    Updates the state of multiple alerts in a batch.
+    """
     client = Client(profile=sdk_config.profile)
     typer.echo(
         client.batch_update_alerts_state(
