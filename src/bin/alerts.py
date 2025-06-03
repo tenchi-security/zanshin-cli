@@ -85,7 +85,7 @@ def alert_list(
     ),
     cursor: Optional[str] = typer.Option(None, help="Cursor for pagination"),
     order: Optional[AlertsOrderOpts] = typer.Option(
-        AlertsOrderOpts.SEVERITY, help="Field to sort results on"
+        AlertsOrderOpts.SEVERITY.value, help="Field to sort results on"
     ),
     comments: bool = typer.Option(
         False, "--comments", help="Retrieve alerts with their comments"

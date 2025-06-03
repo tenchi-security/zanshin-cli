@@ -7,7 +7,6 @@ from boto3_type_annotations.organizations import Client as Boto3OrganizationsCli
 from zanshinsdk import Client
 from zanshinsdk.client import DAILY as DAILY_SCHEDULE
 from zanshinsdk.client import (
-    OAuthTargetKind,
     ScanTargetAWS,
     ScanTargetAZURE,
     ScanTargetBITBUCKET,
@@ -26,6 +25,7 @@ from zanshinsdk.client import (
     ScanTargetSLACK,
     ScanTargetZENDESK,
 )
+from zanshinsdk.common.enums import OAuthTargetKind
 
 import src.config.sdk as sdk_config
 from src.lib.awsorgrun import AWSOrgRunTarget, awsorgrun
