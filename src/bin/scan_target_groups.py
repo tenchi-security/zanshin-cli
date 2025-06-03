@@ -3,9 +3,11 @@ from uuid import UUID
 import typer
 from zanshinsdk import Client
 from zanshinsdk.client import (
-    OAuthTargetKind,
     ScanTargetGroupCredentialListORACLE,
     ScanTargetKind,
+)
+from zanshinsdk.common.enums import (
+    OAuthTargetKind
 )
 
 import src.config.sdk as sdk_config
