@@ -2,7 +2,7 @@ from typing import List, Optional
 from uuid import UUID
 
 import typer
-from zanshinsdk import AlertSeverity, Client, ScanTargetKind
+from zanshinsdk import AlertSeverity, Client, Languages, ScanTargetKind
 
 import src.config.sdk as sdk_config
 from src.lib.utils import dump_json
@@ -66,5 +66,47 @@ def summary_scan_targets_detail(
             scan_target_tags=scan_target_tags,
             scan_target_kinds=scan_target_kinds,
             alert_severities=alert_severities,
+        )
+    )
+
+
+@app.command(name="alerts")
+def summary_alerts(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    scan_target_ids: Optional[List[UUID]] = typer.Option(
+        None, help="Only summarize alerts from the specified scan target ids"
+    ),
+    search: Optional[str] = typer.Option("", help="Text to search for in the alerts"),
+    lang: Optional[Languages] = typer.Option(
+        Languages.EN_US.value,
+        help="Show alerts titles in the specified language",
+        case_sensitive=False,
+    ),
+):
+    client = Client(profile=sdk_config.profile)
+    dump_json(
+        client.get_alerts_summaries(
+            organization_id=organization_id,
+            scan_target_ids=scan_target_ids,
+            search=search,
+            lang=lang,
+        )
+    )
+
+
+@app.command("following_scan")
+def summary_following_scan(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    following_ids: Optional[List[UUID]] = typer.Option(
+        None, help="Only summarize scans from the following ids"
+    ),
+    days: Optional[int] = typer.Option(
+        7, help="Number of days to go back in time in historical search"
+    ),
+):
+    client = Client(profile=sdk_config.profile)
+    dump_json(
+        client.get_following_scan_summaries(
+            organization_id=organization_id, following_ids=following_ids, days=days
         )
     )
