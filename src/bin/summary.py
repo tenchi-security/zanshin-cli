@@ -110,3 +110,27 @@ def summary_following_scan(
             organization_id=organization_id, following_ids=following_ids, days=days
         )
     )
+
+
+@app.command(name="following_alerts_over_time")
+def summary_following_alerts_over_time(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    following_ids: Optional[List[UUID]] = typer.Option(
+        None, help="Only summarize alerts from the specified following ids"
+    ),
+    severities: Optional[List[AlertSeverity]] = typer.Option(
+        None, help="Only summarize alerts with the specified severities"
+    ),
+    dates: Optional[List[str]] = typer.Option(
+        None, help="Dates to gather the data for (YYYY-MM-DD format)"
+    ),
+):
+    client = Client(profile=sdk_config.profile)
+    dump_json(
+        client.get_alerts_over_time(
+            organization_id=organization_id,
+            following_ids=following_ids,
+            severities=severities,
+            dates=dates,
+        )
+    )
