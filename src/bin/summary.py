@@ -127,7 +127,7 @@ def summary_following_alerts_over_time(
 ):
     client = Client(profile=sdk_config.profile)
     dump_json(
-        client.get_alerts_over_time(
+        client.get_following_alerts_over_time(
             organization_id=organization_id,
             following_ids=following_ids,
             severities=severities,
