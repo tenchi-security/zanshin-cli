@@ -140,7 +140,7 @@ def summary_following_alerts_over_time(
 def summary_alerts_scans(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     scan_target_ids: Optional[List[UUID]] = typer.Option(
-        None, help="Only summarize scan targets from the specified scan target ids"
+        None, help="Only summarize alerts from the specified scan target ids"
     ),
     days: Optional[int] = typer.Option(
         7, help="Number of days to go back in time in historical search"
