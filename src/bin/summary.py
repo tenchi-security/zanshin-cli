@@ -134,3 +134,23 @@ def summary_following_alerts_over_time(
             dates=dates,
         )
     )
+
+
+@app.command(name="alerts_scans")
+def summary_alerts_scans(
+    organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
+    scan_target_ids: Optional[List[UUID]] = typer.Option(
+        None, help="Only summarize scan targets from the specified scan target ids"
+    ),
+    days: Optional[int] = typer.Option(
+        7, help="Number of days to go back in time in historical search"
+    ),
+):
+    client = Client(profile=sdk_config.profile)
+    dump_json(
+        client.get_alerts_summaries_scans(
+            organization_id=organization_id,
+            scan_target_ids=scan_target_ids,
+            days=days,
+        )
+    )
