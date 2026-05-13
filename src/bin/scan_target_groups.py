@@ -164,10 +164,15 @@ def scan_target_groups_insert(
         ..., help="UUID of the scan target group"
     ),
     region: str = typer.Argument(..., help="Oracle Cloud Infrastructure (OCI) region"),
-    tenancy_id: str = typer.Argument(..., help="Oracle Cloud Infrastructure (OCI) tenancy ID"),
-    user_id: str = typer.Argument(..., help="Oracle Cloud Infrastructure (OCI) user ID"),
+    tenancy_id: str = typer.Argument(
+        ..., help="Oracle Cloud Infrastructure (OCI) tenancy ID"
+    ),
+    user_id: str = typer.Argument(
+        ..., help="Oracle Cloud Infrastructure (OCI) user ID"
+    ),
     key_fingerprint: str = typer.Argument(
-        ..., help="Oracle Cloud Infrastructure (OCI) API key fingerprint used for authentication"
+        ...,
+        help="Oracle Cloud Infrastructure (OCI) API key fingerprint used for authentication",
     ),
 ):
     """
@@ -191,7 +196,9 @@ def scan_target_groups_create_by_compartments(
         ..., help="UUID of the scan target group"
     ),
     name: str = typer.Argument(..., help="Compartment name"),
-    ocid: str = typer.Argument(..., help="Oracle Cloud Infrastructure (OCI) Compartment ID"),
+    ocid: str = typer.Argument(
+        ..., help="Oracle Cloud Infrastructure (OCI) Compartment ID"
+    ),
 ):
     """
     Creates Scan Targets from previous listed compartments inside the scan target group.
