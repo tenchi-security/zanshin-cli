@@ -9,7 +9,7 @@ service <https://api.zanshin.tenchisecurity.com>`__ from `Tenchi
 Security <https://www.tenchisecurity.com>`__.
 
 Is it based on the Zanshin Python SDK available on
-`Github <https://github.com/tenchi-security/zanshin-sdk-python>`__ and
+`GitHub <https://github.com/tenchi-security/zanshin-sdk-python>`__ and
 `PyPI <https://pypi.python.org/pypi/zanshinsdk/>`__.
 
 If you are a Zanshin customer and have any questions regarding the use
