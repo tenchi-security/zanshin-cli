@@ -179,9 +179,12 @@ def organization_scan_target_oauth_link(
 @app.command(name="onboard_aws")
 def onboard_organization_aws_scan_target(
     boto3_profile: str = typer.Option(
-        None, help="Boto3 profile name to use for Onboard AWS Account"
+        None,
+        help="Boto3 profile name to use for Onboard Amazon Web Services (AWS) Account",
     ),
-    region: str = typer.Argument(..., help="AWS Region to deploy CloudFormation"),
+    region: str = typer.Argument(
+        ..., help="Amazon Web Services (AWS) Region to deploy CloudFormation"
+    ),
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     name: str = typer.Argument(..., help="name of the scan target"),
     credential: str = typer.Argument(..., help="credential of the scan target"),
@@ -190,8 +193,8 @@ def onboard_organization_aws_scan_target(
     ),
 ):
     """
-    Create a new scan target in organization and perform onboard. Requires boto3 and correct AWS IAM Privileges.
-    Checkout the required AWS IAM privileges here https://github.com/tenchi-security/zanshin-sdk-python/blob/main/zanshinsdk/docs/README.md
+    Create a new scan target in organization and perform onboard. Requires boto3 and correct Amazon Web Services (AWS) IAM Privileges.
+    Checkout the required Amazon Web Services (AWS) IAM privileges here https://github.com/tenchi-security/zanshin-sdk-python/blob/main/zanshinsdk/docs/README.md
     """
     client = Client(profile=sdk_config.profile)
     credential = ScanTargetAWS(credential)
@@ -224,25 +227,29 @@ def onboard_organization_aws_organization_scan_target(
         None, help="choose which accounts to onboard"
     ),
     exclude_account: Optional[List[str]] = typer.Option(
-        None, help="ID, Name, E-mail or ARN of AWS Account not to be onboarded"
+        None,
+        help="ID, Name, E-mail or ARN of Amazon Web Services (AWS) Account not to be onboarded",
     ),
     boto3_profile: str = typer.Option(
-        None, help="Boto3 profile name to use for Onboard AWS Account"
+        None,
+        help="Boto3 profile name to use for Onboard Amazon Web Services (AWS) Account",
     ),
     aws_role_name: str = typer.Option(
         "OrganizationAccountAccessRole",
-        help="Name of AWS role that allow access from Management Account to Member accounts",
+        help="Name of Amazon Web Services (AWS) role that allow access from Management Account to Member accounts",
     ),
-    region: str = typer.Argument(..., help="AWS Region to deploy CloudFormation"),
+    region: str = typer.Argument(
+        ..., help="Amazon Web Services (AWS) Region to deploy CloudFormation"
+    ),
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     schedule: str = typer.Argument(
         DAILY_SCHEDULE.json(), help="schedule of the scan target"
     ),
 ):
     """
-    For each of selected accounts in AWS Organization, creates a new Scan Target in informed zanshin organization
-    and performs onboarding. Requires boto3 and correct AWS IAM Privileges.
-    Checkout the required AWS IAM privileges at
+    For each of selected accounts in Amazon Web Services (AWS) Organization, creates a new Scan Target in informed zanshin organization
+    and performs onboarding. Requires boto3 and correct Amazon Web Services (AWS) IAM Privileges.
+    Checkout the required Amazon Web Services (AWS) IAM privileges at
     https://github.com/tenchi-security/zanshin-cli/blob/main/src/lib/docs/README.md
     """
     client = Client(profile=sdk_config.profile)
@@ -261,7 +268,7 @@ def onboard_organization_aws_organization_scan_target(
 
     # Fetching organization's existing Scan Targets of kind AWS
     # in order to see if AWS Accounts are already in Zanshin
-    typer.echo("Looking for Zanshin AWS Scan Targets")
+    typer.echo("Looking for Zanshin Amazon Web Services (AWS) Scan Targets")
     organization_current_scan_targets: Iterator[Dict] = (
         client.iter_organization_scan_targets(organization_id=organization_id)
     )
@@ -300,7 +307,9 @@ def onboard_organization_aws_organization_scan_target(
         )
 
         # Check if there're new AWS Accounts in Customer Organization that aren't in Zanshin yet
-        typer.echo("Detecting AWS Accounts already in Zanshin Organization")
+        typer.echo(
+            "Detecting Amazon Web Services (AWS) Accounts already in Zanshin Organization"
+        )
         onboard_accounts: List[AWSAccount] = []
 
         for customer_acc in customer_aws_accounts:
@@ -317,7 +326,8 @@ def onboard_organization_aws_organization_scan_target(
         # onboarded. Otherwise, we'll prompt the user to select the accounts they want to Onboard manually.
         for acc in onboard_accounts:
             onboard_acc = typer.confirm(
-                f"Onboard AWS account {acc['Name']} ({acc['Id']})?", default=True
+                f"Onboard Amazon Web Services (AWS) account {acc['Name']} ({acc['Id']})?",
+                default=True,
             )
             acc["Onboard"] = onboard_acc
             if onboard_acc:
