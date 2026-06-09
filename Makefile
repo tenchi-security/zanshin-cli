@@ -12,7 +12,7 @@ CLI.md: src/*.py
 
 	# Workaround for lack of typer-cli support on new versions
 	poetry remove typer-cli
-	poetry add typer>=0.26.0
+	poetry add "typer>=0.26.0"
 
 README.md: BASE_README.md CLI.md
 	cat BASE_README.md CLI.md > README.md
