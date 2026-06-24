@@ -40,7 +40,7 @@ def organization_scan_target_list(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization")
 ):
     """
-    Lists the scan targets of organization this user has direct access to.
+    List the scan targets of an organization the user has direct access to.
     """
     client = Client(profile=sdk_config.profile)
     output_iterable(client.iter_organization_scan_targets(organization_id))
@@ -57,7 +57,7 @@ def organization_scan_target_create(
     ),
 ):
     """
-    Create a new scan target in organization.
+    Create a new scan target within a specific organization.
     """
     client = Client(profile=sdk_config.profile)
 
@@ -113,7 +113,7 @@ def organization_scan_target_get(
     scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target"),
 ):
     """
-    Get scan target of organization.
+    Get details of a specific scan target within an organization.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(client.get_organization_scan_target(organization_id, scan_target_id))
@@ -127,7 +127,7 @@ def organization_scan_target_update(
     schedule: Optional[str] = typer.Argument(None, help="schedule of the scan target"),
 ):
     """
-    Update scan target of organization.
+    Update the name or schedule of a specific scan target.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(
@@ -146,7 +146,7 @@ def organization_scan_target_delete(
     scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target"),
 ):
     """
-    Delete scan target of organization.
+    Delete a specific scan target from an organization.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(client.delete_organization_scan_target(organization_id, scan_target_id))
@@ -158,7 +158,7 @@ def organization_scan_target_check(
     scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target"),
 ):
     """
-    Check scan target.
+    Check the status and connectivity of a specific scan target.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(client.check_organization_scan_target(organization_id, scan_target_id))
@@ -170,7 +170,7 @@ def organization_scan_target_oauth_link(
     scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target"),
 ):
     """
-    Retrieve a link to allow the user to authorize zanshin to read info from their scan target environment.
+    Retrieve an OAuth link to authorize Zanshin to access the scan target environment.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(client.get_scan_target_oauth_link(organization_id, scan_target_id))
@@ -193,8 +193,8 @@ def onboard_organization_aws_scan_target(
     ),
 ):
     """
-    Create a new scan target in organization and perform onboard. Requires boto3 and correct Amazon Web Services (AWS) IAM Privileges.
-    Checkout the required Amazon Web Services (AWS) IAM privileges here https://github.com/tenchi-security/zanshin-sdk-python/blob/main/zanshinsdk/docs/README.md
+    Create and onboard a new AWS scan target. Requires boto3 and specific AWS IAM privileges.
+    See docs: https://github.com/tenchi-security/zanshin-sdk-python/blob/main/zanshinsdk/docs/README.md.
     """
     client = Client(profile=sdk_config.profile)
     credential = ScanTargetAWS(credential)
@@ -247,10 +247,8 @@ def onboard_organization_aws_organization_scan_target(
     ),
 ):
     """
-    For each of selected accounts in Amazon Web Services (AWS) Organization, creates a new Scan Target in informed zanshin organization
-    and performs onboarding. Requires boto3 and correct Amazon Web Services (AWS) IAM Privileges.
-    Checkout the required Amazon Web Services (AWS) IAM privileges at
-    https://github.com/tenchi-security/zanshin-cli/blob/main/src/lib/docs/README.md
+    Onboard multiple AWS Organization accounts as new Zanshin scan targets. Requires boto3 and AWS IAM privileges.
+    See docs: https://github.com/tenchi-security/zanshin-cli/blob/main/src/lib/docs/README.md.
     """
     client = Client(profile=sdk_config.profile)
     if boto3_profile:
@@ -267,7 +265,7 @@ def onboard_organization_aws_organization_scan_target(
         )
 
     # Fetching organization's existing Scan Targets of kind AWS
-    # in order to see if AWS Accounts are already in Zanshin
+    # in order to see if AWS Accounts are already in Zanshin.
     typer.echo("Looking for Zanshin Amazon Web Services (AWS) Scan Targets")
     organization_current_scan_targets: Iterator[Dict] = (
         client.iter_organization_scan_targets(organization_id=organization_id)
@@ -306,7 +304,7 @@ def onboard_organization_aws_organization_scan_target(
             aws_organizations_client
         )
 
-        # Check if there're new AWS Accounts in Customer Organization that aren't in Zanshin yet
+        # Check if there are new AWS Accounts in Customer Organization that aren't in Zanshin yet.
         typer.echo(
             "Detecting Amazon Web Services (AWS) Accounts already in Zanshin Organization"
         )
@@ -323,7 +321,7 @@ def onboard_organization_aws_organization_scan_target(
                 onboard_accounts.append(customer_acc)
 
         # If flag all_accounts is present, it means all AWS Accounts that aren't already in Zanshin organization will be
-        # onboarded. Otherwise, we'll prompt the user to select the accounts they want to Onboard manually.
+        # onboarded. Otherwise, we will prompt the user to select the accounts they want to Onboard manually.
         for acc in onboard_accounts:
             onboard_acc = typer.confirm(
                 f"Onboard Amazon Web Services (AWS) account {acc['Name']} ({acc['Id']})?",
@@ -387,8 +385,8 @@ def _sdk_onboard_scan_target(
 
 def _validate_role_name(aws_cross_account_role_name: str):
     """
-    Make sure provided role name is valid as in it's not an ARN, and not bigger than AWS constraints.
-    :param: aws_cross_account_role_name - Role name received from user input
+    Validate that the provided IAM role name is not an ARN and fits within AWS length constraints.
+    :param: aws_cross_account_role_name - Role name received from user input.
     """
     if ":" in aws_cross_account_role_name:
         raise ValueError(
@@ -402,7 +400,7 @@ def _get_aws_accounts_from_organization(
     boto3_organizations_client: Boto3OrganizationsClient,
 ) -> List[AWSAccount]:
     """
-    With boto3 Organizations Client, list AWS Accounts from Organization.
+    List AWS accounts from an AWS Organization using the Boto3 client, handling pagination automatically.
     If [NextToken] is present, keeps fetching Accounts until complete.
     Creates AWSAccount class with response data.
 

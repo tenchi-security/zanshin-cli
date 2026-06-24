@@ -19,7 +19,7 @@ def organization_scan_target_scan_start(
     ),
 ):
     """
-    Starts a scan on the specified scan target.
+    Start a new scan on the specified scan target.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(
@@ -35,7 +35,7 @@ def organization_scan_target_scan_stop(
     scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target"),
 ):
     """
-    Stop a scan on the specified scan target.
+    Stop a currently running scan on the specified scan target.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(
@@ -49,7 +49,7 @@ def organization_scan_target_scan_list(
     scan_target_id: UUID = typer.Argument(..., help="UUID of the scan target"),
 ):
     """
-    Lists the scan target scans of organization this user has direct access to.
+    List all scans performed on a specific scan target within an organization.
     """
     client = Client(profile=sdk_config.profile)
     output_iterable(
@@ -64,7 +64,7 @@ def organization_scan_target_scan_get(
     scan_id: UUID = typer.Argument(..., help="UUID of the scan"),
 ):
     """
-    Get scan of scan target.
+    Get details of a specific scan performed on a scan target.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(

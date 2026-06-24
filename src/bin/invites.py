@@ -16,7 +16,7 @@ app = typer.Typer()
 @app.command(name="list")
 def account_invite_list():
     """
-    Iterates over the invites of current logged user.
+    List all pending invitations for the currently logged-in user.
     """
     client = Client(profile=sdk_config.profile)
     output_iterable(client.iter_invites())
@@ -27,7 +27,7 @@ def account_invite_get(
     invite_id: UUID = typer.Argument(..., help="UUID of the invite")
 ):
     """
-    Gets a specific invitation details, it only works if the invitation was made for the current logged user.
+    Get details of a specific invitation belonging to the logged-in user.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(client.get_invite(invite_id))
@@ -38,8 +38,7 @@ def account_invite_accept(
     invite_id: UUID = typer.Argument(..., help="UUID of the invite")
 ):
     """
-    Accepts an invitation with the informed ID, it only works if the user accepting the invitation is the user that
-    received the invitation.
+    Accept a specific invitation. The invite must belong to the logged-in user.
     """
     client = Client(profile=sdk_config.profile)
-    dump_json(client.get_invite(invite_id))
+    dump_json(client.accept_invite(invite_id))

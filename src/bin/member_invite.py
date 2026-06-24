@@ -20,7 +20,7 @@ def organization_member_invite_list(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization")
 ):
     """
-    Lists the member invites of organization this user has direct access to.
+    List all pending member invitations for an organization the user has access to.
     """
     client = Client(profile=sdk_config.profile)
     output_iterable(client.iter_organization_members_invites(organization_id))
@@ -30,7 +30,7 @@ def organization_member_invite_list(
 def organization_member_invite_create(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     organization_member_invite_email: str = typer.Argument(
-        ..., help="E-mail of the organization member"
+        ..., help="E-mail of the invited user"
     ),
     organization_member_invite_role: Optional[List[Roles]] = typer.Option(
         [x.value for x in Roles],
@@ -39,7 +39,7 @@ def organization_member_invite_create(
     ),
 ):
     """
-    Create organization member invite.
+    Send an invitation for a new user to join the organization via email.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(
@@ -55,15 +55,15 @@ def organization_member_invite_create(
 def organization_member_invite_get(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     organization_member_invite_email: str = typer.Argument(
-        ..., help="E-mail of the organization member invite"
+        ..., help="E-mail of the invited user"
     ),
 ):
     """
-    Get organization member invite.
+    Get details of a specific pending member invitation using the invited email.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(
-        client.get_organization_member(
+        client.get_organization_member_invite(
             organization_id, organization_member_invite_email
         )
     )
@@ -73,11 +73,11 @@ def organization_member_invite_get(
 def organization_member_invite_delete(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     organization_member_invite_email: str = typer.Argument(
-        ..., help="E-mail of the organization member"
+        ..., help="E-mail of the invited user"
     ),
 ):
     """
-    Delete organization member invite.
+    Cancel a pending member invitation using the invited email.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(
@@ -91,11 +91,11 @@ def organization_member_invite_delete(
 def organization_member_invite_resend(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     organization_member_invite_email: str = typer.Argument(
-        ..., help="E-mail of the organization member"
+        ..., help="E-mail of the invited user"
     ),
 ):
     """
-    Resend organization member invitation.
+    Resend an existing member invitation to the specified email address.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(

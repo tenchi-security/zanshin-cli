@@ -92,7 +92,7 @@ def alert_list(
     ),
 ):
     """
-    List alerts from a given organization, with optional filters by scan target, state or severity.
+    List alerts from a given organization, supporting advanced filtering, text search, pagination, and comment fetching.
     """
     client = Client(profile=sdk_config.profile)
 
@@ -199,7 +199,7 @@ def alert_following_list(
     ),
 ):
     """
-    List following alerts from a given organization, with optional filters by following ids, state or severity.
+    List following alerts from an organization, supporting advanced filtering, search, pagination, and comments.
     """
     client = Client(profile=sdk_config.profile)
     alerts = client.iter_following_alerts(
@@ -246,7 +246,7 @@ def alert_history_list(
     persist: Optional[bool] = typer.Option(False, help="Persist"),
 ):
     """
-    List alerts from a given organization, with optional filters by scan target, state or severity
+    List the history of alerts from an organization, with an optional scan target filter and result persistence.
     """
     client = Client(profile=sdk_config.profile)
 
@@ -279,7 +279,7 @@ def alert_history_following_list(
     persist: Optional[bool] = typer.Option(False, help="Persist"),
 ):
     """
-    List alerts from a given organization, with optional filters by scan target, state or severity
+    List the history of following alerts from an organization, with optional ID filters and result persistence.
     """
     client = Client(profile=sdk_config.profile)
 
@@ -368,7 +368,7 @@ def grouped_alert_list(
     ),
 ):
     """
-    List grouped alerts from a given organization, with optional filters by scan target, state or severity.
+    List grouped alerts from an organization, supporting advanced filtering, text search, and pagination.
     """
     client = Client(profile=sdk_config.profile)
     output_iterable(
@@ -463,7 +463,7 @@ def grouped_alert_following_list(
     ),
 ):
     """
-    List grouped following alerts from a given organization, with optional filters by scan target, state or severity.
+    List grouped following alerts from an organization, supporting advanced filtering, search, and pagination.
     """
     client = Client(profile=sdk_config.profile)
     output_iterable(
@@ -499,7 +499,7 @@ def alert_get(
     list_comments: Optional[bool] = typer.Option(False, help="Comments of this alert"),
 ):
     """
-    Returns details about a specified alert
+    Return details about a specified alert, with options to view its history or associated comments.
     """
     if list_history:
         client = Client(profile=sdk_config.profile)
@@ -531,7 +531,7 @@ def alert_update(
     ),
 ):
     """
-    Updates the alert.
+    Update a specific alert's state, labels, and add optional comments for certain state transitions.
     """
 
     client = Client(profile=sdk_config.profile)
@@ -578,7 +578,7 @@ def batch_update_state(
     ),
 ):
     """
-    Updates the state of multiple alerts in a batch.
+    Update the state of multiple alerts in a batch, with dry-run support and extensive filtering options.
     """
     client = Client(profile=sdk_config.profile)
     typer.echo(
@@ -638,7 +638,7 @@ def calculate_global_categories(
         global_categories[global_category] = round(
             global_categories[global_category] / num_items, 1
         )
-    global_entry = {"ID": "GLOBAL", "NAME": "Global Avarage"}
+    global_entry = {"ID": "GLOBAL", "NAME": "Global Average"}
     global_entry.update(global_categories)
     return global_entry
 
@@ -655,6 +655,9 @@ def generate_alert_category_report(
         case_sensitive=False,
     ),
 ):
+    """
+    Generate an alert category report for an organization's followings, grouped by tag and severity.
+    """
     client = Client(profile=sdk_config.profile)
     followings = [
         following
