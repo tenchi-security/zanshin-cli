@@ -219,8 +219,7 @@ organization.app.add_typer(
 follower.app.add_typer(
     follower_request.app,
     name="request",
-    help="Manage incoming requests to follow an organization."
-    "access to",
+    help="Manage incoming requests to follow an organization.",
 )
 
 
