@@ -17,7 +17,7 @@ app = typer.Typer()
 @app.command(name="list")
 def organization_list():
     """
-    Lists the organizations this user has direct access to as a member.
+    List the organizations the logged-in user has direct access to as a member.
     """
     client = Client(profile=sdk_config.profile)
     output_iterable(client.iter_organizations())
@@ -28,7 +28,7 @@ def organization_get(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization")
 ):
     """
-    Gets an organization given its ID.
+    Get details of a specific organization by its UUID.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(client.get_organization(organization_id))
@@ -44,7 +44,7 @@ def organization_update(
     ),
 ):
     """
-    Gets an organization given its ID.
+    Update an organization's details, such as name, picture or contact email.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(client.update_organization(organization_id, name, picture, email))
@@ -55,7 +55,7 @@ def organization_create(
     name: str = typer.Argument(..., help="Name of the organization")
 ):
     """
-    Creates an organization.
+    Create a new organization with the specified name.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(client.create_organization(name))
@@ -66,7 +66,7 @@ def organization_delete(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization")
 ):
     """
-    Deletes an organization given its ID.
+    Delete a specific organization by its UUID.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(client.delete_organization(organization_id))

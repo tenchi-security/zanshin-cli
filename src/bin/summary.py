@@ -29,6 +29,9 @@ def summary_scan_targets_following(
         None, help="Include alerts from scan targets without tags"
     ),
 ):
+    """
+    Generate a summary of scan targets for the organization's followings, with optional filtering.
+    """
     client = Client(profile=sdk_config.profile)
     dump_json(
         client.get_scan_targets_following_summary(
@@ -58,6 +61,9 @@ def summary_scan_targets_detail(
         None, help="Only summarize alerts with the specified severities"
     ),
 ):
+    """
+    Generate a detailed summary of the organization's scan targets, with optional filtering.
+    """
     client = Client(profile=sdk_config.profile)
     dump_json(
         client.get_scan_target_detail_summary(

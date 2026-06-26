@@ -16,7 +16,7 @@ def scan_target_groups_list(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization")
 ):
     """
-    Lists the scan target groups of the user's organization.
+    List all scan target groups belonging to a specific organization.
     """
     client = Client(profile=sdk_config.profile)
     output_iterable(client.iter_organization_scan_target_groups(organization_id))
@@ -30,7 +30,7 @@ def scan_target_groups_get(
     ),
 ):
     """
-    Gets details of the scan target group given its ID.
+    Get details of a specific scan target group by its UUID.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(
@@ -46,7 +46,7 @@ def scan_target_groups_delete(
     ),
 ):
     """
-    Deletes the scan target group of the organization.
+    Delete a specific scan target group from an organization.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(
@@ -65,7 +65,7 @@ def scan_target_groups_update(
     name: str = typer.Argument(..., help="new name of the scan target group"),
 ):
     """
-    Updates a scan target group.
+    Update the name of a specific scan target group.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(
@@ -83,7 +83,7 @@ def scan_target_groups_create(
     name: str = typer.Argument(..., help="name of the scan target group"),
 ):
     """
-    Creates a scan target group for the organization.
+    Create a new scan target group for an organization.
     """
     client = Client(profile=sdk_config.profile)
     scan_target_group = client.create_scan_target_group(organization_id, kind, name)
@@ -115,7 +115,7 @@ def organization_scan_target_group_oauth_link(
     ),
 ):
     """
-    Retrieve a link to allow the user to authorize zanshin to read info from their scan target group environment.
+    Retrieve an OAuth link to authorize Zanshin to access the scan target group environment.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(
@@ -131,7 +131,7 @@ def scan_target_groups_script(
     ),
 ):
     """
-    Gets download URL of the scan target group.
+    Retrieve the script download URL for a specific scan target group.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(
@@ -147,7 +147,7 @@ def scan_target_groups_compartments(
     ),
 ):
     """
-    Iterates over the compartments of a scan target group.
+    List all Oracle Cloud (OCI) compartments associated with a specific scan target group.
     """
     client = Client(profile=sdk_config.profile)
     output_iterable(
@@ -176,7 +176,7 @@ def scan_target_groups_insert(
     ),
 ):
     """
-    Inserts an already created scan target group.
+    Insert Oracle Cloud (OCI) credentials into an existing scan target group.
     """
     credential = ScanTargetGroupCredentialListORACLE(
         region, tenancy_id, user_id, key_fingerprint
@@ -201,7 +201,7 @@ def scan_target_groups_create_by_compartments(
     ),
 ):
     """
-    Creates Scan Targets from previous listed compartments inside the scan target group.
+    Create scan targets from listed compartments within a specific scan target group.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(
@@ -219,7 +219,7 @@ def scan_target_groups_scan_targets(
     ),
 ):
     """
-    Gets all scan targets from a specific scan target group.
+    List all scan targets belonging to a specific scan target group.
     """
     client = Client(profile=sdk_config.profile)
     output_iterable(

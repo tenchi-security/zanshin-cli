@@ -14,7 +14,7 @@ def organization_following_request_list(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization")
 ):
     """
-    Lists the following requests of organization this user has direct access to.
+    List the following requests of an organization the user has direct access to.
     """
     client = Client(profile=sdk_config.profile)
     output_iterable(client.iter_organization_following_requests(organization_id))
@@ -26,7 +26,7 @@ def organization_following_request_get(
     following_id: UUID = typer.Argument(..., help="UUID of the following request"),
 ):
     """
-    Returns a request received by an organization to follow another.
+    Get details of a specific request received by an organization to follow another.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(client.get_organization_following_request(organization_id, following_id))
@@ -38,7 +38,7 @@ def organization_following_request_accept(
     following_id: UUID = typer.Argument(..., help="UUID of the following request"),
 ):
     """
-    Accepts a request to follow another organization.
+    Accept a pending request to follow another organization.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(
@@ -52,7 +52,7 @@ def organization_following_request_decline(
     following_id: UUID = typer.Argument(..., help="UUID of the following request"),
 ):
     """
-    Declines a request to follow another organization.
+    Decline a pending request to follow another organization.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(

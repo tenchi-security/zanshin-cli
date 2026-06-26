@@ -14,7 +14,7 @@ def organization_follower_list(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization")
 ):
     """
-    Lists the followers of organization this user has direct access to.
+    List the followers of an organization the user has direct access to.
     """
     client = Client(profile=sdk_config.profile)
     output_iterable(client.iter_organization_followers(organization_id))
@@ -28,7 +28,7 @@ def organization_follower_stop(
     ),
 ):
     """
-    Stops one organization follower of another.
+    Stop a specific follower from following the given organization.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(

@@ -20,7 +20,7 @@ def organization_member_list(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization")
 ):
     """
-    Lists the members of organization this user has direct access to.
+    List the members of an organization the user has direct access to.
     """
     client = Client(profile=sdk_config.profile)
     output_iterable(client.iter_organization_members(organization_id))
@@ -34,7 +34,7 @@ def organization_member_get(
     ),
 ):
     """
-    Get organization member.
+    Get details of a specific member within an organization.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(client.get_organization_member(organization_id, organization_member_id))
@@ -53,7 +53,7 @@ def organization_member_update(
     ),
 ):
     """
-    Update organization member.
+    Update the role of a specific member within an organization.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(
@@ -69,7 +69,7 @@ def organization_member_delete(
     ),
 ):
     """
-    Delete organization member.
+    Remove a specific member from an organization.
     """
     client = Client(profile=sdk_config.profile)
     dump_json(

@@ -102,7 +102,7 @@ def global_options_callback(
 @main_app.command()
 def init():
     """
-    Update settings on configuration file.
+    Initialize or update the Zanshin CLI configuration file with an API profile.
     """
     cfg = RawConfigParser()
     cfg.read(CONFIG_FILE)
@@ -128,7 +128,7 @@ def init():
 @main_app.command()
 def version():
     """
-    Display the program and Python versions in use.
+    Display the current versions of the Zanshin CLI, SDK, and Python.
     """
     typer.echo(f"Zanshin CLI v{cli_version}")
     typer.echo(f"Zanshin Python SDK v{sdk_version}")
@@ -142,7 +142,7 @@ def version():
 main_app.add_typer(
     account.app,
     name="account",
-    help="Operations on user the API key owner has direct access to",
+    help="Manage the user account associated with the current API key.",
 )
 
 
@@ -153,7 +153,7 @@ main_app.add_typer(
 account.app.add_typer(
     invites.app,
     name="invites",
-    help="Operations on invites from account the API key owner has direct access to",
+    help="Manage pending invitations for the logged-in user.",
 )
 
 
@@ -164,7 +164,7 @@ account.app.add_typer(
 account.app.add_typer(
     api_key.app,
     name="api_key",
-    help="Operations on API keys from account the API key owner has direct access to",
+    help="Manage API keys associated with the logged-in user account.",
 )
 
 
@@ -175,7 +175,7 @@ account.app.add_typer(
 main_app.add_typer(
     organization.app,
     name="organization",
-    help="Operations on organizations the API key owner has direct access to",
+    help="Manage organizations the logged-in user has access to.",
 )
 
 
@@ -186,7 +186,7 @@ main_app.add_typer(
 organization.app.add_typer(
     organization_member.app,
     name="member",
-    help="Operations on members of organization the API key owner has direct access to",
+    help="Manage members within an organization.",
 )
 
 
@@ -197,8 +197,7 @@ organization.app.add_typer(
 organization_member.app.add_typer(
     member_invite.app,
     name="invite",
-    help="Operations on member invites of organization the API key owner has direct"
-    "access to",
+    help="Manage member invitations for an organization.",
 )
 
 
@@ -209,7 +208,7 @@ organization_member.app.add_typer(
 organization.app.add_typer(
     follower.app,
     name="follower",
-    help="Operations on followers of organization the API key owner has direct access to",
+    help="Manage followers of an organization.",
 )
 
 
@@ -220,8 +219,7 @@ organization.app.add_typer(
 follower.app.add_typer(
     follower_request.app,
     name="request",
-    help="Operations on follower requests of organization the API key owner has direct"
-    "access to",
+    help="Manage incoming requests to follow an organization.",
 )
 
 
@@ -232,7 +230,7 @@ follower.app.add_typer(
 organization.app.add_typer(
     following.app,
     name="following",
-    help="Operations on following of organization the API key owner has direct access to",
+    help="Manage relationships with following organizations.",
 )
 
 
@@ -243,8 +241,7 @@ organization.app.add_typer(
 following.app.add_typer(
     following_request.app,
     name="request",
-    help="Operations on following requests of organization the API key owner has"
-    "direct access to",
+    help="Manage outgoing requests to follow other organizations.",
 )
 
 
@@ -255,7 +252,7 @@ following.app.add_typer(
 organization.app.add_typer(
     scan_target.app,
     name="scan_target",
-    help="Operations on scan targets from organizations the API key owner has direct access to",
+    help="Manage scan targets within an organization.",
 )
 
 
@@ -266,8 +263,7 @@ organization.app.add_typer(
 scan_target.app.add_typer(
     scan.app,
     name="scan",
-    help="Operations on scan targets from organizations the API key owner has direct"
-    " access to",
+    help="Manage and trigger scans for specific scan targets.",
 )
 
 
@@ -278,7 +274,7 @@ scan_target.app.add_typer(
 organization.app.add_typer(
     scan_target_groups.app,
     name="scan-target-groups",
-    help="Operations on organizations scan target groups the API key owner has direct access to",
+    help="Manage scan target groups within an organization.",
 )
 
 
@@ -289,7 +285,7 @@ organization.app.add_typer(
 main_app.add_typer(
     alerts.app,
     name="alert",
-    help="Operations on alerts the API key owner has direct access to",
+    help="Manage and view security alerts across organizations.",
 )
 
 
@@ -300,7 +296,7 @@ main_app.add_typer(
 main_app.add_typer(
     summary.app,
     name="summary",
-    help="Operations on summaries the API key owner has direct access to",
+    help="Generate aggregated data summaries and reports.",
 )
 
 
