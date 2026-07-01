@@ -66,7 +66,7 @@ $ zanshin [OPTIONS] COMMAND [ARGS]...
 
 **Options**:
 
-* `--profile TEXT`: Configuration file section to read API keyand configuration from  [default: default]
+* `--profile TEXT`: Configuration file section to read API key and configuration from  [default: default]
 * `--format [json|table|csv|html]`: Output format to use for list operations  [default: json]
 * `--verbose / --no-verbose`: Print more information to stderr  [default: True]
 * `--debug / --no-debug`: Enable debug logging in the SDK  [default: False]
@@ -328,7 +328,7 @@ $ zanshin alert generate_alert_category_report [OPTIONS] ORGANIZATION_ID
 **Options**:
 
 * `--following-ids UUID`: Only list alerts from the specified following organizations
-* `--severities [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with the specified severities  [default: AlertSeverity.CRITICAL, AlertSeverity.HIGH]
+* `--severities [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with the specified severities  [default: CRITICAL, HIGH]
 * `--help`: Show this message and exit.
 
 ### `zanshin alert get`
