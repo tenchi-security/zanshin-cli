@@ -134,13 +134,13 @@ def alert_list(
 def alert_following_list(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     following_ids: Optional[List[UUID]] = typer.Option(
-        None, help="Only list alerts from the specified scan targets"
+        None, help="Only list alerts from the specified following organizations"
     ),
-    following_tags: Optional[List[UUID]] = typer.Option(
+    following_tags: Optional[List[str]] = typer.Option(
         None, help="Only lists alerts from the specified tags"
     ),
     include_empty_following_tags: Optional[bool] = typer.Option(
-        None, help="Include alerts from scan targets without tags"
+        None, help="Include alerts from following organizations without tags"
     ),
     states: Optional[List[AlertState]] = typer.Option(
         [
@@ -273,7 +273,7 @@ def alert_history_list(
 def alert_history_following_list(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     following_ids: Optional[List[UUID]] = typer.Option(
-        None, help="Only list alerts from the specified scan targets"
+        None, help="Only list alerts from the specified following organizations"
     ),
     cursor: Optional[str] = typer.Option(None, help="Cursor for pagination"),
     persist: Optional[bool] = typer.Option(False, help="Persist"),
@@ -401,13 +401,13 @@ def grouped_alert_list(
 def grouped_alert_following_list(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     following_ids: Optional[List[UUID]] = typer.Option(
-        None, help="Only list alerts from the specified scan targets"
+        None, help="Only list alerts from the specified following organizations"
     ),
-    following_tags: Optional[List[UUID]] = typer.Option(
+    following_tags: Optional[List[str]] = typer.Option(
         None, help="Only lists alerts from the specified tags"
     ),
     include_empty_following_tags: Optional[bool] = typer.Option(
-        None, help="Include alerts from scan targets without tags"
+        None, help="Include alerts from following organizations without tags"
     ),
     states: Optional[List[AlertState]] = typer.Option(
         [
@@ -647,7 +647,7 @@ def calculate_global_categories(
 def generate_alert_category_report(
     organization_id: UUID = typer.Argument(..., help="UUID of the organization"),
     following_ids: Optional[List[UUID]] = typer.Option(
-        None, help="Only list alerts from the specified scan targets"
+        None, help="Only list alerts from the specified following organizations"
     ),
     severities: Optional[List[AlertSeverity]] = typer.Option(
         [AlertSeverity.CRITICAL, AlertSeverity.HIGH],

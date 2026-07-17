@@ -2,7 +2,7 @@
 
 Command-line utility to interact with the Zanshin SaaS service offered by Tenchi Security
 (https://tenchisecurity.com), go to https://github.com/tenchi-security/zanshin-cli for license, source code and
-documentation
+documentation.
 
 **Usage**:
 
@@ -12,8 +12,8 @@ $ zanshin [OPTIONS] COMMAND [ARGS]...
 
 **Options**:
 
-* `--profile TEXT`: Configuration file section to read API keyand configuration from  [default: default]
-* `--format [json|table|csv|html]`: Output format to use for list operations  [default: OutputFormat.JSON]
+* `--profile TEXT`: Configuration file section to read API key and configuration from  [default: default]
+* `--format [json|table|csv|html]`: Output format to use for list operations  [default: json]
 * `--verbose / --no-verbose`: Print more information to stderr  [default: True]
 * `--debug / --no-debug`: Enable debug logging in the SDK  [default: False]
 * `--install-completion`: Install completion for the current shell.
@@ -22,16 +22,16 @@ $ zanshin [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `account`: Operations on user the API key owner has...
-* `alert`: Operations on alerts the API key owner has...
-* `init`: Update settings on configuration file.
-* `organization`: Operations on organizations the API key owner...
-* `summary`: Operations on summaries the API key owner has...
-* `version`: Display the program and Python versions in...
+* `account`: Manage the user account associated with the...
+* `alert`: Manage and view security alerts across...
+* `init`: Initialize or update the Zanshin CLI...
+* `organization`: Manage organizations the logged-in user has...
+* `summary`: Generate aggregated data summaries and...
+* `version`: Display the current versions of the Zanshin...
 
 ## `zanshin account`
 
-Operations on user the API key owner has direct access to
+Manage the user account associated with the current API key.
 
 **Usage**:
 
@@ -45,13 +45,13 @@ $ zanshin account [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `api_key`: Operations on API keys from account the API...
-* `invites`: Operations on invites from account the API...
-* `me`: Returns the details of the user account that...
+* `api_key`: Manage API keys associated with the logged-in...
+* `invites`: Manage pending invitations for the logged-in...
+* `me`: Show details of the user account associated...
 
 ### `zanshin account api_key`
 
-Operations on API keys from account the API key owner has direct access to
+Manage API keys associated with the logged-in user account.
 
 **Usage**:
 
@@ -65,14 +65,13 @@ $ zanshin account api_key [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `create`: Creates a new API key for the current logged...
-* `delete`: Deletes a given API key by its id, it will...
-* `list`: Iterates over the API keys of current logged...
+* `create`: Create a new API key for the logged-in user...
+* `delete`: Delete a specific API key by its UUID.
+* `list`: List all API keys belonging to the currently...
 
 #### `zanshin account api_key create`
 
-Creates a new API key for the current logged user, API Keys can be used to interact with the zanshin api directly
-a behalf of that user.
+Create a new API key for the logged-in user to interact with the Zanshin API.
 
 **Usage**:
 
@@ -90,7 +89,7 @@ $ zanshin account api_key create [OPTIONS] NAME
 
 #### `zanshin account api_key delete`
 
-Deletes a given API key by its id, it will only work if the informed ID belongs to the current logged user.
+Delete a specific API key by its UUID. The key must belong to the logged-in user.
 
 **Usage**:
 
@@ -100,7 +99,7 @@ $ zanshin account api_key delete [OPTIONS] API_KEY_ID
 
 **Arguments**:
 
-* `API_KEY_ID`: UUID of the invite to delete  [required]
+* `API_KEY_ID`: UUID of the API key to delete  [required]
 
 **Options**:
 
@@ -108,7 +107,7 @@ $ zanshin account api_key delete [OPTIONS] API_KEY_ID
 
 #### `zanshin account api_key list`
 
-Iterates over the API keys of current logged user.
+List all API keys belonging to the currently logged-in user.
 
 **Usage**:
 
@@ -122,7 +121,7 @@ $ zanshin account api_key list [OPTIONS]
 
 ### `zanshin account invites`
 
-Operations on invites from account the API key owner has direct access to
+Manage pending invitations for the logged-in user.
 
 **Usage**:
 
@@ -136,14 +135,13 @@ $ zanshin account invites [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `accept`: Accepts an invitation with the informed ID,...
-* `get`: Gets a specific invitation details, it only...
-* `list`: Iterates over the invites of current logged...
+* `accept`: Accept a specific invitation.
+* `get`: Get details of a specific invitation...
+* `list`: List all pending invitations for the...
 
 #### `zanshin account invites accept`
 
-Accepts an invitation with the informed ID, it only works if the user accepting the invitation is the user that
-received the invitation.
+Accept a specific invitation. The invite must belong to the logged-in user.
 
 **Usage**:
 
@@ -161,7 +159,7 @@ $ zanshin account invites accept [OPTIONS] INVITE_ID
 
 #### `zanshin account invites get`
 
-Gets a specific invitation details, it only works if the invitation was made for the current logged user.
+Get details of a specific invitation belonging to the logged-in user.
 
 **Usage**:
 
@@ -179,7 +177,7 @@ $ zanshin account invites get [OPTIONS] INVITE_ID
 
 #### `zanshin account invites list`
 
-Iterates over the invites of current logged user.
+List all pending invitations for the currently logged-in user.
 
 **Usage**:
 
@@ -193,7 +191,7 @@ $ zanshin account invites list [OPTIONS]
 
 ### `zanshin account me`
 
-Returns the details of the user account that owns the API key used by this Connection instance
+Show details of the user account associated with the currently configured API key.
 
 **Usage**:
 
@@ -207,7 +205,7 @@ $ zanshin account me [OPTIONS]
 
 ## `zanshin alert`
 
-Operations on alerts the API key owner has direct access to
+Manage and view security alerts across organizations.
 
 **Usage**:
 
@@ -221,20 +219,20 @@ $ zanshin alert [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `batch_update_state`: Updates the state of multiple alerts in a...
-* `generate_alert_category_report`
-* `get`: Returns details about a specified alert
-* `list`: List alerts from a given organization, with...
-* `list_following`: List following alerts from a given...
-* `list_grouped`: List grouped alerts from a given...
-* `list_grouped_following`: List grouped following alerts from a given...
-* `list_history`: List alerts from a given organization, with...
-* `list_history_following`: List alerts from a given organization, with...
-* `update`: Updates the alert.
+* `batch_update_state`: Update the state of multiple alerts in a...
+* `generate_alert_category_report`: Generate an alert category report for an...
+* `get`: Return details about a specified alert, with...
+* `list`: List alerts from a given organization,...
+* `list_following`: List following alerts from an organization,...
+* `list_grouped`: List grouped alerts from an organization,...
+* `list_grouped_following`: List grouped following alerts from an...
+* `list_history`: List the history of alerts from an...
+* `list_history_following`: List the history of following alerts from an...
+* `update`: Update a specific alert's state, labels, and...
 
 ### `zanshin alert batch_update_state`
 
-Updates the state of multiple alerts in a batch.
+Update the state of multiple alerts in a batch, with dry-run support and extensive filtering options.
 
 **Usage**:
 
@@ -261,6 +259,8 @@ $ zanshin alert batch_update_state [OPTIONS] ORGANIZATION_ID STATE:[OPEN|ACTIVE|
 
 ### `zanshin alert generate_alert_category_report`
 
+Generate an alert category report for an organization's followings, grouped by tag and severity.
+
 **Usage**:
 
 ```console
@@ -273,13 +273,13 @@ $ zanshin alert generate_alert_category_report [OPTIONS] ORGANIZATION_ID
 
 **Options**:
 
-* `--following-ids UUID`: Only list alerts from the specified scan targets
-* `--severities [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with the specified severities  [default: AlertSeverity.CRITICAL, AlertSeverity.HIGH]
+* `--following-ids UUID`: Only list alerts from the specified following organizations
+* `--severities [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with the specified severities  [default: CRITICAL, HIGH]
 * `--help`: Show this message and exit.
 
 ### `zanshin alert get`
 
-Returns details about a specified alert
+Return details about a specified alert, with options to view its history or associated comments.
 
 **Usage**:
 
@@ -299,7 +299,7 @@ $ zanshin alert get [OPTIONS] ALERT_ID
 
 ### `zanshin alert list`
 
-List alerts from a given organization, with optional filters by scan target, state or severity.
+List alerts from a given organization, supporting advanced filtering, text search, pagination, and comment fetching.
 
 **Usage**:
 
@@ -331,13 +331,13 @@ $ zanshin alert list [OPTIONS] ORGANIZATION_ID
 * `--resolved-at-start TEXT`: Date resolved starts at (format YYYY-MM-DDTHH:MM:SS)
 * `--resolved-at-end TEXT`: Date resolved ends at (format YYYY-MM-DDTHH:MM:SS)
 * `--cursor TEXT`: Cursor for pagination
-* `--order [scanTargetId|resource|rule|severity|state|openedAt|resolvedAt|createdAt|updatedAt]`: Field to sort results on  [default: AlertsOrderOpts.SEVERITY]
+* `--order [scanTargetId|resource|rule|severity|state|openedAt|resolvedAt|createdAt|updatedAt]`: Field to sort results on  [default: severity]
 * `--comments`: Retrieve alerts with their comments  [default: False]
 * `--help`: Show this message and exit.
 
 ### `zanshin alert list_following`
 
-List following alerts from a given organization, with optional filters by following ids, state or severity.
+List following alerts from an organization, supporting advanced filtering, search, pagination, and comments.
 
 **Usage**:
 
@@ -351,9 +351,9 @@ $ zanshin alert list_following [OPTIONS] ORGANIZATION_ID
 
 **Options**:
 
-* `--following-ids UUID`: Only list alerts from the specified scan targets
-* `--following-tags UUID`: Only lists alerts from the specified tags
-* `--include-empty-following-tags / --no-include-empty-following-tags`: Include alerts from scan targets without tags
+* `--following-ids UUID`: Only list alerts from the specified following organizations
+* `--following-tags TEXT`: Only lists alerts from the specified tags
+* `--include-empty-following-tags / --no-include-empty-following-tags`: Include alerts from following organizations without tags
 * `--states [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: Only list alerts in the specified states  [default: OPEN, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
 * `--severities [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with the specified severities  [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
 * `--lang [pt-BR|en-US]`: Show alert titles in the specified language  [default: en-US]
@@ -369,13 +369,13 @@ $ zanshin alert list_following [OPTIONS] ORGANIZATION_ID
 * `--resolved-at-start TEXT`: Date resolved starts at (format YYYY-MM-DDTHH:MM:SS)
 * `--resolved-at-end TEXT`: Date resolved ends at (format YYYY-MM-DDTHH:MM:SS)
 * `--cursor TEXT`: Cursor for pagination
-* `--order [scanTargetId|resource|rule|severity|state|openedAt|resolvedAt|createdAt|updatedAt]`: Field to sort results on  [default: AlertsOrderOpts.SEVERITY]
+* `--order [scanTargetId|resource|rule|severity|state|openedAt|resolvedAt|createdAt|updatedAt]`: Field to sort results on  [default: severity]
 * `--comments`: Retrieve alerts with their comments  [default: False]
 * `--help`: Show this message and exit.
 
 ### `zanshin alert list_grouped`
 
-List grouped alerts from a given organization, with optional filters by scan target, state or severity.
+List grouped alerts from an organization, supporting advanced filtering, text search, and pagination.
 
 **Usage**:
 
@@ -407,12 +407,12 @@ $ zanshin alert list_grouped [OPTIONS] ORGANIZATION_ID
 * `--resolved-at-start TEXT`: Date resolved starts at (format YYYY-MM-DDTHH:MM:SS)
 * `--resolved-at-end TEXT`: Date resolved ends at (format YYYY-MM-DDTHH:MM:SS)
 * `--cursor TEXT`: Cursor for pagination
-* `--order [severity|rule|total]`: Field to sort results on  [default: GroupedAlertOrderOpts.SEVERITY]
+* `--order [severity|rule|total]`: Field to sort results on  [default: severity]
 * `--help`: Show this message and exit.
 
 ### `zanshin alert list_grouped_following`
 
-List grouped following alerts from a given organization, with optional filters by scan target, state or severity.
+List grouped following alerts from an organization, supporting advanced filtering, search, and pagination.
 
 **Usage**:
 
@@ -426,9 +426,9 @@ $ zanshin alert list_grouped_following [OPTIONS] ORGANIZATION_ID
 
 **Options**:
 
-* `--following-ids UUID`: Only list alerts from the specified scan targets
-* `--following-tags UUID`: Only lists alerts from the specified tags
-* `--include-empty-following-tags / --no-include-empty-following-tags`: Include alerts from scan targets without tags
+* `--following-ids UUID`: Only list alerts from the specified following organizations
+* `--following-tags TEXT`: Only lists alerts from the specified tags
+* `--include-empty-following-tags / --no-include-empty-following-tags`: Include alerts from following organizations without tags
 * `--states [OPEN|ACTIVE|IN_PROGRESS|RISK_ACCEPTED|MITIGATING_CONTROL|FALSE_POSITIVE|CLOSED]`: Only list alerts in the specified states  [default: OPEN, IN_PROGRESS, RISK_ACCEPTED, MITIGATING_CONTROL, FALSE_POSITIVE]
 * `--severities [CRITICAL|HIGH|MEDIUM|LOW|INFO]`: Only list alerts with the specified severities  [default: CRITICAL, HIGH, MEDIUM, LOW, INFO]
 * `--lang [pt-BR|en-US]`: Show alert titles in the specified language  [default: en-US]
@@ -444,12 +444,12 @@ $ zanshin alert list_grouped_following [OPTIONS] ORGANIZATION_ID
 * `--resolved-at-start TEXT`: Date resolved starts at (format YYYY-MM-DDTHH:MM:SS)
 * `--resolved-at-end TEXT`: Date resolved ends at (format YYYY-MM-DDTHH:MM:SS)
 * `--cursor TEXT`: Cursor for pagination
-* `--order [severity|rule|total]`: Field to sort results on  [default: GroupedAlertOrderOpts.SEVERITY]
+* `--order [severity|rule|total]`: Field to sort results on  [default: severity]
 * `--help`: Show this message and exit.
 
 ### `zanshin alert list_history`
 
-List alerts from a given organization, with optional filters by scan target, state or severity
+List the history of alerts from an organization, with an optional scan target filter and result persistence.
 
 **Usage**:
 
@@ -470,7 +470,7 @@ $ zanshin alert list_history [OPTIONS] ORGANIZATION_ID
 
 ### `zanshin alert list_history_following`
 
-List alerts from a given organization, with optional filters by scan target, state or severity
+List the history of following alerts from an organization, with optional ID filters and result persistence.
 
 **Usage**:
 
@@ -484,14 +484,14 @@ $ zanshin alert list_history_following [OPTIONS] ORGANIZATION_ID
 
 **Options**:
 
-* `--following-ids UUID`: Only list alerts from the specified scan targets
+* `--following-ids UUID`: Only list alerts from the specified following organizations
 * `--cursor TEXT`: Cursor for pagination
 * `--persist / --no-persist`: Persist  [default: False]
 * `--help`: Show this message and exit.
 
 ### `zanshin alert update`
 
-Updates the alert.
+Update a specific alert's state, labels, and add optional comments for certain state transitions.
 
 **Usage**:
 
@@ -514,7 +514,7 @@ $ zanshin alert update [OPTIONS] ORGANIZATION_ID SCAN_TARGET_ID ALERT_ID
 
 ## `zanshin init`
 
-Update settings on configuration file.
+Initialize or update the Zanshin CLI configuration file with an API profile.
 
 **Usage**:
 
@@ -528,7 +528,7 @@ $ zanshin init [OPTIONS]
 
 ## `zanshin organization`
 
-Operations on organizations the API key owner has direct access to
+Manage organizations the logged-in user has access to.
 
 **Usage**:
 
@@ -542,20 +542,20 @@ $ zanshin organization [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `create`: Creates an organization.
-* `delete`: Deletes an organization given its ID.
-* `follower`: Operations on followers of organization the...
-* `following`: Operations on following of organization the...
-* `get`: Gets an organization given its ID.
-* `list`: Lists the organizations this user has direct...
-* `member`: Operations on members of organization the API...
-* `scan-target-groups`: Operations on organizations scan target...
-* `scan_target`: Operations on scan targets from organizations...
-* `update`: Gets an organization given its ID.
+* `create`: Create a new organization with the specified...
+* `delete`: Delete a specific organization by its UUID.
+* `follower`: Manage followers of an organization.
+* `following`: Manage relationships with following...
+* `get`: Get details of a specific organization by its...
+* `list`: List the organizations the logged-in user has...
+* `member`: Manage members within an organization.
+* `scan-target-groups`: Manage scan target groups within an...
+* `scan_target`: Manage scan targets within an organization.
+* `update`: Update an organization's details, such as...
 
 ### `zanshin organization create`
 
-Creates an organization.
+Create a new organization with the specified name.
 
 **Usage**:
 
@@ -573,7 +573,7 @@ $ zanshin organization create [OPTIONS] NAME
 
 ### `zanshin organization delete`
 
-Deletes an organization given its ID.
+Delete a specific organization by its UUID.
 
 **Usage**:
 
@@ -591,7 +591,7 @@ $ zanshin organization delete [OPTIONS] ORGANIZATION_ID
 
 ### `zanshin organization follower`
 
-Operations on followers of organization the API key owner has direct access to
+Manage followers of an organization.
 
 **Usage**:
 
@@ -605,13 +605,13 @@ $ zanshin organization follower [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `list`: Lists the followers of organization this user...
-* `request`: Operations on follower requests of...
-* `stop`: Stops one organization follower of another.
+* `list`: List the followers of an organization the...
+* `request`: Manage incoming requests to follow an...
+* `stop`: Stop a specific follower from following the...
 
 #### `zanshin organization follower list`
 
-Lists the followers of organization this user has direct access to.
+List the followers of an organization the user has direct access to.
 
 **Usage**:
 
@@ -629,7 +629,7 @@ $ zanshin organization follower list [OPTIONS] ORGANIZATION_ID
 
 #### `zanshin organization follower request`
 
-Operations on follower requests of organization the API key owner has directaccess to
+Manage incoming requests to follow an organization.
 
 **Usage**:
 
@@ -643,14 +643,14 @@ $ zanshin organization follower request [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `create`: Create organization follower request.
-* `delete`: Delete organization follower request.
-* `get`: Get organization follower request.
-* `list`: Lists the follower requests of organization...
+* `create`: Create a follower request for a specific...
+* `delete`: Delete a specific organization follower...
+* `get`: Get details of a specific organization...
+* `list`: List the follower requests of an organization...
 
 ##### `zanshin organization follower request create`
 
-Create organization follower request.
+Create a follower request for a specific organization using a token.
 
 **Usage**:
 
@@ -669,7 +669,7 @@ $ zanshin organization follower request create [OPTIONS] ORGANIZATION_ID TOKEN
 
 ##### `zanshin organization follower request delete`
 
-Delete organization follower request.
+Delete a specific organization follower request using its token.
 
 **Usage**:
 
@@ -688,7 +688,7 @@ $ zanshin organization follower request delete [OPTIONS] ORGANIZATION_ID TOKEN
 
 ##### `zanshin organization follower request get`
 
-Get organization follower request.
+Get details of a specific organization follower request using its token.
 
 **Usage**:
 
@@ -707,7 +707,7 @@ $ zanshin organization follower request get [OPTIONS] ORGANIZATION_ID TOKEN
 
 ##### `zanshin organization follower request list`
 
-Lists the follower requests of organization this user has direct access to.
+List the follower requests of an organization the user has direct access to.
 
 **Usage**:
 
@@ -725,7 +725,7 @@ $ zanshin organization follower request list [OPTIONS] ORGANIZATION_ID
 
 #### `zanshin organization follower stop`
 
-Stops one organization follower of another.
+Stop a specific follower from following the given organization.
 
 **Usage**:
 
@@ -744,7 +744,7 @@ $ zanshin organization follower stop [OPTIONS] ORGANIZATION_ID ORGANIZATION_FOLL
 
 ### `zanshin organization following`
 
-Operations on following of organization the API key owner has direct access to
+Manage relationships with following organizations.
 
 **Usage**:
 
@@ -758,13 +758,13 @@ $ zanshin organization following [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `list`: Lists the following of organization this user...
-* `request`: Operations on following requests of...
-* `stop`: Stops one organization following of another.
+* `list`: List the followings of an organization the...
+* `request`: Manage outgoing requests to follow other...
+* `stop`: Stop the organization from following another...
 
 #### `zanshin organization following list`
 
-Lists the following of organization this user has direct access to.
+List the followings of an organization the user has direct access to.
 
 **Usage**:
 
@@ -782,7 +782,7 @@ $ zanshin organization following list [OPTIONS] ORGANIZATION_ID
 
 #### `zanshin organization following request`
 
-Operations on following requests of organization the API key owner hasdirect access to
+Manage outgoing requests to follow other organizations.
 
 **Usage**:
 
@@ -796,14 +796,14 @@ $ zanshin organization following request [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `accept`: Accepts a request to follow another...
-* `decline`: Declines a request to follow another...
-* `get`: Returns a request received by an organization...
-* `list`: Lists the following requests of organization...
+* `accept`: Accept a pending request to follow another...
+* `decline`: Decline a pending request to follow another...
+* `get`: Get details of a specific request received by...
+* `list`: List the following requests of an...
 
 ##### `zanshin organization following request accept`
 
-Accepts a request to follow another organization.
+Accept a pending request to follow another organization.
 
 **Usage**:
 
@@ -822,7 +822,7 @@ $ zanshin organization following request accept [OPTIONS] ORGANIZATION_ID FOLLOW
 
 ##### `zanshin organization following request decline`
 
-Declines a request to follow another organization.
+Decline a pending request to follow another organization.
 
 **Usage**:
 
@@ -841,7 +841,7 @@ $ zanshin organization following request decline [OPTIONS] ORGANIZATION_ID FOLLO
 
 ##### `zanshin organization following request get`
 
-Returns a request received by an organization to follow another.
+Get details of a specific request received by an organization to follow another.
 
 **Usage**:
 
@@ -860,7 +860,7 @@ $ zanshin organization following request get [OPTIONS] ORGANIZATION_ID FOLLOWING
 
 ##### `zanshin organization following request list`
 
-Lists the following requests of organization this user has direct access to.
+List the following requests of an organization the user has direct access to.
 
 **Usage**:
 
@@ -878,7 +878,7 @@ $ zanshin organization following request list [OPTIONS] ORGANIZATION_ID
 
 #### `zanshin organization following stop`
 
-Stops one organization following of another.
+Stop the organization from following another specific organization.
 
 **Usage**:
 
@@ -897,7 +897,7 @@ $ zanshin organization following stop [OPTIONS] ORGANIZATION_ID ORGANIZATION_FOL
 
 ### `zanshin organization get`
 
-Gets an organization given its ID.
+Get details of a specific organization by its UUID.
 
 **Usage**:
 
@@ -915,7 +915,7 @@ $ zanshin organization get [OPTIONS] ORGANIZATION_ID
 
 ### `zanshin organization list`
 
-Lists the organizations this user has direct access to as a member.
+List the organizations the logged-in user has direct access to as a member.
 
 **Usage**:
 
@@ -929,7 +929,7 @@ $ zanshin organization list [OPTIONS]
 
 ### `zanshin organization member`
 
-Operations on members of organization the API key owner has direct access to
+Manage members within an organization.
 
 **Usage**:
 
@@ -943,15 +943,15 @@ $ zanshin organization member [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `delete`: Delete organization member.
-* `get`: Get organization member.
-* `invite`: Operations on member invites of organization...
-* `list`: Lists the members of organization this user...
-* `update`: Update organization member.
+* `delete`: Remove a specific member from an...
+* `get`: Get details of a specific member within an...
+* `invite`: Manage member invitations for an...
+* `list`: List the members of an organization the user...
+* `update`: Update the role of a specific member within...
 
 #### `zanshin organization member delete`
 
-Delete organization member.
+Remove a specific member from an organization.
 
 **Usage**:
 
@@ -970,7 +970,7 @@ $ zanshin organization member delete [OPTIONS] ORGANIZATION_ID ORGANIZATION_MEMB
 
 #### `zanshin organization member get`
 
-Get organization member.
+Get details of a specific member within an organization.
 
 **Usage**:
 
@@ -989,7 +989,7 @@ $ zanshin organization member get [OPTIONS] ORGANIZATION_ID ORGANIZATION_MEMBER_
 
 #### `zanshin organization member invite`
 
-Operations on member invites of organization the API key owner has directaccess to
+Manage member invitations for an organization.
 
 **Usage**:
 
@@ -1003,15 +1003,15 @@ $ zanshin organization member invite [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `create`: Create organization member invite.
-* `delete`: Delete organization member invite.
-* `get`: Get organization member invite.
-* `list`: Lists the member invites of organization this...
-* `resend`: Resend organization member invitation.
+* `create`: Send an invitation for a new user to join the...
+* `delete`: Cancel a pending member invitation using the...
+* `get`: Get details of a specific pending member...
+* `list`: List all pending member invitations for an...
+* `resend`: Resend an existing member invitation to the...
 
 ##### `zanshin organization member invite create`
 
-Create organization member invite.
+Send an invitation for a new user to join the organization via email.
 
 **Usage**:
 
@@ -1022,7 +1022,7 @@ $ zanshin organization member invite create [OPTIONS] ORGANIZATION_ID ORGANIZATI
 **Arguments**:
 
 * `ORGANIZATION_ID`: UUID of the organization  [required]
-* `ORGANIZATION_MEMBER_INVITE_EMAIL`: E-mail of the organization member  [required]
+* `ORGANIZATION_MEMBER_INVITE_EMAIL`: E-mail of the invited user  [required]
 
 **Options**:
 
@@ -1031,7 +1031,7 @@ $ zanshin organization member invite create [OPTIONS] ORGANIZATION_ID ORGANIZATI
 
 ##### `zanshin organization member invite delete`
 
-Delete organization member invite.
+Cancel a pending member invitation using the invited email.
 
 **Usage**:
 
@@ -1042,7 +1042,7 @@ $ zanshin organization member invite delete [OPTIONS] ORGANIZATION_ID ORGANIZATI
 **Arguments**:
 
 * `ORGANIZATION_ID`: UUID of the organization  [required]
-* `ORGANIZATION_MEMBER_INVITE_EMAIL`: E-mail of the organization member  [required]
+* `ORGANIZATION_MEMBER_INVITE_EMAIL`: E-mail of the invited user  [required]
 
 **Options**:
 
@@ -1050,7 +1050,7 @@ $ zanshin organization member invite delete [OPTIONS] ORGANIZATION_ID ORGANIZATI
 
 ##### `zanshin organization member invite get`
 
-Get organization member invite.
+Get details of a specific pending member invitation using the invited email.
 
 **Usage**:
 
@@ -1061,7 +1061,7 @@ $ zanshin organization member invite get [OPTIONS] ORGANIZATION_ID ORGANIZATION_
 **Arguments**:
 
 * `ORGANIZATION_ID`: UUID of the organization  [required]
-* `ORGANIZATION_MEMBER_INVITE_EMAIL`: E-mail of the organization member invite  [required]
+* `ORGANIZATION_MEMBER_INVITE_EMAIL`: E-mail of the invited user  [required]
 
 **Options**:
 
@@ -1069,7 +1069,7 @@ $ zanshin organization member invite get [OPTIONS] ORGANIZATION_ID ORGANIZATION_
 
 ##### `zanshin organization member invite list`
 
-Lists the member invites of organization this user has direct access to.
+List all pending member invitations for an organization the user has access to.
 
 **Usage**:
 
@@ -1087,7 +1087,7 @@ $ zanshin organization member invite list [OPTIONS] ORGANIZATION_ID
 
 ##### `zanshin organization member invite resend`
 
-Resend organization member invitation.
+Resend an existing member invitation to the specified email address.
 
 **Usage**:
 
@@ -1098,7 +1098,7 @@ $ zanshin organization member invite resend [OPTIONS] ORGANIZATION_ID ORGANIZATI
 **Arguments**:
 
 * `ORGANIZATION_ID`: UUID of the organization  [required]
-* `ORGANIZATION_MEMBER_INVITE_EMAIL`: E-mail of the organization member  [required]
+* `ORGANIZATION_MEMBER_INVITE_EMAIL`: E-mail of the invited user  [required]
 
 **Options**:
 
@@ -1106,7 +1106,7 @@ $ zanshin organization member invite resend [OPTIONS] ORGANIZATION_ID ORGANIZATI
 
 #### `zanshin organization member list`
 
-Lists the members of organization this user has direct access to.
+List the members of an organization the user has direct access to.
 
 **Usage**:
 
@@ -1124,7 +1124,7 @@ $ zanshin organization member list [OPTIONS] ORGANIZATION_ID
 
 #### `zanshin organization member update`
 
-Update organization member.
+Update the role of a specific member within an organization.
 
 **Usage**:
 
@@ -1144,7 +1144,7 @@ $ zanshin organization member update [OPTIONS] ORGANIZATION_ID ORGANIZATION_MEMB
 
 ### `zanshin organization scan-target-groups`
 
-Operations on organizations scan target groups the API key owner has direct access to
+Manage scan target groups within an organization.
 
 **Usage**:
 
@@ -1158,21 +1158,21 @@ $ zanshin organization scan-target-groups [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `compartments`: Iterates over the compartments of a scan...
-* `create`: Creates a scan target group for the...
-* `create-by-compartments`: Creates Scan Targets from previous listed...
-* `delete`: Deletes the scan target group of the...
-* `get`: Gets details of the scan target group given...
-* `insert`: Inserts an already created scan target group.
-* `list`: Lists the scan target groups of the user's...
-* `oauth_link`: Retrieve a link to allow the user to...
-* `scan-targets`: Gets all scan targets from a specific scan...
-* `script`: Gets download URL of the scan target group.
-* `update`: Updates a scan target group.
+* `compartments`: List all Oracle Cloud (OCI) compartments...
+* `create`: Create a new scan target group for an...
+* `create-by-compartments`: Create scan targets from listed compartments...
+* `delete`: Delete a specific scan target group from an...
+* `get`: Get details of a specific scan target group...
+* `insert`: Insert Oracle Cloud (OCI) credentials into an...
+* `list`: List all scan target groups belonging to a...
+* `oauth_link`: Retrieve an OAuth link to authorize Zanshin...
+* `scan-targets`: List all scan targets belonging to a specific...
+* `script`: Retrieve the script download URL for a...
+* `update`: Update the name of a specific scan target...
 
 #### `zanshin organization scan-target-groups compartments`
 
-Iterates over the compartments of a scan target group.
+List all Oracle Cloud (OCI) compartments associated with a specific scan target group.
 
 **Usage**:
 
@@ -1191,7 +1191,7 @@ $ zanshin organization scan-target-groups compartments [OPTIONS] ORGANIZATION_ID
 
 #### `zanshin organization scan-target-groups create`
 
-Creates a scan target group for the organization.
+Create a new scan target group for an organization.
 
 **Usage**:
 
@@ -1202,7 +1202,7 @@ $ zanshin organization scan-target-groups create [OPTIONS] ORGANIZATION_ID KIND:
 **Arguments**:
 
 * `ORGANIZATION_ID`: UUID of the organization  [required]
-* `KIND:[AWS|AZURE|GCP|BITBUCKET|DOMAIN|GITHUB|GITLAB|GWORKSPACE|HUAWEI|JIRA|MS365|ORACLE|SALESFORCE|SLACK|ZENDESK]`: kind of the scan target group. Should be 'ORACLE', 'BITBUCKET' or 'GITLAB'  [required]
+* `KIND:[AWS|AZURE|GCP|BITBUCKET|DOMAIN|GITHUB|GITLAB|GWORKSPACE|HUAWEI|JIRA|MS365|ORACLE|SALESFORCE|SLACK|ZENDESK]`: kind of the scan target group. Should be 'ORACLE' (Oracle Cloud Infrastructure (OCI)), 'BITBUCKET' (Bitbucket Cloud), or 'GITLAB' (GitLab.com)  [required]
 * `NAME`: name of the scan target group  [required]
 
 **Options**:
@@ -1211,7 +1211,7 @@ $ zanshin organization scan-target-groups create [OPTIONS] ORGANIZATION_ID KIND:
 
 #### `zanshin organization scan-target-groups create-by-compartments`
 
-Creates Scan Targets from previous listed compartments inside the scan target group.
+Create scan targets from listed compartments within a specific scan target group.
 
 **Usage**:
 
@@ -1224,7 +1224,7 @@ $ zanshin organization scan-target-groups create-by-compartments [OPTIONS] ORGAN
 * `ORGANIZATION_ID`: UUID of the organization  [required]
 * `SCAN_TARGET_GROUP_ID`: UUID of the scan target group  [required]
 * `NAME`: Compartment name  [required]
-* `OCID`: Oracle Compartment Id  [required]
+* `OCID`: Oracle Cloud Infrastructure (OCI) Compartment ID  [required]
 
 **Options**:
 
@@ -1232,7 +1232,7 @@ $ zanshin organization scan-target-groups create-by-compartments [OPTIONS] ORGAN
 
 #### `zanshin organization scan-target-groups delete`
 
-Deletes the scan target group of the organization.
+Delete a specific scan target group from an organization.
 
 **Usage**:
 
@@ -1251,7 +1251,7 @@ $ zanshin organization scan-target-groups delete [OPTIONS] ORGANIZATION_ID SCAN_
 
 #### `zanshin organization scan-target-groups get`
 
-Gets details of the scan target group given its ID.
+Get details of a specific scan target group by its UUID.
 
 **Usage**:
 
@@ -1270,7 +1270,7 @@ $ zanshin organization scan-target-groups get [OPTIONS] ORGANIZATION_ID SCAN_TAR
 
 #### `zanshin organization scan-target-groups insert`
 
-Inserts an already created scan target group.
+Insert Oracle Cloud (OCI) credentials into an existing scan target group.
 
 **Usage**:
 
@@ -1282,10 +1282,10 @@ $ zanshin organization scan-target-groups insert [OPTIONS] ORGANIZATION_ID SCAN_
 
 * `ORGANIZATION_ID`: UUID of the organization  [required]
 * `SCAN_TARGET_GROUP_ID`: UUID of the scan target group  [required]
-* `REGION`: Oracle cloud region  [required]
-* `TENANCY_ID`: Oracle tenancyId  [required]
-* `USER_ID`: Oracle userId  [required]
-* `KEY_FINGERPRINT`: Oracle Fingerprint used for authentication  [required]
+* `REGION`: Oracle Cloud Infrastructure (OCI) region  [required]
+* `TENANCY_ID`: Oracle Cloud Infrastructure (OCI) tenancy ID  [required]
+* `USER_ID`: Oracle Cloud Infrastructure (OCI) user ID  [required]
+* `KEY_FINGERPRINT`: Oracle Cloud Infrastructure (OCI) API key fingerprint used for authentication  [required]
 
 **Options**:
 
@@ -1293,7 +1293,7 @@ $ zanshin organization scan-target-groups insert [OPTIONS] ORGANIZATION_ID SCAN_
 
 #### `zanshin organization scan-target-groups list`
 
-Lists the scan target groups of the user's organization.
+List all scan target groups belonging to a specific organization.
 
 **Usage**:
 
@@ -1311,7 +1311,7 @@ $ zanshin organization scan-target-groups list [OPTIONS] ORGANIZATION_ID
 
 #### `zanshin organization scan-target-groups oauth_link`
 
-Retrieve a link to allow the user to authorize zanshin to read info from their scan target group environment.
+Retrieve an OAuth link to authorize Zanshin to access the scan target group environment.
 
 **Usage**:
 
@@ -1330,7 +1330,7 @@ $ zanshin organization scan-target-groups oauth_link [OPTIONS] ORGANIZATION_ID S
 
 #### `zanshin organization scan-target-groups scan-targets`
 
-Gets all scan targets from a specific scan target group.
+List all scan targets belonging to a specific scan target group.
 
 **Usage**:
 
@@ -1349,7 +1349,7 @@ $ zanshin organization scan-target-groups scan-targets [OPTIONS] ORGANIZATION_ID
 
 #### `zanshin organization scan-target-groups script`
 
-Gets download URL of the scan target group.
+Retrieve the script download URL for a specific scan target group.
 
 **Usage**:
 
@@ -1368,7 +1368,7 @@ $ zanshin organization scan-target-groups script [OPTIONS] ORGANIZATION_ID SCAN_
 
 #### `zanshin organization scan-target-groups update`
 
-Updates a scan target group.
+Update the name of a specific scan target group.
 
 **Usage**:
 
@@ -1388,7 +1388,7 @@ $ zanshin organization scan-target-groups update [OPTIONS] ORGANIZATION_ID SCAN_
 
 ### `zanshin organization scan_target`
 
-Operations on scan targets from organizations the API key owner has direct access to
+Manage scan targets within an organization.
 
 **Usage**:
 
@@ -1402,20 +1402,20 @@ $ zanshin organization scan_target [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `check`: Check scan target.
-* `create`: Create a new scan target in organization.
-* `delete`: Delete scan target of organization.
-* `get`: Get scan target of organization.
-* `list`: Lists the scan targets of organization this...
-* `oauth_link`: Retrieve a link to allow the user to...
-* `onboard_aws`: Create a new scan target in organization and...
-* `onboard_aws_organization`: For each of selected accounts in AWS...
-* `scan`: Operations on scan targets from organizations...
-* `update`: Update scan target of organization.
+* `check`: Check the status and connectivity of a...
+* `create`: Create a new scan target within a specific...
+* `delete`: Delete a specific scan target from an...
+* `get`: Get details of a specific scan target within...
+* `list`: List the scan targets of an organization the...
+* `oauth_link`: Retrieve an OAuth link to authorize Zanshin...
+* `onboard_aws`: Create and onboard a new AWS scan target.
+* `onboard_aws_organization`: Onboard multiple AWS Organization accounts as...
+* `scan`: Manage and trigger scans for specific scan...
+* `update`: Update the name or schedule of a specific...
 
 #### `zanshin organization scan_target check`
 
-Check scan target.
+Check the status and connectivity of a specific scan target.
 
 **Usage**:
 
@@ -1434,7 +1434,7 @@ $ zanshin organization scan_target check [OPTIONS] ORGANIZATION_ID SCAN_TARGET_I
 
 #### `zanshin organization scan_target create`
 
-Create a new scan target in organization.
+Create a new scan target within a specific organization.
 
 **Usage**:
 
@@ -1456,7 +1456,7 @@ $ zanshin organization scan_target create [OPTIONS] ORGANIZATION_ID KIND:[AWS|AZ
 
 #### `zanshin organization scan_target delete`
 
-Delete scan target of organization.
+Delete a specific scan target from an organization.
 
 **Usage**:
 
@@ -1475,7 +1475,7 @@ $ zanshin organization scan_target delete [OPTIONS] ORGANIZATION_ID SCAN_TARGET_
 
 #### `zanshin organization scan_target get`
 
-Get scan target of organization.
+Get details of a specific scan target within an organization.
 
 **Usage**:
 
@@ -1494,7 +1494,7 @@ $ zanshin organization scan_target get [OPTIONS] ORGANIZATION_ID SCAN_TARGET_ID
 
 #### `zanshin organization scan_target list`
 
-Lists the scan targets of organization this user has direct access to.
+List the scan targets of an organization the user has direct access to.
 
 **Usage**:
 
@@ -1512,7 +1512,7 @@ $ zanshin organization scan_target list [OPTIONS] ORGANIZATION_ID
 
 #### `zanshin organization scan_target oauth_link`
 
-Retrieve a link to allow the user to authorize zanshin to read info from their scan target environment.
+Retrieve an OAuth link to authorize Zanshin to access the scan target environment.
 
 **Usage**:
 
@@ -1531,8 +1531,8 @@ $ zanshin organization scan_target oauth_link [OPTIONS] ORGANIZATION_ID SCAN_TAR
 
 #### `zanshin organization scan_target onboard_aws`
 
-Create a new scan target in organization and perform onboard. Requires boto3 and correct AWS IAM Privileges.
-Checkout the required AWS IAM privileges here https://github.com/tenchi-security/zanshin-sdk-python/blob/main/zanshinsdk/docs/README.md
+Create and onboard a new AWS scan target. Requires boto3 and specific AWS IAM privileges.
+See docs: https://github.com/tenchi-security/zanshin-sdk-python/blob/main/zanshinsdk/docs/README.md.
 
 **Usage**:
 
@@ -1542,7 +1542,7 @@ $ zanshin organization scan_target onboard_aws [OPTIONS] REGION ORGANIZATION_ID 
 
 **Arguments**:
 
-* `REGION`: AWS Region to deploy CloudFormation  [required]
+* `REGION`: Amazon Web Services (AWS) Region to deploy CloudFormation  [required]
 * `ORGANIZATION_ID`: UUID of the organization  [required]
 * `NAME`: name of the scan target  [required]
 * `CREDENTIAL`: credential of the scan target  [required]
@@ -1550,15 +1550,13 @@ $ zanshin organization scan_target onboard_aws [OPTIONS] REGION ORGANIZATION_ID 
 
 **Options**:
 
-* `--boto3-profile TEXT`: Boto3 profile name to use for Onboard AWS Account
+* `--boto3-profile TEXT`: Boto3 profile name to use for Onboard Amazon Web Services (AWS) Account
 * `--help`: Show this message and exit.
 
 #### `zanshin organization scan_target onboard_aws_organization`
 
-For each of selected accounts in AWS Organization, creates a new Scan Target in informed zanshin organization
-and performs onboarding. Requires boto3 and correct AWS IAM Privileges.
-Checkout the required AWS IAM privileges at
-https://github.com/tenchi-security/zanshin-cli/blob/main/src/lib/docs/README.md
+Onboard multiple AWS Organization accounts as new Zanshin scan targets. Requires boto3 and AWS IAM privileges.
+See docs: https://github.com/tenchi-security/zanshin-cli/blob/main/src/lib/docs/README.md.
 
 **Usage**:
 
@@ -1568,21 +1566,21 @@ $ zanshin organization scan_target onboard_aws_organization [OPTIONS] REGION ORG
 
 **Arguments**:
 
-* `REGION`: AWS Region to deploy CloudFormation  [required]
+* `REGION`: Amazon Web Services (AWS) Region to deploy CloudFormation  [required]
 * `ORGANIZATION_ID`: UUID of the organization  [required]
 * `[SCHEDULE]`: schedule of the scan target  [default: {"frequency": "1d", "timeOfDay": "NIGHT"}]
 
 **Options**:
 
 * `--target-accounts [ALL|MASTER|MEMBERS|NONE]`: choose which accounts to onboard
-* `--exclude-account TEXT`: ID, Name, E-mail or ARN of AWS Account not to be onboarded
-* `--boto3-profile TEXT`: Boto3 profile name to use for Onboard AWS Account
-* `--aws-role-name TEXT`: Name of AWS role that allow access from Management Account to Member accounts  [default: OrganizationAccountAccessRole]
+* `--exclude-account TEXT`: ID, Name, E-mail or ARN of Amazon Web Services (AWS) Account not to be onboarded
+* `--boto3-profile TEXT`: Boto3 profile name to use for Onboard Amazon Web Services (AWS) Account
+* `--aws-role-name TEXT`: Name of Amazon Web Services (AWS) role that allow access from Management Account to Member accounts  [default: OrganizationAccountAccessRole]
 * `--help`: Show this message and exit.
 
 #### `zanshin organization scan_target scan`
 
-Operations on scan targets from organizations the API key owner has direct access to
+Manage and trigger scans for specific scan targets.
 
 **Usage**:
 
@@ -1596,14 +1594,14 @@ $ zanshin organization scan_target scan [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `get`: Get scan of scan target.
-* `list`: Lists the scan target scans of organization...
-* `start`: Starts a scan on the specified scan target.
-* `stop`: Stop a scan on the specified scan target.
+* `get`: Get details of a specific scan performed on a...
+* `list`: List all scans performed on a specific scan...
+* `start`: Start a new scan on the specified scan...
+* `stop`: Stop a currently running scan on the...
 
 ##### `zanshin organization scan_target scan get`
 
-Get scan of scan target.
+Get details of a specific scan performed on a scan target.
 
 **Usage**:
 
@@ -1623,7 +1621,7 @@ $ zanshin organization scan_target scan get [OPTIONS] ORGANIZATION_ID SCAN_TARGE
 
 ##### `zanshin organization scan_target scan list`
 
-Lists the scan target scans of organization this user has direct access to.
+List all scans performed on a specific scan target within an organization.
 
 **Usage**:
 
@@ -1642,7 +1640,7 @@ $ zanshin organization scan_target scan list [OPTIONS] ORGANIZATION_ID SCAN_TARG
 
 ##### `zanshin organization scan_target scan start`
 
-Starts a scan on the specified scan target.
+Start a new scan on the specified scan target.
 
 **Usage**:
 
@@ -1662,7 +1660,7 @@ $ zanshin organization scan_target scan start [OPTIONS] ORGANIZATION_ID SCAN_TAR
 
 ##### `zanshin organization scan_target scan stop`
 
-Stop a scan on the specified scan target.
+Stop a currently running scan on the specified scan target.
 
 **Usage**:
 
@@ -1681,7 +1679,7 @@ $ zanshin organization scan_target scan stop [OPTIONS] ORGANIZATION_ID SCAN_TARG
 
 #### `zanshin organization scan_target update`
 
-Update scan target of organization.
+Update the name or schedule of a specific scan target.
 
 **Usage**:
 
@@ -1702,7 +1700,7 @@ $ zanshin organization scan_target update [OPTIONS] ORGANIZATION_ID SCAN_TARGET_
 
 ### `zanshin organization update`
 
-Gets an organization given its ID.
+Update an organization's details, such as name, picture or contact email.
 
 **Usage**:
 
@@ -1723,7 +1721,7 @@ $ zanshin organization update [OPTIONS] ORGANIZATION_ID [NAME] [PICTURE] [EMAIL]
 
 ## `zanshin summary`
 
-Operations on summaries the API key owner has direct access to
+Generate aggregated data summaries and reports.
 
 **Usage**:
 
@@ -1737,10 +1735,12 @@ $ zanshin summary [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `scan_targets_detail`
-* `scan_targets_following`
+* `scan_targets_detail`: Generate a detailed summary of the...
+* `scan_targets_following`: Generate a summary of scan targets for the...
 
 ### `zanshin summary scan_targets_detail`
+
+Generate a detailed summary of the organization's scan targets, with optional filtering.
 
 **Usage**:
 
@@ -1761,6 +1761,8 @@ $ zanshin summary scan_targets_detail [OPTIONS] ORGANIZATION_ID
 * `--help`: Show this message and exit.
 
 ### `zanshin summary scan_targets_following`
+
+Generate a summary of scan targets for the organization's followings, with optional filtering.
 
 **Usage**:
 
@@ -1783,7 +1785,7 @@ $ zanshin summary scan_targets_following [OPTIONS] ORGANIZATION_ID
 
 ## `zanshin version`
 
-Display the program and Python versions in use.
+Display the current versions of the Zanshin CLI, SDK, and Python.
 
 **Usage**:
 

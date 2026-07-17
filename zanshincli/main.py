@@ -54,7 +54,7 @@ def global_options_callback(
     ctx: typer.Context,
     profile: str = typer.Option(
         "default",
-        help="Configuration file section to read API key" "and configuration from",
+        help="Configuration file section to read API key " "and configuration from",
     ),
     output_format: OutputFormat = typer.Option(
         OutputFormat.JSON,
